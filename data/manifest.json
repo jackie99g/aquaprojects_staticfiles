@@ -1,0 +1,30 @@
+{
+    "name": "Aqua Project",
+    "short_name": "Aqua",
+    "icons": [
+        {
+            "src": "/static/aqua/images/icons-128.png",
+            "type": "image/png",
+            "sizes": "128x128"
+        },
+        {
+            "src": "/static/aqua/images/icons-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/static/aqua/images/icons-256.png",
+            "type": "image/png",
+            "sizes": "256x256"
+        },
+        {
+            "src": "/static/aqua/images/icons-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "/?utm_source=homescreen",
+    "display": "standalone",
+    "theme_color": "#23A0F2",
+    "background_color": "white"
+}
