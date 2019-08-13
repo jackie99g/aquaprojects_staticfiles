@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'Billabong';
     src: local('billabong');
-    src: url('Billabong.ttf')
+    src: url('https://jackie99g.github.io/Aqua_project_staticfiles/css/Billabong.ttf')
 }
 .box {
     width: 100%;
@@ -13,6 +13,25 @@
 .box_bg_pattern {
     background-color: #8CCDF7;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 200 200'%3E%3Cpolygon fill='%23ffffff' points='100 0 0 100 100 100 100 200 200 100 200 0'/%3E%3C/svg%3E");    
+    
+}
+
+.box_bg_animation {
+    background: linear-gradient(-45deg, rgb(236, 148, 121), rgb(235, 133, 184), rgb(169, 235, 220), rgb(40, 140, 233));
+	background-size: 400% 400%;
+	animation: Gradient 15s ease infinite;
+}
+
+@keyframes Gradient {
+	0% {
+		background-position: 0% 50%
+	}
+	50% {
+		background-position: 100% 50%
+	}
+	100% {
+		background-position: 0% 50%
+	}
 }
 
 /* .box_bg_pale_blue {
@@ -49,6 +68,23 @@
 .username {
     display: inline-block;
     margin: auto 5px auto auto;
+}
+
+.user_picture {
+    cursor: pointer;
+}
+
+.account {
+    position: fixed;
+    top: 58.5px;
+    right: 5px;
+    width: 300px;
+    height: 300px;
+    border: 1px solid white;
+    border-radius: 10px;
+    background: white;
+    padding: 15px;
+    visibility: hidden;
 }
 
 .eye_catch {
@@ -184,4 +220,118 @@
 
 .main_content {
     padding-top: 15px;
+}
+
+.content_display {
+    display: none!important;
+}
+
+/* switch */
+.switch__label {
+	width: 50px;
+	position: relative;
+    display: inline-block;
+    margin: 0px;
+}
+
+.switch__input {
+	display: none;
+}
+
+.switch__input:checked ~ .switch__content:after {
+	background: #23A0F2;
+	top: 0px;
+	left: 0px;
+	width: 80%;
+	height: 100%;
+}
+
+.switch__input:checked ~ .switch__circle {
+	left: 35%;
+}
+
+.switch__content {
+	display:block;
+	cursor: pointer;
+	position: relative;
+	border-radius: 22px;
+	height: 24px;
+	overflow: hidden;
+}
+
+.switch__content:before {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 80%;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	border: 1.5px solid #23A0F2;
+	border-radius: 22px;
+	background: white;
+}
+
+.switch__content:after {
+	content: "";
+	display:block;
+	position:absolute;
+	background-color: transparent;
+	width: 0;
+	height: 0;
+	top: 50%;
+	left: 50%;
+	border-radius: 22px;
+	transition: all 0.2s;
+}
+
+.switch__circle {
+	display: block;
+	top: 1px;
+	left: 0px;
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	border-radius: 22px;
+	background: white;
+	transition: all 0.2s;
+	border: #23A0F2 solid 1px;
+}
+
+.switch:after {
+    content: "Hide aside bar (Desktop only)";
+    position: absolute;
+}
+
+.switch {
+    height: 24px;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.account_user_info {
+    display: flex;
+    flex-direction: row;
+}
+
+.account_picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+}
+
+.account_name {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.switch__animation:after {
+    content: "Disable animation";
+    position: absolute;
+}
+
+.switch__animation {
+    height: 24px;
+    position: relative;
 }
