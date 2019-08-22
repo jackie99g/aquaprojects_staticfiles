@@ -335,3 +335,19 @@
     height: 24px;
     position: relative;
 }
+
+.news_image {
+    width: 160px;
+    height: 90px; 
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+}
+
+.news_image_sm {
+    height: 150px; 
+    padding: 0px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+}
