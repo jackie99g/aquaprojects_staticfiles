@@ -1,14 +1,16 @@
 $(function () {
-    var currentPage = location.href;
-    currentPage = currentPage.split('/')
-    currentPage = currentPage[currentPage.length - 1]
-    var state = {
-        'targetPage': currentPage,
-        'currentPage': currentPage,
-        'changeLocation': '#main'
-    };
-    history.replaceState(state, null, currentPage)
-    document.title = 'Aqua Project - ' + currentPage;
+    $(document).ready(function () {
+        var currentPage = location.href;
+        currentPage = currentPage.split('/')
+        currentPage = currentPage[currentPage.length - 1]
+        var state = {
+            'targetPage': currentPage,
+            'currentPage': currentPage,
+            'changeLocation': '#main'
+        };
+        history.replaceState(state, null, currentPage)
+        document.title = 'Aqua Project - ' + currentPage;
+    })
     $('.dashboard_anchor').on('click', function () {
         var targetPage = $(this).attr('href');
         targetPage = targetPage.split('/')
@@ -45,9 +47,9 @@ $(function () {
     })
     $(window).on('popstate', function (e) {
         var pageState = e.originalEvent.state
-        if(state){
+        if (state) {
             var beforePage = pageState['targetPage'];
-            if(pageState['targetPage'] == null){
+            if (pageState['targetPage'] == null) {
                 document.title = 'Aqua Project'
             } else {
                 document.title = 'Aqua Project - ' + pageState['targetPage']
