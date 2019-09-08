@@ -3,9 +3,9 @@ $(function () {
     currentPage = currentPage.split('/')
     currentPage = currentPage[currentPage.length - 1]
     var state = {
-        'targetPage': null,
+        'targetPage': currentPage,
         'currentPage': currentPage,
-        'changeLocation': null
+        'changeLocation': '#main'
     };
     history.replaceState(state, null, currentPage)
     document.title = 'Aqua Project - ' + currentPage;
