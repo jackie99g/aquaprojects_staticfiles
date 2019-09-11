@@ -166,13 +166,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     $('#contents_anchor_sm_entertainment').on('click', function () {
@@ -188,13 +188,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     $('#contents_anchor_sm_general').on('click', function () {
@@ -210,13 +210,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     $('#contents_anchor_sm_health').on('click', function () {
@@ -232,13 +232,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     $('#contents_anchor_sm_science').on('click', function () {
@@ -254,13 +254,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     $('#contents_anchor_sm_sports').on('click', function () {
@@ -276,13 +276,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     $('#contents_anchor_sm_technology').on('click', function () {
@@ -298,13 +298,13 @@ $(function () {
             'thisisnews': true,
             'targetPage': targetPage,
             'currentPage': currentPage,
-            'changeLocation': '#category_contents'
+            'changeLocation': '#category_contents_sm'
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')
         return false;
     })
     function changeContentInSearch(url, contentsLocation, changeLocation) {
