@@ -9,6 +9,61 @@ $(function () {
             'changeLocation': '#main'
         };
         history.replaceState(state, null, currentPage)
+        $('.contents_anchor_group a').removeClass('select_active')
+        if (location.pathname.indexOf('home') >= 0) {
+            $('.dashboard_anchor_home').addClass('select_active_dashboard')
+        }
+        if (location.pathname.indexOf('news') >= 0) {
+            $('.dashboard_anchor_news').addClass('select_active_dashboard')
+        }
+        if (location.pathname.indexOf('weather') >= 0) {
+            $('.dashboard_anchor_weather').addClass('select_active_dashboard')
+        }
+        if (location.pathname.indexOf('translate') >= 0) {
+            $('.dashboard_anchor_translate').addClass('select_active_dashboard')
+        }
+        if (location.pathname.indexOf('search') >= 0) {
+            $('.dashboard_anchor_search').addClass('select_active_dashboard')
+        }
+        if (location.search.indexOf('') == 0) {
+            if (location.search.indexOf('business') >= 0) {
+                $('.contents_anchor_business').addClass('select_active')
+            }
+            if (location.search.indexOf('entertainment') >= 0) {
+                $('.contents_anchor_entertainment').addClass('select_active')
+            }
+            if (location.search.indexOf('general') >= 0) {
+                $('.contents_anchor_general').addClass('select_active')
+            }
+            if (location.search.indexOf('health') >= 0) {
+                $('.contents_anchor_health').addClass('select_active')
+            }
+            if (location.search.indexOf('science') >= 0) {
+                $('.contents_anchor_science').addClass('select_active')
+            }
+            if (location.search.indexOf('sports') >= 0) {
+                $('.contents_anchor_sports').addClass('select_active')
+            }
+            if (location.search.indexOf('technology') >= 0) {
+                $('.contents_anchor_technology').addClass('select_active')
+            }
+            if(location.search.indexOf('Google') >= 0){
+                $('#contents_anchor_google').addClass('select_active')
+            }
+            if(location.search.indexOf('%E3%81%94%E6%B3%A8%E6%96%87%E3%81%AF%E3%81%86%E3%81%95%E3%81%8E%E3%81%A7%E3%81%99%E3%81%8B?') >= 0){
+                $('#contents_anchor_gochiusa').addClass('select_active')
+            }
+        }
+        if (location.pathname + location.search == '/news') {
+            if (location.search.indexOf('') == 0) {
+                $('.contents_anchor_general').addClass('select_active')
+            }
+        }
+        if (location.pathname + location.search == '/search') {
+            if (location.search.indexOf('') == 0) {
+                $('#contents_anchor_gochiusa').addClass('select_active')                
+            }
+        }
         document.title = 'Aqua Project - ' + currentPage;
     })
     $('.dashboard_anchor').on('click', function () {
@@ -25,16 +80,57 @@ $(function () {
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
+        $('.dashboard_anchor').removeClass('select_active_dashboard')
+        $(this).addClass('select_active_dashboard')
         changeContent(targetPage);
         return false;
     })
     $(window).on('popstate', function (e) {
         if (!e.originalEvent.state) return false;
         if (e.originalEvent.state['thisissearch'] == true) {
+            $('.contents_anchor_group a').removeClass('select_active')
+            if(location.search.indexOf('Google') >= 0){
+                $('#contents_anchor_google').addClass('select_active')
+            }
+            if(location.search.indexOf('%E3%81%94%E6%B3%A8%E6%96%87%E3%81%AF%E3%81%86%E3%81%95%E3%81%8E%E3%81%A7%E3%81%99%E3%81%8B?') >= 0){
+                $('#contents_anchor_gochiusa').addClass('select_active')
+            }
+            if (location.pathname + location.search == '/search') {
+                if (location.search.indexOf('') == 0) {
+                    $('#contents_anchor_gochiusa').addClass('select_active')
+                }
+            }
             changeContentInSearch_(e.originalEvent.state['targetPage'], '#category_contents', '#category_contents')
             return false;
         }
         if (e.originalEvent.state['thisisnews'] == true) {
+            $('.contents_anchor_group a').removeClass('select_active')
+            if (location.search.indexOf('business') >= 0) {
+                $('.contents_anchor_business').addClass('select_active')
+            }
+            if (location.search.indexOf('entertainment') >= 0) {
+                $('.contents_anchor_entertainment').addClass('select_active')
+            }
+            if (location.search.indexOf('general') >= 0) {
+                $('.contents_anchor_general').addClass('select_active')
+            }
+            if (location.search.indexOf('health') >= 0) {
+                $('.contents_anchor_health').addClass('select_active')
+            }
+            if (location.search.indexOf('science') >= 0) {
+                $('.contents_anchor_science').addClass('select_active')
+            }
+            if (location.search.indexOf('sports') >= 0) {
+                $('.contents_anchor_sports').addClass('select_active')
+            }
+            if (location.search.indexOf('technology') >= 0) {
+                $('.contents_anchor_technology').addClass('select_active')
+            }
+            if (location.pathname + location.search == '/news') {
+                if (location.search.indexOf('') == 0) {
+                    $('.contents_anchor_general').addClass('select_active')
+                }
+            }
             changeContentInSearch__(e.originalEvent.state['targetPage'], '#category_contents', '#category_contents')
             return false;
         }
@@ -47,6 +143,22 @@ $(function () {
                 document.title = 'Aqua Project'
             } else {
                 document.title = 'Aqua Project - ' + pageState['targetPage']
+            }
+            $('.dashboard_anchor_group a').removeClass('select_active_dashboard')            
+            if (location.pathname.indexOf('home') >= 0) {
+                $('.dashboard_anchor_home').addClass('select_active_dashboard')
+            }
+            if (location.pathname.indexOf('news') >= 0) {
+                $('.dashboard_anchor_news').addClass('select_active_dashboard')
+            }
+            if (location.pathname.indexOf('weather') >= 0) {
+                $('.dashboard_anchor_weather').addClass('select_active_dashboard')
+            }
+            if (location.pathname.indexOf('translate') >= 0) {
+                $('.dashboard_anchor_translate').addClass('select_active_dashboard')
+            }
+            if (location.pathname.indexOf('search') >= 0) {
+                $('.dashboard_anchor_search').addClass('select_active_dashboard')
             }
             changeContent(beforePage);
         }
@@ -80,7 +192,6 @@ $(function () {
                 $('#ajax-progress-bar').css({ 'transition': 'width 0.6s ease 0s' });
             });
         })
-        
     }
     function changeContentInSearch_(url, contentsLocation, changeLocation) {
         $('#ajax_p').text('loading...')

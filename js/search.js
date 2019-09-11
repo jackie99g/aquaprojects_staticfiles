@@ -17,6 +17,8 @@ $(function () {
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
+        $('.contents_anchor_group a').removeClass('select_active')
+        $(this).addClass('select_active')
         changeContentInSearch(targetPage, '#category_contents', '#category_contents')
         return false;
     })
@@ -38,6 +40,8 @@ $(function () {
         };
         history.pushState(state, null, targetPage);
         document.title = 'Aqua Project - ' + targetPage
+        $('.contents_anchor_group a').removeClass('select_active')
+        $(this).addClass('select_active')
         changeContentInSearch(targetPage, '#category_contents', '#category_contents')
         return false;
     })
