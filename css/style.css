@@ -378,3 +378,7 @@ a:hover {
 .select_active_dashboard {
     color: #1DA1F2;
 }
+
+.contents_anchor:hover {
+    background-color: #E8F5FE;
+}
