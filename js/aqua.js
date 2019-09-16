@@ -1,14 +1,26 @@
-$(window).resize(function () {
+$(document).ready(function() {
     var windowWidth = $(window).width();
     console.log(windowWidth);
     if (windowWidth < 768) {
         $('.main_content').css({
-            'padding-bottom': '35px'
+            'padding-bottom': '59px'
+        });
+        $('.daily-weather').css({
+            'overflow-x': 'auto'
+        });
+        $('.hourly-weather').css({
+            'overflow-x': 'auto'
         });
     }
     if (windowWidth >= 768) {
         $('.main_content').css({
             'padding-bottom': '0px'
+        });
+        $('.daily-weather').css({
+            'overflow-x': 'hidden'
+        });
+        $('.hourly-weather').css({
+            'overflow-x': 'hiddent'
         });
     }
     if (windowWidth < 992) {
@@ -18,7 +30,44 @@ $(window).resize(function () {
     }
     if (windowWidth >= 992) {
         $('.aside_border').css({
-            'padding': '15px'
+            'padding': '0px'
+        });
+    }
+})
+
+$(window).resize(function () {
+    var windowWidth = $(window).width();
+    console.log(windowWidth);
+    if (windowWidth < 768) {
+        $('.main_content').css({
+            'padding-bottom': '59px'
+        });
+        $('.daily-weather').css({
+            'overflow-x': 'auto'
+        });
+        $('.hourly-weather').css({
+            'overflow-x': 'auto'
+        });
+    }
+    if (windowWidth >= 768) {
+        $('.main_content').css({
+            'padding-bottom': '0px'
+        });
+        $('.daily-weather').css({
+            'overflow-x': 'hidden'
+        });
+        $('.hourly-weather').css({
+            'overflow-x': 'hiddent'
+        });
+    }
+    if (windowWidth < 992) {
+        $('.aside_border').css({
+            'padding': '0px'
+        });
+    }
+    if (windowWidth >= 992) {
+        $('.aside_border').css({
+            'padding': '0px'
         });
     }
 });

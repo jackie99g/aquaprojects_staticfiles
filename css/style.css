@@ -382,3 +382,133 @@ a:hover {
 .contents_anchor:hover {
     background-color: #E8F5FE;
 }
+
+/* weather style */
+.current-weather {
+    width: 300px;
+    padding-top: 8px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cw {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.weather-position {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  color: black;
+  background: white;
+  position: relative;
+}
+
+.weather-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url(https://pbs.twimg.com/media/EEVWhMLU8AAIe89?format=jpg&name=4096x4096);
+  background-size: cover;
+  opacity: 0.3;
+}
+
+.weather-details-1 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  font-size: small;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.weather-details-2 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  font-size: small;
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.humidity {
+	font-size: small;
+}
+
+.wind {
+	font-size: small;
+}
+
+.current-temp {
+  font-size: 24px;
+}
+
+.weather-time {
+  font-size: 10px;
+}
+
+.weather-place {
+  font-size: larger;
+}
+
+.weather-desc {
+	font-size: smaller;
+}
+
+.weather-date {
+	font-size: smaller;
+}
+
+.weather-day {
+	width: 150px;
+	text-align: left;
+	padding: 12px;
+}
+
+.weather-hourly {
+	width: 150px;
+	text-align: left;
+	padding: 12px;
+}
+
+.details-day {
+	width: 150px;
+	text-align: left;
+	padding: 12px;
+}
+
+.daily-weather {
+	display: flex;
+	flex-direction: row;
+	overflow-x: hidden;
+	position: relative;
+}
+
+.hourly-weather {
+	display: flex;
+	flex-direction: row;
+	overflow-x: hidden;
+	position: relative;
+}
+
+.day-details {
+	display: flex;
+	flex-direction: row;
+	overflow-x: auto;
+	position: relative;
+}
+
+.scroll-btn {
+    position: relative;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 4px;
+    cursor: pointer;
+}
