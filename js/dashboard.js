@@ -240,6 +240,7 @@ $(function () {
         }).done(function (data) {
             var mc = $(data).find(history.state['changeLocation']).html();
             $(history.state['changeLocation']).html(mc);
+            ContentActive()
             $('#ajax-progress-bar').css({ 'width': '100%' });
             $('#ajax-progress-bar').css({ 'transition': 'width 0.1s ease 0s' });
             function wait(sec) {
@@ -255,5 +256,29 @@ $(function () {
                 $('#ajax-progress-bar').css({ 'transition': 'width 0.6s ease 0s' });
             });
         })
+    }
+    function ContentActive() {
+        if (location.pathname.indexOf('weather') >= 0) {
+            weatherContentActive()
+        }
+    }
+    function weatherContentActive() {
+        var windowWidth = $(window).width();
+        if (windowWidth < 768) {
+            $('.daily-weather').css({
+                'overflow-x': 'auto'
+            });
+            $('.hourly-weather').css({
+                'overflow-x': 'auto'
+            });
+        }
+        if (windowWidth >= 768) {
+            $('.daily-weather').css({
+                'overflow-x': 'hidden'
+            });
+            $('.hourly-weather').css({
+                'overflow-x': 'hiddent'
+            });
+        }
     }
 })
