@@ -219,6 +219,7 @@ a:hover {
     border-top: solid 1px #E6ECF0;
     background-color: white;
     padding: 5px;
+    box-shadow: 0px 0 8px #00000066
 }
 
 .side_content_sm {
@@ -413,7 +414,6 @@ a:hover {
   position: absolute;
   top: 0;
   left: 0;
-  background: url(https://pbs.twimg.com/media/EEVWhMLU8AAIe89?format=jpg&name=4096x4096);
   background-size: cover;
   opacity: 0.3;
 }

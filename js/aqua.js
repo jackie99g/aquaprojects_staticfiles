@@ -33,6 +33,7 @@ $(document).ready(function() {
             'padding': '0px'
         });
     }
+    userinfodic(".account_content_email", "email", false)    
 })
 
 $(window).resize(function () {
@@ -83,6 +84,7 @@ $('.user_picture').on('click', function () {
                 'width': '100%',
                 'right': '0px',
                 'box-shadow': '0px 0px',
+                'border-radius': '0px',
             });
             $('#main').css({
                 'display': 'none'
@@ -95,6 +97,7 @@ $('.user_picture').on('click', function () {
                 'width': '300px',
                 'right': '0px',
                 'box-shadow': '0px 0px',
+                'border-radius': '10px',
             });
             $('#main').css({
                 'display': 'block',
@@ -108,7 +111,8 @@ $('.user_picture').on('click', function () {
                 'height': '300px',
                 'width': '300px',
                 'right': '5px',
-                'box-shadow': '0px 0px 3px 3px rgba(0,0,0,0.1)'
+                'box-shadow': '0px 8px 16px #00000026',
+                'border-radius': '10px',
             });
             $('#main').css({
                 'display': 'block',
@@ -121,6 +125,7 @@ $('.user_picture').on('click', function () {
                 'width': '300px',
                 'right': '5px',
                 'box-shadow': '0px 0px',
+                'border-radius': '10px',
             });
             $('#main').css({
                 'display': 'block',
@@ -132,9 +137,12 @@ $('.user_picture').on('click', function () {
 
 $('body').on('click', function (e) {
     var click_class = e.target.className
-    if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'prop account_content' && click_class != 'switch' && click_class != 'switch__label' && click_class != 'prop switch__input' && click_class != 'switch__content' && click_class != 'switch__circle' && click_class != 'account_picture' && click_class != 'animation switch__input' && click_class != 'switch__animation') {
+    if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'prop account_content' && click_class != 'switch' && click_class != 'switch__label' && click_class != 'prop switch__input' && click_class != 'switch__content' && click_class != 'switch__circle' && click_class != 'account_picture' && click_class != 'animation switch__input' && click_class != 'switch__animation' && click_class != 'account_content_email') {
         $('.account').css({
             'visibility': 'hidden',
+        });
+        $('#main').css({
+            'display': 'block',
         });
     }
 
@@ -165,3 +173,20 @@ $('input[name="check"]').change(function () {
         $('#index_box').addClass('box_bg_animation');
     }
 });
+
+function userinfodic(changePlace, query, src) {
+    $.ajax({
+        url: '/userinfo?q=' + query,
+        crossDomain: true,
+        xhrFields: {
+            withCredentials: true
+        }
+    }).done(function(data) {
+        if (src == false) {
+            $(changePlace).text(data)
+        }
+        if (src == true) {
+            $(changePlace).attr('src', data)            
+        }
+    })
+}

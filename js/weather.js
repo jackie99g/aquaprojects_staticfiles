@@ -1,4 +1,18 @@
 $(function () {
+    $(document).ready(function() {
+        $.ajax({
+            url: '/userinfo?q=' + 'user_metadata--background_image',
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            }
+        }).done(function(data) {
+            $('.weather-bg').css({
+                'background': 'url(' + data + ')'
+            })
+        })
+        
+    })
     $('#rbtn').on("click", function () {
         wdwidth = $('.weather-day').width()
         wdoutwidth = $('.weather-day').outerWidth()
