@@ -8,7 +8,7 @@ $(function () {
             }
         }).done(function(data) {
             $('.weather-bg').css({
-                'background': 'url(' + data + ')'
+                'background-image': 'url(' + data + ')'
             })
         })
         
