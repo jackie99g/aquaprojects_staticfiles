@@ -33,7 +33,9 @@ $(document).ready(function() {
             'padding': '0px'
         });
     }
-    userinfodic(".account_content_email", "email", false)    
+    if ($('.account_content_email').length) {
+        userinfodic(".account_content_email", "email", false)        
+    }
 })
 
 $(window).resize(function () {
@@ -177,6 +179,7 @@ $('input[name="check"]').change(function () {
 function userinfodic(changePlace, query, src) {
     $.ajax({
         url: '/userinfo?q=' + query,
+        timeout: 10000,
         crossDomain: true,
         xhrFields: {
             withCredentials: true
@@ -188,5 +191,7 @@ function userinfodic(changePlace, query, src) {
         if (src == true) {
             $(changePlace).attr('src', data)            
         }
+    }).fail(function(data) {
+        $(changePlace).text("Sorry, couldn't get.")
     })
 }
