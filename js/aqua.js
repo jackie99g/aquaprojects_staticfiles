@@ -33,9 +33,6 @@ $(document).ready(function() {
             'padding': '0px'
         });
     }
-    if ($('.account_content_email').length) {
-        userinfodic(".account_content_email", "email", false)        
-    }
 })
 
 $(window).resize(function () {
@@ -95,7 +92,7 @@ $('.user_picture').on('click', function () {
         else if (visible_state == 'visible') {
             $('.account').css({
                 'visibility': 'hidden',
-                'height': '300px',
+                'height': 'auto',
                 'width': '300px',
                 'right': '0px',
                 'box-shadow': '0px 0px',
@@ -110,7 +107,7 @@ $('.user_picture').on('click', function () {
         if (visible_state == 'hidden') {
             $('.account').css({
                 'visibility': 'visible',
-                'height': '300px',
+                'height': 'auto',
                 'width': '300px',
                 'right': '5px',
                 'box-shadow': '0px 8px 16px #00000026',
@@ -123,7 +120,7 @@ $('.user_picture').on('click', function () {
         else if (visible_state == 'visible') {
             $('.account').css({
                 'visibility': 'hidden',
-                'height': '300px',
+                'height': 'auto',
                 'width': '300px',
                 'right': '5px',
                 'box-shadow': '0px 0px',
