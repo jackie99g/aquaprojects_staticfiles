@@ -11,7 +11,6 @@ $(function () {
                 'background-image': 'url(' + data + ')'
             })
         })
-        
     })
     $('#rbtn').on("click", function () {
         wdwidth = $('.weather-day').width()
@@ -46,12 +45,5 @@ $(function () {
         whoutwidth = $('.weather-hourly').outerWidth()
         hwwidth = $('.hourly-weather').scrollLeft()
         $('.hourly-weather').scrollLeft(hwwidth + whoutwidth + whwidth)
-    })
-    // Experiment code..
-    $("#bg-select").on("click", function () {
-        url = $('#bg-url').val();
-        $('.weather-bg').css({
-            'background': 'url(' + url + ')'
-        })
     })
 })
