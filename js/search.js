@@ -1,14 +1,7 @@
 $(function () {
-    $('#contents_anchor_google').on('click', function () {
-        $('#ajax_p').text('loading...')
-        $('#ajax-progress-bar').css({ 'visibility': 'visible' });
-        $('#ajax-progress-bar').css({ 'width': '80%' });
-        var targetPage = $(this).attr('href');
-        targetPage = targetPage.split('/')
-        targetPage = targetPage[targetPage.length - 1]
-        var currentPage = location.href;
-        currentPage = currentPage.split('/')
-        currentPage = currentPage[currentPage.length - 1]
+    $('.contents_anchor').on('click', function() {
+        var targetPage = $(this).attr('href').split('/')[1]
+        var currentPage = location.href.split('/')[location.href.split('/').length -1]
         state = {
             'thisissearch': true,
             'targetPage': targetPage,
@@ -19,43 +12,31 @@ $(function () {
         document.title = 'Aqua Project - ' + targetPage
         $('.contents_anchor_group a').removeClass('select_active')
         $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        if ($(this).attr('id').indexOf('sm') >= 0) {
+            changeContentInSearch(targetPage, '#category_contents_sm', '#category_contents_sm')            
+        } else {
+            changeContentInSearch(targetPage, '#category_contents', '#category_contents')
+        }
         return false;
     })
-    $('#contents_anchor_gochiusa').on('click', function () {
-        $('#ajax_p').text('loading...')
+    function changeContentInSearch(uri, contentsLocation, changeLocation) {
+        $(changeLocation).html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
+        $('#ajax-progress-bar').removeClass('bg-danger');
         $('#ajax-progress-bar').css({ 'visibility': 'visible' });
         $('#ajax-progress-bar').css({ 'width': '80%' });
-        var targetPage = $(this).attr('href');
-        targetPage = targetPage.split('/')
-        targetPage = targetPage[targetPage.length - 1]
-        var currentPage = location.href;
-        currentPage = currentPage.split('/')
-        currentPage = currentPage[currentPage.length - 1]
-        state = {
-            'thisissearch': true,
-            'targetPage': targetPage,
-            'currentPage': currentPage,
-            'changeLocation': '#category_contents'
-        };
-        history.pushState(state, null, targetPage);
-        document.title = 'Aqua Project - ' + targetPage
-        $('.contents_anchor_group a').removeClass('select_active')
-        $(this).addClass('select_active')
-        changeContentInSearch(targetPage, '#category_contents', '#category_contents')
-        return false;
-    })
-    function changeContentInSearch(url, contentsLocation, changeLocation) {
-        $('#ajax_p').text('loading...')
+        // Cache exsists.
+        if (AquaProjectCache[uri]) {$(changeLocation).html($(AquaProjectCache[uri]).find(history.state['changeLocation']).html());}
         $.ajax({
-            url: url,
+            url: uri,
+            timeout: 30000,
             type: "GET",
             crossDomain: true,
             xhrFields: {
                 withCredentials: true
             }
-        }).done(function (data) {
-            console.log('done')
+        }).done(function(data) {
+            // Save Cache.
+            AquaProjectCache[uri] = data
             var mc = $(data).find(contentsLocation).html();
             $(changeLocation).html(mc);
             $('#ajax-progress-bar').css({ 'width': '100%' });
@@ -72,7 +53,10 @@ $(function () {
                 $('#ajax-progress-bar').css({ 'width': '0%' });
                 $('#ajax-progress-bar').css({ 'transition': 'width 0.6s ease 0s' });
             });
-            $('#ajax_p').text('done!')
+        }).fail(function(data) {
+            $('#ajax-progress-bar').addClass('bg-danger');
+            $('#ajax-progress-bar').css({ 'width': '100%' });
+            $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
         })
     }
 })
