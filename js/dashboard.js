@@ -6,7 +6,9 @@ $(function () {
         var state = {
             'targetPage': currentPage,
             'currentPage': currentPage,
-            'changeLocation': '#main'
+            'changeLocation': '#main',
+            'thisisnews': history.state['thisisnews'],
+            'thisisexperiment': history.state['thisisexperiment']
         };
         history.replaceState(state, null, currentPage)
         $('.contents_anchor_group a').removeClass('select_active')
@@ -34,8 +36,6 @@ $(function () {
                 $('#contents_anchor_gochiusa').addClass('select_active')                
             }
         }
-        document.title = 'Aqua Project - ' + currentPage;
-        AquaProjectCache[location.href.split('/')[location.href.split('/').length - 1]] = document.documentElement.innerHTML
     })
     $('.dashboard_anchor').on('click', function () {
         var targetPage = $(this).attr('href');
@@ -49,13 +49,14 @@ $(function () {
             'currentPage': currentPage,
             'changeLocation': '#main'
         };
-        if (currentPage.indexOf('news') >= 0 && targetPage.indexOf('news') < 0 || currentPage.indexOf('search') >= 0 && targetPage.indexOf('search') < 0) {
+        if (currentPage.indexOf('news') >= 0 && targetPage.indexOf('news') < 0 || currentPage.indexOf('search') >= 0 && targetPage.indexOf('search') < 0 || currentPage.indexOf('experiment') >= 0 && targetPage.indexOf('experiment') < 0) {
             replaceStateData ={
                 'currentPage':history.state['currentPage'],
                 'targetPage': history.state['targetPage'],
                 'changeLocation': history.state['changeLocation'],
                 'drawLocationChanged': true,
-                'thisisnews': history.state['thisisnews']
+                'thisisnews': history.state['thisisnews'],
+                'thisisexperiment': history.state['thisisexperiment']
             }
             history.replaceState(replaceStateData, null, history['targetPage'])
         }
@@ -119,15 +120,36 @@ $(function () {
                 return false;
             }
         }
+        // experiment
+        if (history.state['thisisexperiment'] == true) {
+            if (history.state['drawLocationChanged'] == true) {
+                $('.dashboard_anchor_group a').removeClass('select_active_dashboard')
+                $('.dashboard_anchor_' + location.pathname.split('/')[1]).addClass('select_active_dashboard')
+                changeContent(e.originalEvent.state['targetPage'])
+                return false;
+            }
+        }
+        if (history.state['is_experiment_pushState'] == true) {
+            var state = {
+                'thisisexperiment': true,
+                'targetPage': history.state['targetPage'],
+                'currentPage': history.state['currentPage'],
+                'changeLocation': history.state['changeLocation'],
+                'is_experiment_pushState': false,
+            };
+            history.replaceState(state, null, history.state['targetPage'])
+            return false
         // dashboard anchor settings.
-        $('.dashboard_anchor_group a').removeClass('select_active_dashboard')
-        $('.dashboard_anchor_' + location.pathname.split('/')[1]).addClass('select_active_dashboard')
-        changeContent(e.originalEvent.state['targetPage']);
-        document.title = 'Aqua Project - ' + e.originalEvent.state['targetPage']
-        return false;
+        } else {
+            $('.dashboard_anchor_group a').removeClass('select_active_dashboard')
+            $('.dashboard_anchor_' + location.pathname.split('/')[1]).addClass('select_active_dashboard')
+            changeContent(e.originalEvent.state['targetPage']);
+            document.title = 'Aqua Project - ' + e.originalEvent.state['targetPage']
+            return false;
+        }
     })
     function changeContent(href, doneFunc) {
-        if (history.state['drawLocationChanged'] == true) {
+        if (history.state['drawLocationChanged'] == false) {
             $('#main').html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
         } else {
             $(history.state['changeLocation']).html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');

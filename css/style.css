@@ -542,3 +542,21 @@ a:hover {
         transform: rotate(360deg);
   }
 }
+
+.swiper-container {
+    width: auto;
+    height: 300px;
+    border: 1px solid #2edbb656;
+}
+
+.swiper-slide {
+    text-align: center;
+}
+
+.gallery-menu .swiper-slide {
+    opacity: 0.4;
+}
+
+.gallery-menu .swiper-slide-thumb-active {
+    opacity: 1;
+}
