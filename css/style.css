@@ -545,12 +545,19 @@ a:hover {
 
 .swiper-container {
     width: auto;
-    height: 300px;
-    border: 1px solid #2edbb656;
+    height: auto;
 }
 
 .swiper-slide {
+    text-align: left;
+}
+
+.contents_anchor {
     text-align: center;
+}
+
+.gallery-menu {
+    border-bottom: solid 1px #E6ECF0 ;
 }
 
 .gallery-menu .swiper-slide {
@@ -558,5 +565,7 @@ a:hover {
 }
 
 .gallery-menu .swiper-slide-thumb-active {
+    color: #1DA1F2;
+    border-bottom: 1px solid #1DA1F2;
     opacity: 1;
 }
