@@ -1,7 +1,7 @@
 $(function () {
     var galleryMenu = new Swiper('.gallery-menu', {
         slidesPerView: 3, freeMode: true, watchSlidesVisibility: true, watchSlidesProgress: true,
-        breakpoints: { 768: { slidesPerView: 6, } }
+        breakpoints: { 768: { slidesPerView: 7, } }
     })
     var galleryContents = new Swiper('.gallery-contents', {
         navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
