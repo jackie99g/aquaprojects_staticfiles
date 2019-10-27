@@ -60,6 +60,8 @@ $(function () {
         } else if (history.state['is_experiment_pushState'] != true) {
             // When flag is false, it runs. the time when not run 'popState'.
             history.pushState(state, null, targetPage);
+        } else {
+            history.replaceState(state, null, targetPage)
         }
         document.title = 'Aqua Project - ' + targetPage
         changeContentInExperiment(targetPage, contentsLocation, changeLocation)
@@ -170,6 +172,11 @@ $(function () {
             'currentPage': currentPage,
             'targetPage': currentPage,
             'thisisexperiment': true
+        }
+        if (history.state != null) {
+            if (history.state['drawLocationChanged'] == true) {
+                state['is_experiment_pushState'] = true
+            }
         }
         history.replaceState(state, null, currentPage)
         galleryContents.slideTo(slideNumber)
