@@ -17,7 +17,7 @@ $(function () {
     win.on('load scroll', function () {
         var value = $(this).scrollTop();
         if (value > startPos && value > hedaerHeight) {
-            header.css('top', '-' + hedaerHeight + progressHiehgt + 'px');
+            header.css('top', '-' + hedaerHeight + progressHiehgt + '4' + 'px');
             progress.css('visibility', 'hidden');
         } else {
             header.css('top', '0');
