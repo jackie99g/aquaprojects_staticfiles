@@ -80,7 +80,7 @@ $(function () {
             if (visible_state == 'hidden') {
                 $('.account').css({
                     'visibility': 'visible',
-                    'height': '100vh',
+                    'height': 'calc(100vh - 117.5px)',
                     'width': '100%',
                     'right': '0px',
                     'box-shadow': '0px 0px',
