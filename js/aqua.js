@@ -85,6 +85,7 @@ $(function () {
                     'right': '0px',
                     'box-shadow': '0px 0px',
                     'border-radius': '0px',
+                    'overflow': 'auto',
                 });
                 $('#main').css({
                     'display': 'none'
