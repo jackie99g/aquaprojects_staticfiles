@@ -148,6 +148,7 @@ a:hover {
     position: fixed;
     border-bottom: solid 1px #E6ECF0 ;
     z-index: 2;
+    transition: top 0.2s ease;
 }
 
 .logo {
