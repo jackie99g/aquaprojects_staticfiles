@@ -54,5 +54,6 @@ $(function () {
         // to the previous sample - take the max here because we
         // want "fast attack, slow release."
         this.volume = Math.max(rms, this.volume * this.averaging);
+
     }
 })

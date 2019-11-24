@@ -206,7 +206,7 @@ $(function () {
                     objDef.resolve(sec);
                 }, sec * 1000);
                 return objDef.promise();
-            };
+            }
             wait(0.2).done(function () {
                 $('#ajax-progress-bar').css({ 'visibility': 'hidden' });
                 $('#ajax-progress-bar').css({ 'width': '0%' });
