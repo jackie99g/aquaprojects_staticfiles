@@ -114,7 +114,7 @@ a:hover {
 
 @keyframes Gradient {
     0% {
-        background-position: 0% 50%;
+        background-position: 0 50%;
     }
 
     50% {
@@ -122,7 +122,7 @@ a:hover {
     }
 
     100% {
-        background-position: 0% 50%;
+        background-position: 0 50%;
     }
 }
 
@@ -352,6 +352,31 @@ a:hover {
     position: relative;
 }
 
+.news_desktop {
+    border: 0;
+    border-bottom: 1px solid #e6ecf0;
+    padding: 15px;
+    border-radius: unset;
+}
+
+.news_sm {
+    border: 0;
+    border-bottom: 1px solid #e6ecf0;
+    padding: 10px;
+    border-radius: unset;
+}
+
+.news_desktop:hover,
+.news_sm:hover {
+    background: #F5F8FA;
+}
+
+.news_noimage {
+    font-family: billabong;
+    font-size: 36px;
+    color: black;
+}
+
 .news_image {
     width: 160px;
     height: 90px;
@@ -388,6 +413,7 @@ a:hover {
 
 /* weather style */
 .current-weather {
+    position: relative;
     width: 300px;
     padding-top: 8px;
     margin-left: auto;
@@ -463,6 +489,8 @@ a:hover {
 
 .weather-desc {
     font-size: smaller;
+    height: 40px;
+    margin-bottom: 8px;
 }
 
 .weather-date {
@@ -470,19 +498,19 @@ a:hover {
 }
 
 .weather-day {
-    width: 150px;
+    min-width: 100px;
     text-align: left;
     padding: 12px;
 }
 
 .weather-hourly {
-    width: 150px;
+    min-width: 100px;
     text-align: left;
     padding: 12px;
 }
 
 .details-day {
-    width: 150px;
+    min-width: 100px;
     text-align: left;
     padding: 12px;
 }
