@@ -4,17 +4,14 @@ $(function () {
     var close = document.getElementById('close')
     var microphone = document.getElementById('microphone')
     var microphoneshader = document.getElementById('microphoneShader');
-    var recorderButton = document.getElementById("recordbutton")
-    var volume = 0;
     var audioContext = null;
     var meter = null;
-    var WIDTH = 500;
-    var HEIGHT = 50;
-    var rafID = null;
-    var recorder, gumStream;
+    var recorder = null;
+    var sendFlag;
 
     close.onclick = function () {
         mymodal.style.display = 'none'
+        sendFlag = false;
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
     }
@@ -84,14 +81,15 @@ $(function () {
     }
 
     function onLevelChange() {
-        shaderVolume = meter.volume * 15
+        shaderVolume = meter.volume * 20 + 0.9
         microphoneshader.style.transform = 'scale(' + shaderVolume + ')'
-        rafID = window.requestAnimationFrame(onLevelChange);
+        window.requestAnimationFrame(onLevelChange);
     }
 
     function ProcessStream(stream) {
         recorder = new MediaRecorder(stream);
         recorder.ondataavailable = function (e) {
+            if (sendFlag === false) return
             var chunks = [];
             chunks.push(e.data);
             var blob = new Blob(chunks, { type: 'audio/webm;codecs=opus' });
