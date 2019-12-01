@@ -12,6 +12,9 @@ $(function () {
             $('.hourly-weather').css({
                 'overflow-x': 'auto'
             });
+            $('.hourly-weather-chart-block').css({
+                'overflow-x': 'auto'
+            });
         }
         if (windowWidth >= 768) {
             $('.main_content').css({
@@ -21,7 +24,10 @@ $(function () {
                 'overflow-x': 'hidden'
             });
             $('.hourly-weather').css({
-                'overflow-x': 'hiddent'
+                'overflow-x': 'hidden'
+            });
+            $('.hourly-weather-chart-block').css({
+                'overflow-x': 'hidden'
             });
         }
         if (windowWidth < 992) {
@@ -49,6 +55,9 @@ $(function () {
             $('.hourly-weather').css({
                 'overflow-x': 'auto'
             });
+            $('.hourly-weather-chart-block').css({
+                'overflow-x': 'auto'
+            });
         }
         if (windowWidth >= 768) {
             $('.main_content').css({
@@ -58,7 +67,10 @@ $(function () {
                 'overflow-x': 'hidden'
             });
             $('.hourly-weather').css({
-                'overflow-x': 'hiddent'
+                'overflow-x': 'hidden'
+            });
+            $('.hourly-weather-chart-block').css({
+                'overflow-x': 'hidden'
             });
         }
         if (windowWidth < 992) {

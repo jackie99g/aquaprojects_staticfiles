@@ -45,6 +45,9 @@ $(function () {
         $('.hourly-weather').animate({
             scrollLeft: hwwidth - whoutwidth - whwidth
         }, {duration: 200})
+        $('.hourly-weather-chart-block').animate({
+            scrollLeft: hwwidth - whoutwidth - whwidth
+        }, {duration: 200})
     })
     $('.hourly-weather-right-btn').on("click", function () {
         whwidth = $('.weather-hourly').width()
@@ -53,5 +56,57 @@ $(function () {
         $('.hourly-weather').animate({
             scrollLeft: hwwidth + whoutwidth + whwidth
         }, {duration: 200})
+        $('.hourly-weather-chart-block').animate({
+            scrollLeft: hwwidth + whoutwidth + whwidth
+        }, {duration: 200})
+    })
+    var hourlyWeather = document.getElementsByClassName('weather-temp-hourly')
+    var hourlyWeatherDate = document.getElementsByClassName('weather-date-hourly')
+    var hourlyWeatherlist = []
+    var hourlyWeatherDatelist = []
+    var hourlyWeatherWidth = 100
+    Array.prototype.forEach.call(hourlyWeather, function(element) {
+        var weatherTemp = parseFloat(element.innerText.replace('℃', ''))
+        hourlyWeatherlist.push(weatherTemp)
+    })
+    Array.prototype.forEach.call(hourlyWeatherDate, function(element) {
+        var weatherDate = element.innerText.split(' ')[1] + ' ' + element.innerText.split(' ')[2]
+        hourlyWeatherDatelist.push(weatherDate)
+    })
+    var ctx = document.getElementById('weather-hourly-chart').getContext('2d')
+    ctx.canvas.height = 100
+    ctx.canvas.width = hourlyWeatherlist.length * hourlyWeatherWidth 
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: hourlyWeatherDatelist,
+            datasets: [{
+                data: hourlyWeatherlist,
+                backgroundColor: 'rgba(29, 161, 242, 0.2)',
+                borderColor: 'rgba(29, 161, 242, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            legend: {
+                display: false,
+            },
+            responsive: false,
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        display: false,
+                    },
+                    gridLines: {
+                        display: false,
+                    }
+                }],
+            }
+        }
     })
 })
