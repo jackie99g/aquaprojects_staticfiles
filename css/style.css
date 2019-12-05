@@ -631,14 +631,12 @@ a:hover {
 }
 
 .share_btn {
+    padding: 0;
     width: 60px;
     height: 60px;
     font-size: 45px;
     position: fixed;
     border-radius: 50%;
-    text-align: center;
-    vertical-align: middle;
-    overflow: hidden;
     bottom: 70px;
     right: 20px;
     border: 0;
@@ -647,14 +645,12 @@ a:hover {
 
 @media only screen and (min-width: 768px) {
     .share_btn {
+        padding: 0;
         width: 80px;
         height: 80px;
         font-size: 60px;
         position: fixed;
         border-radius: 50%;
-        text-align: center;
-        vertical-align: middle;
-        overflow: hidden;
         bottom: 20px;
         right: 20px;
         border: 0;
