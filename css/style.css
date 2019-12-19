@@ -142,6 +142,7 @@ a:hover {
 
 .header_contents {
     display: flex;
+    height: 57px;
     /* background-color: #1B435D; */
     background-color: #ffffff;
     /* opacity: 0.6; */
@@ -154,7 +155,6 @@ a:hover {
 
 .logo {
     display: inline-block;
-    margin-left: 5px;
     padding: 5px;
 }
 
@@ -522,6 +522,13 @@ a:hover {
     position: relative;
 }
 
+.hourly-weather-chart-block {
+    position: relative;
+    width: calc(100% - 48px);
+    overflow-x: hidden;
+    margin: 0 24px;
+}
+
 .hourly-weather {
     display: flex;
     flex-direction: row;
@@ -605,7 +612,7 @@ a:hover {
     align-items: center;
     justify-content: flex-end;
     position: fixed;
-    z-index: 1;
+    z-index: 2;
     left: 0;
     top: 0;
     width: 100%;
