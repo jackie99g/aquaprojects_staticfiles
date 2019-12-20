@@ -7,7 +7,7 @@ $(document).ready(function() {
         });
         return jQuery.ajax(options);
     };
-    $.cachedScript("https://cdn.jsdelivr.net/npm/chart.js@2.8.0").done(function() {
+    $.cachedScript("https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js").done(function() {
         startMessage();
     });
 
