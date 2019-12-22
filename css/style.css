@@ -692,3 +692,56 @@ a:hover {
     font-size: large;
     padding-left: 8px;
 }
+
+.check_css {
+    transition: background-color 0.2s linear;
+    position: relative;
+    display: inline-block;
+    padding: 0 0 0 42px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.check_css:hover:after {
+    border-color: #0171bd;
+}
+
+.check_css:after {
+    -webkit-transition: border-color 0.2s linear;
+    transition: border-color 0.2s linear;
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    display: block;
+    margin-top: -10px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    content: '';
+}
+
+.check_css:before {
+    -webkit-transition: opacity 0.2s linear;
+    transition: opacity 0.2s linear;
+    position: absolute;
+    top: 50%;
+    left: 21px;
+    display: block;
+    margin-top: -7px;
+    width: 5px;
+    height: 9px;
+    border-right: 3px solid #0171bd;
+    border-bottom: 3px solid #0171bd;
+    content: '';
+    opacity: 0;
+    transform: rotate(45deg);
+}
+
+.check_css_opacity:before {
+    opacity: 0;
+}
+
+.checked_css_opacity:before {
+    opacity: 1;
+}

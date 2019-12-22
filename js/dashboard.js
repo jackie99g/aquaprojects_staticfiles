@@ -47,11 +47,21 @@ $(function() {
     $('.dashboard_anchor').on('click', function() {
         ScrollPageTop()
         var targetPage = $(this).attr('href');
-        targetPage = targetPage.split('/')
-        targetPage = targetPage[targetPage.length - 1]
+        var splitTargetPage = targetPage.split('/')
+        for (let index = 3; index < splitTargetPage.length; index++) {
+            targetPage += splitTargetPage[index]
+            if (index != splitTargetPage.length - 1) {
+                targetPage += '/'
+            }
+        }
         var currentPage = location.href;
-        currentPage = currentPage.split('/')
-        currentPage = currentPage[currentPage.length - 1]
+        var splitCurrentPage = currentPage.split('/')
+        for (let index = 3; index < splitCurrentPage.length; index++) {
+            currentPage += splitCurrentPage[index]
+            if (index != splitCurrentPage.length - 1) {
+                currentPage += '/'
+            }
+        }
         state = {
             'targetPage': targetPage,
             'currentPage': currentPage,
