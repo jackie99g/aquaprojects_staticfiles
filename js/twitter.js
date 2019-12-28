@@ -144,17 +144,17 @@ $(function() {
         }
     }
     $(document).ready(function() {
-        $.ajax({
-            url: '/userinfo?q=' + 'user_metadata--background_image',
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true
-            }
-        }).done(function(data) {
-            $('.timeline_background').css({
-                'background-image': 'url(' + data + ')'
-            })
-        })
+        // $.ajax({
+        //     url: '/userinfo?q=' + 'user_metadata--background_image',
+        //     crossDomain: true,
+        //     xhrFields: {
+        //         withCredentials: true
+        //     }
+        // }).done(function(data) {
+        //     $('.timeline_background').css({
+        //         'background-image': 'url(' + data + ')'
+        //     })
+        // })
     })
     $('.twitter_anchor').on('click', function() {
         ScrollPageTop()
