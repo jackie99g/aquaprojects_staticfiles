@@ -4,10 +4,10 @@ $(function() {
             $('.tweet-twitter_picture_show').css({
                 'display': 'block',
             })
-            $('.tweet_twitter_picture_show_img').attr('src', $(this).data('img-src'))
+            $('.tweet-twitter_picture_show_img').attr('src', $(this).data('img-src'))
         }
     })
-    $('.tweet_twitter_picture_show_img').on('click', function() {
+    $('.tweet-twitter_picture_show_img').on('click', function() {
         $('.tweet-twitter_picture_show').css({
             'display': 'none',
         })
@@ -156,4 +156,114 @@ $(function() {
             })
         })
     })
+    $('.twitter_anchor').on('click', function() {
+        ScrollPageTop()
+        var targetPage = $(this).attr('href');
+        targetPage = targetPage.replace(location.origin, '')
+        var currentPage = location.href;
+        currentPage = currentPage.replace(location.origin, '')
+        state = {
+            'targetPage': targetPage,
+            'currentPage': currentPage,
+            'changeLocation': '#main'
+        };
+        history.pushState(state, null, targetPage);
+        changeContent(targetPage);
+        return false;
+    })
+
+    function changeContent(href, doneFunc) {
+        if (history.state['drawLocationChanged'] == false) {
+            $('#main').html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
+        } else {
+            $(history.state['changeLocation']).html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
+        }
+        $('#ajax-progress-bar').removeClass('bg-danger');
+        $('#ajax-progress-bar').css({
+            'visibility': 'visible'
+        });
+        $('#ajax-progress-bar').css({
+            'width': '80%'
+        });
+        // Cache exsists.
+        if (AquaProjectCache[href]) {
+            if (history.state['drawLocationChanged'] == true) {
+                $('#main').html($(AquaProjectCache[href]).find('#main').html());
+            } else {
+                $(history.state['changeLocation']).html($(AquaProjectCache[href]).find(history.state['changeLocation']).html());
+            }
+            // After data added, to do this method.
+            if (doneFunc != undefined) {
+                doneFunc()
+            }
+            $('#ajax-progress-bar').css({
+                'width': '100%'
+            });
+        }
+        $.ajax({
+            url: href,
+            timeout: 60000,
+            type: 'GET',
+            dataType: 'html',
+            crossDomain: true,
+            xhrFields: {
+                withCredentials: true
+            }
+        }).done(function(data) {
+            // Save Cache.
+            AquaProjectCache[href] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+            if (history.state['drawLocationChanged'] == true) {
+                $('#main').html($(data).find('#main').html());
+            } else {
+                $(history.state['changeLocation']).html($(data).find(history.state['changeLocation']).html());
+            }
+            // After data added, to do this method.
+            if (doneFunc != undefined) {
+                doneFunc()
+            }
+            $('#ajax-progress-bar').css({
+                'width': '100%'
+            });
+            $('#ajax-progress-bar').css({
+                'transition': 'width 0.1s ease 0s'
+            });
+
+            function wait(sec) {
+                var objDef = new $.Deferred;
+                setTimeout(function() {
+                    objDef.resolve(sec);
+                }, sec * 1000);
+                return objDef.promise();
+            }
+            wait(0.2).done(function() {
+                $('#ajax-progress-bar').css({
+                    'visibility': 'hidden'
+                });
+                $('#ajax-progress-bar').css({
+                    'width': '0%'
+                });
+                $('#ajax-progress-bar').css({
+                    'transition': 'width 0.6s ease 0s'
+                });
+            });
+        }).fail(function() {
+            $('#ajax-progress-bar').addClass('bg-danger');
+            $('#ajax-progress-bar').css({
+                'width': '100%'
+            });
+            $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+        })
+    }
+
+    function ScrollPageTop() {
+        $('html').animate({
+            scrollTop: 0
+        }, {
+            duration: 1000
+        }, 'linear')
+    }
 })

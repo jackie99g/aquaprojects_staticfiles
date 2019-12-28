@@ -86,6 +86,7 @@ $(function() {
         return false;
     })
     $(window).on('popstate', function(e) {
+        ScrollPageTop()
         // When we access the page at the first time, we don't do nothing.
         if (!e.originalEvent.state) return false;
         // search
@@ -217,6 +218,10 @@ $(function() {
         }).done(function(data) {
             // Save Cache.
             AquaProjectCache[href] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
             if (history.state['drawLocationChanged'] == true) {
                 $('#main').html($(data).find('#main').html());
             } else {
@@ -298,7 +303,7 @@ $(function() {
         $('html').animate({
             scrollTop: 0
         }, {
-            duration: 200
+            duration: 1000
         }, 'linear')
     }
 })
