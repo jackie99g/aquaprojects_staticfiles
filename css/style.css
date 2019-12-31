@@ -4,6 +4,11 @@
     --buttonDisableColor: #f2f2f2;
 }
 
+.btn,
+h1 {
+    font-size: inherit;
+}
+
 /* switch tgl */
 .tg-list {
     text-align: center;
@@ -805,12 +810,6 @@ a:hover {
     position: relative;
 }
 
-.twitter-load_all_images {
-    display: flex;
-    padding: 12px 16px;
-    border-bottom: solid 1px #e6ecf0;
-}
-
 .tweet {
     display: flex;
     flex-wrap: wrap;
@@ -888,4 +887,28 @@ a:hover {
 
 .tweet-twitter_retweet {
     margin-right: 8px;
+}
+
+.tweet:hover {
+    cursor: pointer;
+}
+
+.tweet-twitter_name:hover {
+    text-decoration: underline;
+}
+
+.tweet-twitter_retweet_header:hover {
+    text-decoration: underline;
+}
+
+.tweet:hover {
+    background: #F5F8FA;
+}
+
+.tweet-twitter_urls>a:hover {
+    text-decoration: underline;
+}
+
+.tweet-tweet_details>a:hover {
+    text-decoration: underline;
 }

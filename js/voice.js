@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
     var mymodal = document.getElementById('myModal')
     var startBtn = document.getElementById('open')
     var close = document.getElementById('close')
@@ -9,24 +9,24 @@ $(function () {
     var recorder = null;
     var sendFlag;
 
-    close.onclick = function () {
+    close.onclick = function() {
         mymodal.style.display = 'none'
         sendFlag = false;
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
     }
-    microphone.onclick = function () {
+    microphone.onclick = function() {
         mymodal.style.display = 'none'
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
     }
-    mymodal.onclick = function () {
+    mymodal.onclick = function() {
         mymodal.style.display = 'none'
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
     }
 
-    startBtn.onclick = function () {
+    startBtn.onclick = function() {
         mymodal.style.display = 'flex'
         if (meter != null) {
             console.log(meter.volume)
@@ -40,10 +40,10 @@ $(function () {
         try {
             navigator.mediaDevices.getUserMedia({
                 audio: true,
-            }).then(function (stream) {
+            }).then(function(stream) {
                 window.streamReference = stream;
                 onMicrophoneGranted(stream)
-            }).catch(function () {
+            }).catch(function() {
                 onMicrophoneDenied()
             })
         } catch (e) {
@@ -53,10 +53,10 @@ $(function () {
 
     function StopStream() {
         if (!window.streamReference) return;
-        window.streamReference.getAudioTracks().forEach(function (track) {
+        window.streamReference.getAudioTracks().forEach(function(track) {
             track.stop();
         });
-        window.streamReference.getVideoTracks().forEach(function (track) {
+        window.streamReference.getVideoTracks().forEach(function(track) {
             track.stop();
         });
         window.streamReference = null;
@@ -88,36 +88,36 @@ $(function () {
 
     function ProcessStream(stream) {
         recorder = new MediaRecorder(stream);
-        recorder.ondataavailable = function (e) {
+        recorder.ondataavailable = function(e) {
             if (sendFlag === false) return
             var chunks = [];
             chunks.push(e.data);
-            var blob = new Blob(chunks, { type: 'audio/webm;codecs=opus' });
+            var blob = new Blob(chunks, {
+                type: 'audio/webm;codecs=opus'
+            });
             var fb = new FormData();
             fb.append('audio', blob);
 
             $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
+                beforeSend: function(xhr, settings) {
                     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
                     }
                 }
             })
             var date = new Date()
-            console.log('POST time: ' + date.getTime())
             $.ajax({
                 url: 'voice',
                 type: 'POST',
                 data: fb,
                 processData: false,
                 contentType: false,
-            }).done(function (data) {
+            }).done(function(data) {
                 console.log(data)
                 var recognizeSpeech = document.createElement('p');
                 alert(data)
                 var donedate = new Date()
-                console.log('Get result time: ' + donedate.getTime())
-            }).fail(function () {
+            }).fail(function() {
                 alert('fail.')
             })
             var url = URL.createObjectURL(e.data);
@@ -168,7 +168,7 @@ $(function () {
         processor.connect(audioContext.destination);
 
         processor.checkClipping =
-            function () {
+            function() {
                 if (!this.clipping)
                     return false;
                 if ((this.lastClip + this.clipLag) < window.performance.now())
@@ -177,7 +177,7 @@ $(function () {
             };
 
         processor.shutdown =
-            function () {
+            function() {
                 this.disconnect();
                 this.onaudioprocess = null;
             };
@@ -208,5 +208,19 @@ $(function () {
         // to the previous sample - take the max here because we
         // want "fast attack, slow release."
         this.volume = Math.max(rms, this.volume * this.averaging);
+    }
+    $('#open').on('mousedown', function() {
+        ScrollPageTop()
+    })
+    $('#open').on('touchend', function() {
+        ScrollPageTop()
+    })
+
+    function ScrollPageTop() {
+        $('html').animate({
+            scrollTop: 0
+        }, {
+            duration: 1000
+        }, 'linear')
     }
 })

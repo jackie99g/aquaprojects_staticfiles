@@ -1,5 +1,5 @@
-$(function () {
-    $(document).ready(function () {
+$(function() {
+    $(document).ready(function() {
         var windowWidth = $(window).width();
         console.log(windowWidth);
         if (windowWidth < 768) {
@@ -42,7 +42,7 @@ $(function () {
         }
     })
 
-    $(window).resize(function () {
+    $(window).resize(function() {
         var windowWidth = $(window).width();
         console.log(windowWidth);
         if (windowWidth < 768) {
@@ -85,7 +85,7 @@ $(function () {
         }
     });
 
-    $('.user_picture').on('click', function () {
+    $('.user_picture').on('click', function() {
         var visible_state = $('.account').css('visibility');
         var windowWidth = $(window).width();
         if (windowWidth < 768) {
@@ -102,8 +102,7 @@ $(function () {
                 $('#main').css({
                     'display': 'none'
                 });
-            }
-            else if (visible_state == 'visible') {
+            } else if (visible_state == 'visible') {
                 $('.account').css({
                     'visibility': 'hidden',
                     'height': 'auto',
@@ -130,8 +129,7 @@ $(function () {
                 $('#main').css({
                     'display': 'block',
                 });
-            }
-            else if (visible_state == 'visible') {
+            } else if (visible_state == 'visible') {
                 $('.account').css({
                     'visibility': 'hidden',
                     'height': 'auto',
@@ -145,12 +143,11 @@ $(function () {
                 });
             }
         }
-
     });
 
-    $('body').on('click', function (e) {
+    $('body').on('click', function(e) {
         var click_class = e.target.className
-        if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'account_picture' && click_class != 'account_content_email' && click_class != 'tgl tgl-flat prop' && click_class != 'tgl tgl-flat animation' && click_class != 'tgl-btn' && click_class != 'toggle_button_message') {
+        if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'account_picture' && click_class != 'account_content_email' && click_class != 'tgl tgl-flat prop' && click_class != 'tgl tgl-flat animation' && click_class != 'tgl tgl-flat load_pictures' && click_class != 'tgl tgl-flat load_videos' && click_class != 'tgl-btn' && click_class != 'toggle_button_message') {
             $('.account').css({
                 'visibility': 'hidden',
             });
@@ -161,7 +158,7 @@ $(function () {
 
     });
 
-    $('input[name="check"]').change(function () {
+    $('input[name="check"]').change(function() {
         var prop = $('.prop').prop('checked');
         if (prop) {
             $('#main').removeClass('col-lg-8');
@@ -175,7 +172,7 @@ $(function () {
         }
     });
 
-    $('input[name="check"]').change(function () {
+    $('input[name="check"]').change(function() {
         var prop = $('.animation').prop('checked');
         if (prop) {
             $('#index_box').removeClass('box_bg_animation');
