@@ -1,6 +1,27 @@
 $(function() {
-    $('.format_timeline').on('click', '.tweet-twitter_picture', tweetTwitterPicture)
-    $('.thread_main_tweet').on('click', '.tweet-twitter_picture', tweetTwitterPicture)
+    $(window).on('aquaproject_popstate', function() {
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
+            console.log('twitter!')
+            changeFontSize()
+            twitterViewAllPictures()
+            twitterViewAllVideos()
+            console.log('twitter! popstate event finished.')
+        }
+    })
+    if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
+        $(window).trigger('aquaproject_popstate');
+    }
+
+    var alreadyBottom = false;
+    $(window).scroll(function() {
+        if ($(document).height() - $('.tweet-load_more_old_tweet').innerHeight() - $('.tweet').innerHeight() * 3 <= $(window).scrollTop() + $(window).innerHeight() && alreadyBottom === false) {
+            console.log('Reach bottom.')
+            var tweet_id = $('.format_timeline > div:last').prev().data('tweet_id');
+            loadMoreTweet(tweet_id, 'old');
+        }
+    })
+
+    $(document).on('click', '.tweet-twitter_picture', tweetTwitterPicture)
 
     function tweetTwitterPicture(event) {
         event.stopPropagation()
@@ -25,10 +46,10 @@ $(function() {
         }
     }
 
-    $('.tweet-twitter_picture_show_prev').on('click', function() {
+    $(document).on('click', '.tweet-twitter_picture_show_prev', function() {
         twitterPictureShowButton('prev')
     })
-    $('.tweet-twitter_picture_show_next').on('click', function() {
+    $(document).on('click', '.tweet-twitter_picture_show_next', function() {
         twitterPictureShowButton('next')
     })
 
@@ -51,8 +72,8 @@ $(function() {
         localStorage.setItem('twitter-img_current_number', get_img_current_number)
     }
 
-    $('.tweet-twitter_picture_show_close').on('click', tweetTwitterPictureShowClose)
-    $('.tweet-twitter_picture_show_img').on('click', tweetTwitterPictureShowClose)
+    $(document).on('click', '.tweet-twitter_picture_show_close', tweetTwitterPictureShowClose)
+    $(document).on('click', '.tweet-twitter_picture_show_img', tweetTwitterPictureShowClose)
 
     function tweetTwitterPictureShowClose() {
         $('.tweet-twitter_picture_show').css({
@@ -61,8 +82,7 @@ $(function() {
     }
 
 
-    $('.format_timeline').on('click', '.tweet-twitter_view_picture', tweetTwitterViewPicture)
-    $('.thread_main_tweet').on('click', '.tweet-twitter_view_picture', tweetTwitterViewPicture)
+    $(document).on('click', '.tweet-twitter_view_picture', tweetTwitterViewPicture)
 
     function tweetTwitterViewPicture(event) {
         event.stopPropagation()
@@ -77,8 +97,7 @@ $(function() {
         })
     }
 
-    $('.format_timeline').on('click', '.tweet-twitter_view_video', tweetTwitterViewVideo)
-    $('.thread_main_tweet').on('click', '.tweet-twitter_view_video', tweetTwitterViewVideo)
+    $(document).on('click', '.tweet-twitter_view_video', tweetTwitterViewVideo)
 
     function tweetTwitterViewVideo(event) {
         event.stopPropagation()
@@ -99,10 +118,7 @@ $(function() {
         })
     }
 
-    $('.format_timeline').on('click', '.tweet-twitter_video', function(event) {
-        event.stopPropagation()
-    })
-    $('.thread_main_tweet').on('click', '.tweet-twitter_video', function(event) {
+    $(document).on('click', '.tweet-twitter_video', function(event) {
         event.stopPropagation()
     })
 
@@ -112,7 +128,7 @@ $(function() {
     var selectExistOwnListResutId = ''
     var is_send_ok = false
 
-    $('.select_exist_own_list-list').on('click', function() {
+    $(document).on('click', '.select_exist_own_list-list', function() {
         var checkStatus = $(this).data('check_status')
         if (checkStatus === 'none') {
             $('.select_exist_own_list-list').data('check_status', 'none')
@@ -130,7 +146,7 @@ $(function() {
         }
     })
 
-    $('.startTwitter').on('click', CheckTwitterWelcomeResult)
+    $(document).on('click', '.startTwitter', CheckTwitterWelcomeResult)
 
     function CheckTwitterWelcomeResult() {
         twittterCreateListName = $('.twitter_create_list-name').val()
@@ -206,9 +222,6 @@ $(function() {
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
     }
-    $(document).ready(function() {
-        changeFontSize()
-    })
 
     function changeFontSize() {
         if (localStorage.getItem('font-size')) {
@@ -256,11 +269,12 @@ $(function() {
                 'font-size': large_font_size
             })
             localStorage.setItem('twitter-image_size', twitter_image_size)
+        } else {
+            localStorage.setItem('twitter-image_size', '285')
         }
     }
 
-    $('.format_timeline').on('click', '.twitter_anchor', twitterAnchor)
-    $('.thread_main_tweet').on('click', '.twitter_anchor', twitterAnchor)
+    $(document).on('click', '.twitter_anchor', twitterAnchor)
 
     function twitterAnchor() {
         ScrollPageTop()
@@ -331,6 +345,12 @@ $(function() {
             if (doneFunc != undefined) {
                 doneFunc()
             }
+
+            twitterViewAllPictures()
+            twitterViewAllVideos()
+
+            changeFontSize()
+
             $('#ajax-progress-bar').css({
                 'width': '100%'
             });
@@ -372,78 +392,92 @@ $(function() {
             duration: 1000
         }, 'linear')
     }
-    $(document).ready(function() {
-        twitterViewAllPictures()
-        twitterViewAllVideos()
-    })
 
     function twitterViewAllPictures() {
+        var prop = $('.load_pictures').prop('checked');
         var twitterViewPictures = localStorage.getItem('twitter-view_pictures')
         if (twitterViewPictures != null) {
-            $('.tweet-twitter_picture').each(function(index, element) {
-                if ($(element).parent().find('.tweet-twitter_view_picture').css('display') !== 'none') {
-                    var data_img_src = $(element).data('img-src')
-                    var img_element = '<img class="tweet-twitter_picture_img" src="' + data_img_src + '" style="object-fit: cover; width: 100%; height: ' + localStorage.getItem('twitter-image_size') + 'px; border-radius: 12px; margin-top: 12px; cursor: pointer;">'
-                    $(element).append(img_element)
-                    $(element).css({
-                        'display': 'block'
-                    })
-                }
-            })
-            $('.tweet-twitter_view_picture').each(function(index, element) {
-                $(element).css({
-                    'display': 'none',
+            if (prop) {
+                $('.tweet-twitter_picture').each(function(index, element) {
+                    if ($(element).parent().find('.tweet-twitter_view_picture').css('display') !== 'none') {
+                        var data_img_src = $(element).data('img-src')
+                        var img_element = '<img class="tweet-twitter_picture_img" src="' + data_img_src + '" style="object-fit: cover; width: 100%; height: ' + localStorage.getItem('twitter-image_size') + 'px; border-radius: 12px; margin-top: 12px; cursor: pointer;">'
+                        $(element).append(img_element)
+                        $(element).css({
+                            'display': 'block'
+                        })
+                    }
                 })
-            })
+                $('.tweet-twitter_view_picture').each(function(index, element) {
+                    $(element).css({
+                        'display': 'none',
+                    })
+                })
+            } else {
+                $('.tweet-twitter_picture_img').each(function(index, element) {
+                    if ($(element).parent().parent().find('.tweet-twitter_view_picture').css('display') === 'none') {
+                        $(element).parent().css({
+                            'display': 'block'
+                        })
+                        $(element).remove()
+                    }
+                })
+                $('.tweet-twitter_view_picture').each(function(index, element) {
+                    $(element).css({
+                        'display': 'block',
+                    })
+                })
+            }
         }
     }
 
     function twitterViewAllVideos() {
         var prop = $('.load_videos').prop('checked');
-        if (prop) {
-            localStorage.setItem('twitter-load_videos', true)
-            $('.tweet-twitter_view_video').each(function(index, vvvvvvvvvv) {
-                if ($(vvvvvvvvvv).css('display') !== 'none') {
-                    var twitter_view_video_data_video_bitrate = $(vvvvvvvvvv).data('video-bitrate')
-                    $(vvvvvvvvvv).parent().find('.tweet-twitter_video').each(function(index, element) {
-                        var data_video_src = $(element).data('video-src')
-                        var data_video_bitrate = $(element).data('video-bitrate')
-                        var video_element = '<video class="tweet-twitter_video_movie" style="width: 100%; height: 285px; border-radius: 12px; margin-top: 12px; outline: none; cursor: pointer;" controls><source src="' + data_video_src + '" data-bitrate="' + data_video_bitrate + '"></video>'
-                        if (twitter_view_video_data_video_bitrate === data_video_bitrate) {
-                            $(element).append(video_element)
-                            $(element).css({
-                                'display': 'block'
-                            })
-                        }
-                    })
-                    $(vvvvvvvvvv).css({
-                        'display': 'none',
-                    })
-                }
-            })
-        } else {
-            localStorage.removeItem('twitter-load_videos')
-            $('.tweet-twitter_video_movie').each(function(index, element) {
-                if ($(element).parent().parent().find('.tweet-twitter_view_video').css('display') === 'none') {
-                    $(element).parent().css({
+        var twitterViewVideos = localStorage.getItem('twitter-view_videos')
+        if (twitterViewVideos != null) {
+            if (prop) {
+                $('.tweet-twitter_view_video').each(function(index, twitter_view_video) {
+                    if ($(twitter_view_video).css('display') !== 'none') {
+                        var twitter_view_video_data_video_bitrate = $(twitter_view_video).data('video-bitrate')
+                        $(twitter_view_video).parent().find('.tweet-twitter_video').each(function(index, element) {
+                            var data_video_src = $(element).data('video-src')
+                            var data_video_bitrate = $(element).data('video-bitrate')
+                            var video_element = '<video class="tweet-twitter_video_movie" style="width: 100%; height: 285px; border-radius: 12px; margin-top: 12px; outline: none; cursor: pointer;" controls><source src="' + data_video_src + '" data-bitrate="' + data_video_bitrate + '"></video>'
+                            if (twitter_view_video_data_video_bitrate === data_video_bitrate) {
+                                $(element).append(video_element)
+                                $(element).css({
+                                    'display': 'block'
+                                })
+                            }
+                        })
+                        $(twitter_view_video).css({
+                            'display': 'none',
+                        })
+                    }
+                })
+            } else {
+                $('.tweet-twitter_video_movie').each(function(index, element) {
+                    if ($(element).parent().parent().find('.tweet-twitter_view_video').css('display') === 'none') {
+                        $(element).parent().css({
+                            'display': 'block'
+                        })
+                        $(element).remove()
+                    }
+                })
+                $('.tweet-twitter_view_video').each(function(index, all_video_element) {
+                    $(all_video_element).css({
                         'display': 'block'
                     })
-                    $(element).remove()
-                }
-            })
-            $('.tweet-twitter_view_video').each(function(index, all_video_element) {
-                $(all_video_element).css({
-                    'display': 'block'
                 })
-            })
+            }
         }
     }
 
-    $('.format_timeline').on('click', '.tweet-load_more_new_tweet', function() {
+    $(document).on('click', '.tweet-load_more_new_tweet', function() {
         var tweet_id = $('.format_timeline > div:first').next().data('tweet_id');
         loadMoreTweet(tweet_id, 'new');
     })
-    $('.format_timeline').on('click', '.tweet-load_more_old_tweet', function() {
+    $(document).on('click', '.tweet-load_more_old_tweet', function() {
         var tweet_id = $('.format_timeline > div:last').prev().data('tweet_id');
         loadMoreTweet(tweet_id, 'old');
     })
@@ -470,6 +504,8 @@ $(function() {
         $('#ajax-progress-bar').css({
             'width': '80%'
         });
+        alreadyBottom = true;
+
         $.ajax({
             url: href,
             timeout: 60000,
@@ -488,6 +524,7 @@ $(function() {
 
             twitterViewAllPictures()
             twitterViewAllVideos()
+            alreadyBottom = false;
 
             changeFontSize()
             $('#ajax-progress-bar').css({

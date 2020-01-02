@@ -218,6 +218,9 @@ $(function() {
             if (doneFunc != undefined) {
                 doneFunc()
             }
+
+            $(window).trigger('aquaproject_popstate');
+
             $('#ajax-progress-bar').css({
                 'width': '100%'
             });

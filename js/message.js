@@ -1,15 +1,22 @@
-$(document).ready(function() {
-    $.cachedScript = function(url, options) {
-        options = $.extend(options || {}, {
-            dataType: "script",
-            cache: true,
-            url: url
-        });
-        return jQuery.ajax(options);
-    };
-    $.cachedScript("https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js").done(function() {
-        startMessage();
-    });
+$(function() {
+    $(window).on('aquaproject_popstate', function() {
+        if (location.pathname.replace(location.origin, '') === '/message') {
+            $.cachedScript = function(url, options) {
+                options = $.extend(options || {}, {
+                    dataType: "script",
+                    cache: true,
+                    url: url
+                });
+                return jQuery.ajax(options);
+            };
+            $.cachedScript("https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js").done(function() {
+                startMessage();
+            });
+        }
+    })
+    if (location.pathname.replace(location.origin, '') === '/message') {
+        $(window).trigger('aquaproject_popstate');
+    }
 
     function startMessage() {
         var socket = io.connect();

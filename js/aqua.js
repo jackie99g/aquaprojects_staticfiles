@@ -143,6 +143,18 @@ $(function() {
                 });
             }
         }
+        var twitter_view_pictures_flag = localStorage.getItem('twitter-view_pictures')
+        var twitter_load_videos_flag = localStorage.getItem('twitter-view_videos')
+        if (twitter_view_pictures_flag == 'true') {
+            $('.load_pictures').prop('checked', true)
+        } else {
+            $('.load_pictures').prop('checked', false)
+        }
+        if (twitter_load_videos_flag == 'true') {
+            $('.load_videos').prop('checked', true)
+        } else {
+            $('.load_videos').prop('checked', false)
+        }
     });
 
     $('body').on('click', function(e) {

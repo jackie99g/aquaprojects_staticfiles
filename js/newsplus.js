@@ -1,20 +1,31 @@
 $(function() {
-    var galleryMenu = null
-    var galleryContents = null
-    $.cachedScript = function(url, options) {
-        options = $.extend(options || {}, {
-            dataType: "script",
-            cache: true,
-            url: url
-        });
-        return jQuery.ajax(options);
-    };
-    $.cachedScript("https://unpkg.com/swiper/js/swiper.min.js").done(function() {
-        drawNewsplus();
-    });
+    $(window).on('aquaproject_popstate', function() {
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
+            console.log('newsplus!')
+            drawNewsplusAll('initialize')
+        }
+    })
+    if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
+        $(window).trigger('aquaproject_popstate');
+    }
+    console.log('newsplus trigger')
 
-    function drawNewsplus() {
-        galleryMenu = new Swiper('.gallery-menu', {
+    function drawNewsplusAll(mode) {
+        $.cachedScript = function(url, options) {
+            options = $.extend(options || {}, {
+                dataType: "script",
+                cache: true,
+                url: url
+            });
+            return jQuery.ajax(options);
+        };
+        $.cachedScript("https://unpkg.com/swiper/js/swiper.min.js").done(function() {
+            drawNewsplus(mode);
+        });
+    }
+
+    function drawNewsplus(mode) {
+        var galleryMenu = new Swiper('.gallery-menu', {
             slidesPerView: 3,
             freeMode: true,
             watchSlidesVisibility: true,
@@ -25,7 +36,7 @@ $(function() {
                 }
             }
         })
-        galleryContents = new Swiper('.gallery-contents', {
+        var galleryContents = new Swiper('.gallery-contents', {
             navigation: {
                 prevEl: '.swiper-button-prev',
                 nextEl: '.swiper-button-next'
@@ -40,6 +51,11 @@ $(function() {
         $('.contents_anchor').on('click', function() {
             return false;
         })
+
+        if (mode === 'initialize') {
+            console.log('newsplus initialize.')
+            startNewsplus()
+        }
 
         function slideChange() {
             ScrollPageTop()
@@ -90,6 +106,8 @@ $(function() {
                 history.pushState(state, null, targetPage);
             } else {
                 history.replaceState(state, null, targetPage)
+                document.title = 'Aqua Project - ' + targetPage
+                return false
             }
             document.title = 'Aqua Project - ' + targetPage
             changeContentInExperiment(targetPage, contentsLocation, changeLocation)
@@ -157,6 +175,50 @@ $(function() {
                 $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
             })
         }
+
+        function startNewsplus() {
+            console.log('newsplus! StartNewsplus')
+            var slideNumber = 0
+            var currentPage = location.href;
+            currentPage = currentPage.split('/')
+            currentPage = currentPage[currentPage.length - 1]
+            if (location.search == '') {
+                slideNumber = 0
+            } else {
+                var contents_list = []
+                var contents_query_Now_list = []
+                $('.swiper_contents').each(function() {
+                    contents_list.push($(this).attr('class'))
+                })
+                for (let index = 0; index < contents_list.length; index++) {
+                    contents_query_Now_list.push(contents_list[index].split(' '))
+                }
+                for (let index = 0; index < contents_query_Now_list.length; index++) {
+                    for (let inner_index = 0; inner_index < contents_query_Now_list[index].length; inner_index++) {
+                        if ('swiper_contents_' + location.search.split('q=')[1] == contents_query_Now_list[index][inner_index]) {
+                            slideNumber = index
+                        }
+                    }
+                }
+            }
+            var state = {
+                'currentPage': currentPage,
+                'targetPage': currentPage,
+                'thisisexperiment': true,
+            }
+
+            if (history.state != null) {
+                if (history.state['drawLocationChanged'] == true) {
+                    state['is_experiment_pushState'] = true
+                }
+                if (history.state['is_experiment_pushState'] == undefined) {
+                    state['is_experiment_pushState'] = true
+                }
+            }
+            history.replaceState(state, null, currentPage)
+            galleryContents.slideTo(slideNumber)
+        }
+
         $(window).on('popstate', function(e) {
             // experiment
             if (e.originalEvent.state['thisisexperiment'] == true) {
@@ -195,43 +257,6 @@ $(function() {
                 }
             }
         })
-        $(document).ready(function() {
-            var slideNumber = 0
-            var currentPage = location.href;
-            currentPage = currentPage.split('/')
-            currentPage = currentPage[currentPage.length - 1]
-            if (location.search == '') {
-                slideNumber = 0
-            } else {
-                var contents_list = []
-                var contents_query_Now_list = []
-                $('.swiper_contents').each(function() {
-                    contents_list.push($(this).attr('class'))
-                })
-                for (let index = 0; index < contents_list.length; index++) {
-                    contents_query_Now_list.push(contents_list[index].split(' '))
-                }
-                for (let index = 0; index < contents_query_Now_list.length; index++) {
-                    for (let inner_index = 0; inner_index < contents_query_Now_list[index].length; inner_index++) {
-                        if ('swiper_contents_' + location.search.split('q=')[1] == contents_query_Now_list[index][inner_index]) {
-                            slideNumber = index
-                        }
-                    }
-                }
-            }
-            var state = {
-                'currentPage': currentPage,
-                'targetPage': currentPage,
-                'thisisexperiment': true
-            }
-            if (history.state != null) {
-                if (history.state['drawLocationChanged'] == true) {
-                    state['is_experiment_pushState'] = true
-                }
-            }
-            history.replaceState(state, null, currentPage)
-            galleryContents.slideTo(slideNumber)
-        })
     }
 
     function ScrollPageTop() {
@@ -240,6 +265,5 @@ $(function() {
         }, {
             duration: 200
         }, 'linear')
-
     }
 })
