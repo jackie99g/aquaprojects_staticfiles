@@ -212,9 +212,6 @@ $(function() {
     $('#open').on('mousedown', function() {
         ScrollPageTop()
     })
-    $('#open').on('touchend', function() {
-        ScrollPageTop()
-    })
 
     function ScrollPageTop() {
         $('html').animate({
