@@ -9,6 +9,10 @@ h1 {
     font-size: inherit;
 }
 
+.animated {
+    animation-duration: 0.3s !important;
+}
+
 /* switch tgl */
 .tg-list {
     text-align: center;
@@ -87,7 +91,7 @@ h1 {
 }
 
 a {
-    color: #5f6368;
+    color: black;
 }
 
 a:hover {
@@ -773,11 +777,11 @@ a:hover {
 }
 
 .timeline_background {
+    top: 0;
     background-size: cover;
     background-position-x: center;
     position: fixed;
     opacity: 0.1;
-    width: 100%;
     height: 100%;
 }
 
@@ -891,6 +895,7 @@ a:hover {
 
 .tweet:hover {
     cursor: pointer;
+    background: rgba(245, 248, 250, 0.5);
 }
 
 .tweet-twitter_name:hover {
@@ -901,14 +906,22 @@ a:hover {
     text-decoration: underline;
 }
 
-.tweet:hover {
-    background: #F5F8FA;
-}
-
 .tweet-twitter_urls>a:hover {
     text-decoration: underline;
 }
 
 .tweet-tweet_details>a:hover {
     text-decoration: underline;
+}
+
+.tweet-twitter_favorite {
+    color:red;
+}
+
+.tweet-twitter_retweet {
+    color: green;
+}
+
+.tweet-twitter_share {
+    color: blue;
 }

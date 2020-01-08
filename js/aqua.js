@@ -87,6 +87,11 @@ $(function() {
 
     $('.user_picture').on('click', function() {
         var visible_state = $('.account').css('visibility');
+        if ($('.account').css('visibility') == 'hidden') {
+            $('.account').addClass('animated fadeInUp faster')
+        } else {
+            $('.account').removeClass('animated fadeInUp faster')
+        }
         var windowWidth = $(window).width();
         if (windowWidth < 768) {
             if (visible_state == 'hidden') {
@@ -166,6 +171,7 @@ $(function() {
             $('#main').css({
                 'display': 'block',
             });
+            $('.account').removeClass('animated fadeInUp faster')
         }
 
     });
@@ -176,11 +182,13 @@ $(function() {
             $('#main').removeClass('col-lg-8');
             $('#main').addClass('col-lg-10');
             $('#aside').addClass('content_display');
+            $(window).trigger('aquaproject_twitter_timeline_background')
 
         } else {
             $('#main').removeClass('col-lg-10');
             $('#main').addClass('col-lg-8');
             $('#aside').removeClass('content_display');
+            $(window).trigger('aquaproject_twitter_timeline_background')
         }
     });
 

@@ -30,6 +30,7 @@ $(function() {
         var prop = $('.load_pictures').prop('checked');
         if (prop) {
             twitterViewPictures()
+            $(window).trigger('aquaproject_popstate');
         } else {
             twitterHiddenPictures()
         }
