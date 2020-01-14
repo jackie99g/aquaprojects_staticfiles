@@ -275,8 +275,8 @@ a:hover {
 .flex_box_lg {
     display: flex;
     flex-direction: column;
-    position: fixed;
-    width: 130px;
+    position: sticky;
+    top: 74px;
     font-size: large;
 }
 
@@ -287,7 +287,6 @@ a:hover {
 }
 
 .custom_aside_pannel_lg {
-    width: 130px;
     height: 100%;
     margin-right: auto;
 }
@@ -781,7 +780,7 @@ a:hover {
     background-size: cover;
     background-position-x: center;
     position: fixed;
-    opacity: 0.1;
+    opacity: 0.3;
     height: 100%;
 }
 
@@ -915,7 +914,7 @@ a:hover {
 }
 
 .tweet-twitter_favorite {
-    color:red;
+    color: red;
 }
 
 .tweet-twitter_retweet {
@@ -924,4 +923,21 @@ a:hover {
 
 .tweet-twitter_share {
     color: blue;
+}
+
+.tweet-twitter_pictures_border {
+    margin: 12px 0 0 0;
+    border: 1px solid #CCD6DD;
+    border-radius: 12px;
+}
+
+.twitter_side_content {
+    border-radius: 8px;
+    background-color: aliceblue;
+}
+
+.twitter_trends_block {
+    padding: 8px 0;
+    margin: 0 8px;
+    border-top: 1px solid #e6ecf0;
 }

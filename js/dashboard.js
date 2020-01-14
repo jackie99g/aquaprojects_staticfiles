@@ -1,5 +1,6 @@
 $(function() {
     $(document).ready(function() {
+        AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
         var currentPage = location.href.replace(location.origin, '')
         var state = {
             'targetPage': currentPage,
@@ -67,11 +68,19 @@ $(function() {
         document.title = 'Aqua Project - ' + targetPage
         $('.dashboard_anchor').removeClass('select_active_dashboard')
         $(this).addClass('select_active_dashboard')
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
+            $('#aside').css({
+                'display': 'block'
+            })
+        } else {
+            $('#aside').css({
+                'display': 'none'
+            })
+        }
         changeContent(targetPage);
         return false;
     })
     $(window).on('popstate', function(e) {
-        ScrollPageTop()
         // When we access the page at the first time, we don't do nothing.
         if (!e.originalEvent.state) return false;
         // search
@@ -155,11 +164,74 @@ $(function() {
         } else {
             $('.dashboard_anchor_group a').removeClass('select_active_dashboard')
             $('.dashboard_anchor_' + location.pathname.split('/')[1]).addClass('select_active_dashboard')
-            changeContent(e.originalEvent.state['targetPage']);
+            if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
+                changeTwitterContent(history.state['targetPage'])
+            } else {
+                changeContent(e.originalEvent.state['targetPage']);
+            }
             document.title = 'Aqua Project - ' + e.originalEvent.state['targetPage']
             return false;
         }
     })
+
+    function changeTwitterContent(href) {
+        $(history.state['changeLocation']).html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
+        $('#ajax-progress-bar').removeClass('bg-danger');
+        $('#ajax-progress-bar').css({
+            'visibility': 'visible'
+        });
+        $('#ajax-progress-bar').css({
+            'width': '80%'
+        });
+        // Cache exsists.
+        if (AquaProjectCache[href]) {
+            $(history.state['changeLocation']).html($(AquaProjectCache[href]).find(history.state['changeLocation']).html());
+            $('#ajax-progress-bar').css({
+                'width': '100%'
+            });
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+            $('#main').html($(AquaProjectCache[href]).find('#main').html());
+            if (history.state['scrollTop']) {
+                $(window).scrollTop(history.state['scrollTop'])
+            }
+            $(window).trigger('aquaproject_popstate');
+
+            $('#ajax-progress-bar').css({
+                'width': '100%'
+            });
+            $('#ajax-progress-bar').css({
+                'transition': 'width 0.1s ease 0s'
+            });
+
+            function wait(sec) {
+                var objDef = new $.Deferred;
+                setTimeout(function() {
+                    objDef.resolve(sec);
+                }, sec * 1000);
+                return objDef.promise();
+            }
+            wait(0.2).done(function() {
+                $('#ajax-progress-bar').css({
+                    'visibility': 'hidden'
+                });
+                $('#ajax-progress-bar').css({
+                    'width': '0%'
+                });
+                $('#ajax-progress-bar').css({
+                    'transition': 'width 0.6s ease 0s'
+                });
+            });
+        } else {
+            $('#ajax-progress-bar').addClass('bg-danger');
+            $('#ajax-progress-bar').css({
+                'width': '100%'
+            });
+            $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+        }
+    }
 
     function changeContent(href, doneFunc) {
         if (history.state['drawLocationChanged'] == false) {
@@ -190,6 +262,7 @@ $(function() {
             $('#ajax-progress-bar').css({
                 'width': '100%'
             });
+            $(window).trigger('aquaproject_popstate');
         }
         $.ajax({
             url: href,

@@ -39,19 +39,23 @@ $(function() {
     function twitterViewPictures() {
         localStorage.setItem('twitter-view_pictures', true)
         $('.tweet-twitter_picture').each(function(index, element) {
-            if ($(element).parent().find('.tweet-twitter_view_picture').css('display') !== 'none') {
-                var data_img_src = $(element).data('img-src')
-                var img_element = '<img class="tweet-twitter_picture_img" src="' + data_img_src + '" style="object-fit: cover; width: 100%; height: ' + localStorage.getItem('twitter-image_size') + 'px; border-radius: 12px; margin-top: 12px; cursor: pointer;">'
-                $(element).append(img_element)
-                $(element).css({
-                    'display': 'block'
-                })
+            if ($(element).data('possibly_sensitive') === 'False') {
+                if ($(element).parent().find('.tweet-twitter_view_picture').css('display') !== 'none') {
+                    var data_img_src = $(element).data('img-src')
+                    var img_element = '<img class="tweet-twitter_picture_img" src="' + data_img_src + '" style="object-fit: cover; width: 100%; height: ' + localStorage.getItem('twitter-image_size') + 'px; border-radius: 12px; cursor: pointer;">'
+                    $(element).append(img_element)
+                }
             }
+            $(element).css({
+                'display': 'block'
+            })
         })
         $('.tweet-twitter_view_picture').each(function(index, element) {
-            $(element).css({
-                'display': 'none',
-            })
+            if ($(element).parent().find('.tweet-twitter_picture').data('possibly_sensitive') === 'False') {
+                $(element).css({
+                    'display': 'none',
+                })
+            }
         })
     }
 

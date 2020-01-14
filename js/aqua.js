@@ -30,16 +30,6 @@ $(function() {
                 'overflow-x': 'hidden'
             });
         }
-        if (windowWidth < 992) {
-            $('.aside_border').css({
-                'padding': '0px'
-            });
-        }
-        if (windowWidth >= 992) {
-            $('.aside_border').css({
-                'padding': '0px'
-            });
-        }
     })
 
     $(window).resize(function() {
@@ -71,16 +61,6 @@ $(function() {
             });
             $('.hourly-weather-chart-block').css({
                 'overflow-x': 'hidden'
-            });
-        }
-        if (windowWidth < 992) {
-            $('.aside_border').css({
-                'padding': '0px'
-            });
-        }
-        if (windowWidth >= 992) {
-            $('.aside_border').css({
-                'padding': '0px'
             });
         }
     });
@@ -148,6 +128,7 @@ $(function() {
                 });
             }
         }
+        var show_side_bar_flag = localStorage.getItem('show_side_bar')
         var twitter_view_pictures_flag = localStorage.getItem('twitter-view_pictures')
         var twitter_load_videos_flag = localStorage.getItem('twitter-view_videos')
         if (twitter_view_pictures_flag == 'true') {
@@ -159,6 +140,11 @@ $(function() {
             $('.load_videos').prop('checked', true)
         } else {
             $('.load_videos').prop('checked', false)
+        }
+        if (show_side_bar_flag == 'true') {
+            $('.prop').prop('checked', true)
+        } else {
+            $('.prop').prop('checked', false)
         }
     });
 
@@ -179,18 +165,27 @@ $(function() {
     $('input[name="check"]').change(function() {
         var prop = $('.prop').prop('checked');
         if (prop) {
-            $('#main').removeClass('col-lg-8');
-            $('#main').addClass('col-lg-10');
-            $('#aside').addClass('content_display');
-            $(window).trigger('aquaproject_twitter_timeline_background')
-
+            showSideBar()
         } else {
-            $('#main').removeClass('col-lg-10');
-            $('#main').addClass('col-lg-8');
-            $('#aside').removeClass('content_display');
-            $(window).trigger('aquaproject_twitter_timeline_background')
+            hideSideBar()
         }
     });
+
+    function showSideBar() {
+        $('#main').removeClass('col-lg-10');
+        $('#main').addClass('col-lg-8');
+        $('#aside').removeClass('content_display');
+        $(window).trigger('aquaproject_twitter_timeline_background')
+        localStorage.setItem('show_side_bar', true)
+    }
+
+    function hideSideBar() {
+        $('#main').removeClass('col-lg-8');
+        $('#main').addClass('col-lg-10');
+        $('#aside').addClass('content_display');
+        $(window).trigger('aquaproject_twitter_timeline_background')
+        localStorage.setItem('show_side_bar', false)
+    }
 
     $('input[name="check"]').change(function() {
         var prop = $('.animation').prop('checked');
