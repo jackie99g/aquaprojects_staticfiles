@@ -3,12 +3,13 @@ $(function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
             console.log('twitter!')
             changeFontSize()
+            setTweetCreated_at()
             twitterViewAllPictures()
             twitterViewAllVideos()
             changeTwitterPictureHeight()
             twitterSideBar()
             twitterTrends()
-            setTimelineBackground()
+            setClearIcon()
             console.log('twitter! popstate event finished.')
         }
     })
@@ -22,7 +23,7 @@ $(function() {
             console.log(currentTime)
             var tweet_id = $('.format_timeline > div:first').next().data('tweet_id');
             if (document.hidden === false) {
-                loadMoreTweet(tweet_id, 'new');                
+                loadMoreTweet(tweet_id, 'new');
             }
         }
     }, 60 * 1000);
@@ -345,23 +346,28 @@ $(function() {
         replaceState['scrollTop'] = $(window).scrollTop()
         history.replaceState(replaceState, null, currentPage)
         history.pushState(state, null, targetPage);
-        changeContent(targetPage);
+
+        var twitterUserScreenName = $(this).data('twitter_user-screen_name')
+        var tweetId = $(this).data('tweet_id')
+        if (twitterUserScreenName !== undefined) changeContent(targetPage, undefined, 'twitter_user', twitterUserScreenName);
+        else if (tweetId !== undefined) changeContent(targetPage, undefined, 'tweet', tweetId)
+        else changeContent(targetPage, undefined);
         return false;
     }
 
-    function changeContent(href, doneFunc) {
-        if (history.state['drawLocationChanged'] == false) {
+    function changeContent(href, doneFunc, anchorMode, anchorContext) {
+        if (anchorMode === 'twitter_user') changeContentTwitterUser(anchorContext)
+        else if (anchorMode === 'tweet') changeContentTweet(anchorContext)
+        else {
             $('#main').html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
-        } else {
-            $(history.state['changeLocation']).html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
+            $('#ajax-progress-bar').removeClass('bg-danger');
+            $('#ajax-progress-bar').css({
+                'visibility': 'visible'
+            });
+            $('#ajax-progress-bar').css({
+                'width': '80%'
+            });
         }
-        $('#ajax-progress-bar').removeClass('bg-danger');
-        $('#ajax-progress-bar').css({
-            'visibility': 'visible'
-        });
-        $('#ajax-progress-bar').css({
-            'width': '80%'
-        });
         // Cache exsists.
         if (AquaProjectCache[href]) {
             if (history.state['drawLocationChanged'] == true) {
@@ -439,6 +445,59 @@ $(function() {
             });
             $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
         })
+
+        function changeContentTwitterUser(screen_name) {
+            // The following will be changed:
+            // .twitter_user-background_image -> Expand image.
+            // .twitter_user-profile_image -> Add .tweet-twitter_icon, twitter_anchor, image property.
+            // .twitter_user-name_screen_name -> Add twitter_anchor
+            // .twitter_user-location -> css:display
+            // .twitter_user-main -> css:padding
+            // .twitter_user -> border-bottom
+            $('.twitter_user').each(function(index, element) {
+                if ($(element).data('twitter_user-screen_name') === screen_name) {
+                    $('.timeline').html($(element).prop('outerHTML'))
+
+                    var TwitterUserBackgroundImage = $('.timeline').find('.twitter_user-background_image').data('img-src')
+                    var TwitterUserBackgroundImageIMG = '<img src="' + TwitterUserBackgroundImage + '" style="width: 100%; height: 100%;">'
+                    $('.timeline').find('.twitter_user-background_image').append(TwitterUserBackgroundImageIMG)
+
+                    $('.timeline').find('.twitter_user-profile_image').css('height', '50px')
+                    var twitterUserProfile = $('.timeline').find('.twitter_user-profile_image')
+                    twitterUserProfile.find('img').insertBefore(twitterUserProfile.find('a'))
+                    twitterUserProfile.find('a').remove()
+                    $('.timeline').find('.twitter_user-profile_image').find('img').css({
+                        'width': '100px',
+                        'height': '100px',
+                        'top': '-50px',
+                        'margin-left': '10px',
+                    })
+
+                    var twitterUserNameScreenName = $('.timeline').find('.twitter_user-name_screen_name')
+                    twitterUserNameScreenName.find('.twitter_user-name').insertBefore(twitterUserNameScreenName.find('a'))
+                    twitterUserNameScreenName.find('.twitter_user-screen_name').insertBefore(twitterUserNameScreenName.find('a'))
+                    twitterUserNameScreenName.find('a').remove()
+
+                    var twitterUserLocation = $('.timeline').find('.twitter_user-local')
+                    twitterUserLocation.css('display', 'flex')
+
+                    $('.timeline').find('.twitter_user-main').css('padding', '0 10px')
+
+                    $('.twitter_user').css('border-bottom', 'solid 1px #e6ecf0')
+                    $('.timeline:last').append('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>')
+                }
+            })
+        }
+
+        function changeContentTweet(tweet_id) {
+            $('.tweet').each(function(index, element) {
+                if ($(element).data('tweet_id') === tweet_id) {
+                    $('.timeline').html($(element).prop('outerHTML'))
+
+                    $('.timeline:last').append('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>')
+                }
+            })
+        }
     }
 
     function ScrollPageTop() {
@@ -653,8 +712,8 @@ $(function() {
             return false;
         }
         loadMoreTweetLoader(load_type, true)
-        if ($('.twitter_user').length > 0) {
-            var screen_name = $('.twitter_user').find('.twitter_user-screen_name').text().replace('@', '')
+        if ($('#twitter_user').length > 0) {
+            var screen_name = $('#twitter_user').find('.twitter_user-screen_name').text().replace('@', '')
             href = href.replace('/twitter', '/twitter/' + screen_name)
         }
         $('#ajax-progress-bar').removeClass('bg-danger');
@@ -683,12 +742,15 @@ $(function() {
             }
             loadMoreTweetLoader(load_type, false)
 
+            setTweetCreated_at()
+
             twitterViewAllPictures()
             twitterViewAllVideos()
             alreadyBottom = false;
 
             changeFontSize()
             changeTwitterPictureHeight()
+            setClearIcon()
 
             AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
 
@@ -843,33 +905,87 @@ $(function() {
         }
     }
 
-    function setTimelineBackground(forced = false) {
-        if (forced === true) {
-            setTimelineBackgroundImage()
-        }
-        if ($('.timeline_background').css('background-image') === 'none') {
-            if (localStorage.getItem('twitter-timeline_background')) {
-                $('.timeline_background').css({
-                    'background-image': 'url(' + localStorage.getItem('twitter-timeline_background') + ')'
-                })
+    function setTweetCreated_at() {
+        $('.tweet-twitter_createdat').each(function(inddex, element) {
+            var createdat_title = $(element).attr('title')
+            var created_at_time = new Date($(element).attr('title')).getTime()
+            var currentTime = new Date().getTime()
+            var diffTime = currentTime - created_at_time
+            var displayTime = calculateTime(diffTime, createdat_title)
+            displayTime = ' · ' + displayTime
+            $(element).text(displayTime)
+        })
+
+        $('.twitter_user-created_at').each(function(index, element) {
+            var createdat_title = $(element).attr('title')
+            var calendarIcon = '<i class="far fa-calendar-alt" style="padding-top: 4px;"></i> '
+            var created_at_time = new Date($(element).attr('title')).getTime()
+            var currentTime = new Date().getTime()
+            var diffTime = currentTime - created_at_time
+            var displayTime = calculateJoinTime(diffTime, createdat_title)
+            displayTime = '<div style="padding-left: 4px;">' + displayTime + '</div>'
+            $(element).text('')
+            $(element).append(calendarIcon)
+            $(element).append(displayTime)
+        })
+
+        function calculateTime(diffTime, createdat_title) {
+            var diffTime = diffTime
+            diffTime /= 1000
+            var displayTime = ''
+            if (diffTime < 60) {
+                displayTime = parseInt(diffTime) + 's'
+            } else if (diffTime < 60 * 60) {
+                displayTime = parseInt(diffTime / 60) + 'm'
+            } else if (diffTime < 60 * 60 * 24) {
+                displayTime = parseInt(diffTime / 60 / 60) + 'h'
             } else {
-                setTimelineBackgroundImage()
+                var displayCreated_at = new Date(createdat_title)
+                var month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                displayTime = month_list[displayCreated_at.getMonth()] + ' ' + displayCreated_at.getDate()
             }
+            return displayTime
         }
 
-        function setTimelineBackgroundImage() {
-            $.ajax({
-                url: '/userinfo?q=' + 'user_metadata--background_image',
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
-                }
-            }).done(function(data) {
-                $('.timeline_background').css({
-                    'background-image': 'url(' + data + ')'
-                })
-                localStorage.setItem('twitter-timeline_background', data)
-            })
+        function calculateJoinTime(diffTime, createdat_title) {
+            var diffTime = diffTime
+            diffTime /= 1000
+            var displayTime = ''
+            var displayCreated_at = new Date(createdat_title)
+            var month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            displayTime = month_list[displayCreated_at.getMonth()] + ' ' + displayCreated_at.getDate() + ' ' + displayCreated_at.getFullYear()
+            return displayTime
         }
     }
+
+    $(document).on('mouseenter', '.tweet-twitter_user_name', function() {
+        var y = $(this).position().top + $(this).height()
+        $(this).find('.tweet-twitter_user_tooltip').css('display', 'block').css('top', y)
+    });
+
+    $(document).on('mouseleave', '.tweet-twitter_user_name', function() {
+        $(this).find('.tweet-twitter_user_tooltip').css('display', 'none');
+    });
+
+    $(document).on('click', '.tweet-twitter_user_tooltip', function(event) {
+        event.stopPropagation()
+    })
+
+    function setClearIcon() {
+        $('.tweet-twitter_icon').find('img').each(function(index, element) {
+            var tweetTwitterIcon = $(element).attr('src')
+            tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
+            $(element).attr('src', tweetTwitterIcon)
+        })
+
+        $('.twitter_user-profile_image').find('img').each(function(index, element) {
+            var tweetTwitterIcon = $(element).attr('src')
+            tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
+            $(element).attr('src', tweetTwitterIcon)
+        })
+    }
+
+    $(document).on('click', '.tweet-twitter_full_text_hashtags', function(event) {
+        event.stopPropagation()
+    })
 })

@@ -941,3 +941,8 @@ a:hover {
     margin: 0 8px;
     border-top: 1px solid #e6ecf0;
 }
+
+.tweet-twitter_full_text_hashtags:hover,
+.tweet-twitter_full_text_user:hover {
+    text-decoration: underline;
+}
