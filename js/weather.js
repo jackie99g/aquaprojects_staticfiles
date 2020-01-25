@@ -9,17 +9,6 @@ $(function() {
             $('.hourly-weather').scroll(function() {
                 $('.hourly-weather-chart-block').scrollLeft($(this).scrollLeft())
             })
-            $.ajax({
-                url: '/userinfo?q=' + 'user_metadata--background_image',
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
-                }
-            }).done(function(data) {
-                $('.weather-bg').css({
-                    'background-image': 'url(' + data + ')'
-                })
-            })
         }
     })
     if (location.pathname.replace(location.origin, '') === '/weather') {
