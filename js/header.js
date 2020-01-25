@@ -124,4 +124,32 @@ $(function() {
             })
         })
     }
+
+    $(document).on('click', '.header-summarize_button', function() {
+        var custom_side_pannel_lg = $('.custom_side_pannel_lg').parent()
+        custom_side_pannel_lg.toggleClass('col-md-1')
+        custom_side_pannel_lg.toggleClass('col-md-2')
+        if (custom_side_pannel_lg.css('visibility') === 'visible') {
+            custom_side_pannel_lg.css({
+                'visibility': 'hidden'
+            })
+        } else {
+            custom_side_pannel_lg.css({
+                'visibility': 'visible'
+            })
+        }
+
+        var custom_side_pannel_md = $('.custom_side_pannel_md').parent()
+        custom_side_pannel_md.toggleClass('col-md-1')
+        custom_side_pannel_md.toggleClass('col-md-2')
+        if (custom_side_pannel_md.css('visibility') === 'visible') {
+            custom_side_pannel_md.css({
+                'visibility': 'hidden'
+            })
+        } else {
+            custom_side_pannel_md.css({
+                'visibility': 'visible'
+            })
+        }
+    })
 })
