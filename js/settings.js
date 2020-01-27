@@ -1,14 +1,14 @@
-$(function () {
-    $(".save-button").on("click", function () {
-        background_url = $(".background-url").val()
-        $(".status").text('sending...')
+$(function() {
+    $(document).on('click', '.save-button', function() {
+        background_url = $('.background-url').val()
+        $('.status').text('sending...')
         var jsondata = {
             user_metadata: {
-                background_image: background_url
+                timeline_background: background_url
             }
         }
         $.ajax({
-            url: "/settings/save",
+            url: '/settings/save',
             data: {
                 body: JSON.stringify(jsondata)
             },
@@ -16,13 +16,13 @@ $(function () {
             xhrFields: {
                 withCredentials: true
             }
-        }).done(function (data) {
-            $(".status").text('success!: ' + data)
-        }).fail(function (data) {
-            $(".status").text('fail...: ' + data)
+        }).done(function(data) {
+            $('.status').text('success!: ' + data)
+        }).fail(function(data) {
+            $('.status').text('fail...: ' + data)
         })
     })
-    $('.connect-google').on('click', function () {
+    $(document).on('click', '.connect-google', function() {
         $('.google-status').addClass('loader')
         $('.google-status-message').text('Running...')
         $.ajax({
@@ -32,17 +32,17 @@ $(function () {
             xhrFields: {
                 withCredentials: true
             }
-        }).done(function (data) {
+        }).done(function(data) {
             $('.google-status').removeClass('loader')
             $('.google-status-message').text('')
             $('.google-status').text('succeed!' + data)
-        }).fail(function (data) {
+        }).fail(function(data) {
             $('.google-status').removeClass('loader')
             $('.google-status-message').text('')
             $('.google-status').text('fail...' + data)
         })
     })
-    $('.disconnect-google').on('click', function () {
+    $(document).on('click', '.disconnect-google', function() {
         $('.google-status').addClass('loader')
         $('.google-status-message').text('Running...')
         $.ajax({
@@ -52,11 +52,11 @@ $(function () {
             xhrFields: {
                 withCredentials: true
             }
-        }).done(function (data) {
+        }).done(function(data) {
             $('.google-status').removeClass('loader')
             $('.google-status-message').text('')
             $('.google-status').text('succeed!' + data)
-        }).fail(function (data) {
+        }).fail(function(data) {
             $('.google-status-message').text('')
             $('.google-status').removeClass('loader')
             $('.google-status').text('fail...' + data)
