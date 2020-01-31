@@ -131,6 +131,8 @@ $(function() {
         var show_side_bar_flag = localStorage.getItem('show_side_bar')
         var twitter_view_pictures_flag = localStorage.getItem('twitter-view_pictures')
         var twitter_load_videos_flag = localStorage.getItem('twitter-view_videos')
+        var twitter_view_clear_icon_flag = localStorage.getItem('twitter-view_clear_icon')
+        var show_left_sidebar_flag = localStorage.getItem('show_left_sidebar')
         if (twitter_view_pictures_flag == 'true') {
             $('.load_pictures').prop('checked', true)
         } else {
@@ -141,6 +143,16 @@ $(function() {
         } else {
             $('.load_videos').prop('checked', false)
         }
+        if (twitter_view_clear_icon_flag == 'true') {
+            $('.load_clear_icon').prop('checked', true)
+        } else {
+            $('.load_clear_icon').prop('checked', false)
+        }
+        if (show_left_sidebar_flag == 'true') {
+            $('.show_left_sidebar').prop('checked', true)
+        } else {
+            $('.show_left_sidebar').prop('checked', false)
+        }
         if (show_side_bar_flag == 'true') {
             $('.prop').prop('checked', true)
         } else {
@@ -150,7 +162,7 @@ $(function() {
 
     $('body').on('click', function(e) {
         var click_class = e.target.className
-        if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'account_picture' && click_class != 'account_content_email' && click_class != 'tgl tgl-flat prop' && click_class != 'tgl tgl-flat animation' && click_class != 'tgl tgl-flat load_pictures' && click_class != 'tgl tgl-flat load_videos' && click_class != 'tgl-btn' && click_class != 'toggle_button_message') {
+        if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'account_picture' && click_class != 'account_content_email' && click_class != 'tgl tgl-flat prop' && click_class != 'tgl tgl-flat animation' && click_class != 'tgl tgl-flat load_pictures' && click_class != 'tgl tgl-flat load_videos' && click_class != 'tgl tgl-flat load_clear_icon' && click_class != 'tgl tgl-flat show_left_sidebar' && click_class != 'tgl-btn' && click_class != 'toggle_button_message') {
             $('.account').css({
                 'visibility': 'hidden',
             });

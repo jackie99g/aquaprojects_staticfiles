@@ -313,6 +313,7 @@ $(function() {
             localStorage.setItem('twitter-image_size', twitter_image_size)
             localStorage.setItem('twitter-icon_image_size', twitter_icon_image_size)
         } else {
+            localStorage.setItem('font-size', '50')
             localStorage.setItem('twitter-image_size', '285')
             localStorage.setItem('twitter-icon_image_size', '40')
         }
@@ -972,17 +973,33 @@ $(function() {
     })
 
     function setClearIcon() {
-        $('.tweet-twitter_icon').find('img').each(function(index, element) {
-            var tweetTwitterIcon = $(element).attr('src')
-            tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
-            $(element).attr('src', tweetTwitterIcon)
-        })
-
-        $('.twitter_user-profile_image').find('img').each(function(index, element) {
-            var tweetTwitterIcon = $(element).attr('src')
-            tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
-            $(element).attr('src', tweetTwitterIcon)
-        })
+        var prop = $('.load_clear_icon').prop('checked')
+        var twitter_view_clear_icon_flag = localStorage.getItem('twitter-view_clear_icon')
+        if (twitter_view_clear_icon_flag != null) {
+            if (prop) {
+                $('.tweet-twitter_icon').find('img').each(function(index, element) {
+                    var tweetTwitterIcon = $(element).attr('src')
+                    tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
+                    $(element).attr('src', tweetTwitterIcon)
+                })
+                $('.twitter_user-profile_image').find('img').each(function(index, element) {
+                    var tweetTwitterIcon = $(element).attr('src')
+                    tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
+                    $(element).attr('src', tweetTwitterIcon)
+                })
+            } else {
+                $('.tweet-twitter_icon').find('img').each(function(index, element) {
+                    var tweetTwitterIcon = $(element).attr('src')
+                    tweetTwitterIcon = tweetTwitterIcon.replace('_400x400', '_normal')
+                    $(element).attr('src', tweetTwitterIcon)
+                })
+                $('.twitter_user-profile_image').find('img').each(function(index, element) {
+                    var tweetTwitterIcon = $(element).attr('src')
+                    tweetTwitterIcon = tweetTwitterIcon.replace('_400x400', '_normal')
+                    $(element).attr('src', tweetTwitterIcon)
+                })
+            }
+        }
     }
 
     $(document).on('click', '.tweet-twitter_full_text_hashtags', function(event) {
