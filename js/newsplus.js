@@ -11,17 +11,21 @@ $(function() {
     console.log('newsplus trigger')
 
     function drawNewsplusAll(mode) {
-        $.cachedScript = function(url, options) {
-            options = $.extend(options || {}, {
-                dataType: "script",
-                cache: true,
-                url: url
-            });
-            return jQuery.ajax(options);
-        };
-        $.cachedScript("https://unpkg.com/swiper/js/swiper.min.js").done(function() {
-            drawNewsplus(mode);
-        });
+        const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {
+            function s(n, t) {
+                (t || !e.readyState || /loaded|complete/.test(e.readyState)) && (e.onload = null, e.onreadystatechange = null, e = undefined, t ? f() : u())
+            }
+            let e = document.createElement("script");
+            const o = t || document.getElementsByTagName("script")[0];
+            e.type = p;
+            e.async = i;
+            e.defer = r;
+            e.onload = s;
+            e.onreadystatechange = s;
+            e.src = n;
+            o.parentNode.insertBefore(e, o.nextSibling);
+        })
+        getScript('https://unpkg.com/swiper/js/swiper.min.js').then(() => drawNewsplus(mode))
     }
 
     function drawNewsplus(mode) {
@@ -58,7 +62,7 @@ $(function() {
         }
 
         function slideChange() {
-            ScrollPageTop()
+            scrollPageTop()
             var url_list = []
             var url_query_list = []
             var contents_list = []
@@ -129,24 +133,31 @@ $(function() {
                     'width': '100%'
                 });
             }
-            $.ajax({
-                url: uri,
-                timeout: 30000,
-                type: "GET",
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
+            fetch(
+                uri, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include'
                 }
-            }).done(function(data) {
+            ).then(response => {
+                if(response.ok) {
+                    return response.text()
+                } else {
+                    console.error(response)
+                    $('#ajax-progress-bar').addClass('bg-danger');
+                $('#ajax-progress-bar').css({
+                    'width': '100%'
+                });
+                $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+                }
+            }).then(data => {
                 // Save Cache.
                 AquaProjectCache[uri] = data
                 var mc = $(data).find(contentsLocation).html();
                 $(changeLocation).html(mc);
                 $('#ajax-progress-bar').css({
-                    'width': '100%'
-                });
-                $('#ajax-progress-bar').css({
-                    'transition': 'width 0.1s ease 0s'
+                    'width': '100%',
+                    'transition': 'width 0.1s ease 0s',
                 });
 
                 function wait(sec) {
@@ -158,21 +169,13 @@ $(function() {
                 }
                 wait(0.2).done(function() {
                     $('#ajax-progress-bar').css({
-                        'visibility': 'hidden'
-                    });
-                    $('#ajax-progress-bar').css({
-                        'width': '0%'
-                    });
-                    $('#ajax-progress-bar').css({
-                        'transition': 'width 0.6s ease 0s'
+                        'visibility': 'hidden',
+                        'width': '0%',
+                        'transition': 'width 0.6s ease 0s',
                     });
                 });
-            }).fail(function() {
-                $('#ajax-progress-bar').addClass('bg-danger');
-                $('#ajax-progress-bar').css({
-                    'width': '100%'
-                });
-                $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+            }).catch(err => {
+                console.error(err)
             })
         }
 
@@ -259,11 +262,17 @@ $(function() {
         })
     }
 
-    function ScrollPageTop() {
-        $('html').animate({
-            scrollTop: 0
-        }, {
-            duration: 200
-        }, 'linear')
+    function scrollPageTop() {
+        scrollTop(500)
+
+        function scrollTop(n) {
+            var t = new Date,
+                i = window.pageYOffset,
+                r = setInterval(() => {
+                    var u = new Date - t;
+                    u > n && (clearInterval(r), u = n);
+                    window.scrollTo(0, i * (1 - u / n))
+                }, 10)
+        }
     }
 })

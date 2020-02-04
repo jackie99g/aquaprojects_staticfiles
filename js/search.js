@@ -1,5 +1,5 @@
 $(function() {
-    $('.contents_anchor').on('click', function() {
+    $(document).on('click', '.contents_anchor', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/search') {
             var targetPage = $(this).attr('href').split('/')[1]
             var currentPage = location.href.split('/')[location.href.split('/').length - 1]
@@ -35,23 +35,30 @@ $(function() {
         if (AquaProjectCache[uri]) {
             $(changeLocation).html($(AquaProjectCache[uri]).find(history.state['changeLocation']).html());
         }
-        $.ajax({
-            url: uri,
-            timeout: 30000,
-            type: "GET",
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true
+        fetch(
+            uri, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include'
             }
-        }).done(function(data) {
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+                $('#ajax-progress-bar').addClass('bg-danger');
+                $('#ajax-progress-bar').css({
+                    'width': '100%'
+                });
+                $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+            }
+        }).then(data => {
             // Save Cache.
             AquaProjectCache[uri] = data
             var mc = $(data).find(contentsLocation).html();
             $(changeLocation).html(mc);
             $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $('#ajax-progress-bar').css({
+                'width': '100%',
                 'transition': 'width 0.1s ease 0s'
             });
 
@@ -64,16 +71,13 @@ $(function() {
             }
             wait(0.2).done(function() {
                 $('#ajax-progress-bar').css({
-                    'visibility': 'hidden'
-                });
-                $('#ajax-progress-bar').css({
-                    'width': '0%'
-                });
-                $('#ajax-progress-bar').css({
-                    'transition': 'width 0.6s ease 0s'
+                    'visibility': 'hidden',
+                    'width': '0%',
+                    'transition': 'width 0.6s ease 0s',
                 });
             });
-        }).fail(function() {
+        }).catch(err => {
+            console.error(err)
             $('#ajax-progress-bar').addClass('bg-danger');
             $('#ajax-progress-bar').css({
                 'width': '100%'

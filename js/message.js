@@ -1,17 +1,21 @@
 $(function() {
     $(window).on('aquaproject_popstate', function() {
         if (location.pathname.replace(location.origin, '') === '/message') {
-            $.cachedScript = function(url, options) {
-                options = $.extend(options || {}, {
-                    dataType: "script",
-                    cache: true,
-                    url: url
-                });
-                return jQuery.ajax(options);
-            };
-            $.cachedScript("https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js").done(function() {
-                startMessage();
-            });
+            const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {
+                function s(n, t) {
+                    (t || !e.readyState || /loaded|complete/.test(e.readyState)) && (e.onload = null, e.onreadystatechange = null, e = undefined, t ? f() : u())
+                }
+                let e = document.createElement("script");
+                const o = t || document.getElementsByTagName("script")[0];
+                e.type = p;
+                e.async = i;
+                e.defer = r;
+                e.onload = s;
+                e.onreadystatechange = s;
+                e.src = n;
+                o.parentNode.insertBefore(e, o.nextSibling);
+            })
+            getScript('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js').then(() => startMessage())
         }
     })
     if (location.pathname.replace(location.origin, '') === '/message') {

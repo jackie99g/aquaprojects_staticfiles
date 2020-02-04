@@ -222,41 +222,28 @@ $(function() {
         post_data['list_mode'] = list_mode
         post_data['list_information'] = list_information
 
-        csrfSetting();
-        $.ajax({
-            url: post_url,
-            type: 'POST',
-            data: post_data,
-        }).done(function(data) {
-            console.log(data)
-            location.href = '/twitter'
-        })
-
-        function getCookie(key) {
-            var cookies = document.cookie.split(';');
-            for (var _i = 0, cookies_1 = cookies; _i < cookies_1.length; _i++) {
-                var cookie = cookies_1[_i];
-                var cookiesArray = cookie.split('=');
-                if (cookiesArray[0].trim() == key.trim()) {
-                    return cookiesArray[1]; // (key[0],value[1])
+        fetch(
+            post_url, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify(post_data),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
                 }
             }
-            return '';
-        }
-
-        function csrfSetting() {
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-                    }
-                }
-            });
-        }
-
-        function csrfSafeMethod(method) {
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            console.log(data)
+            location.href = '/twitter'
+        }).catch(err => {
+            console.error(err)
+        })
     }
 
     function changeFontSize() {
@@ -333,7 +320,7 @@ $(function() {
     $(document).on('click', '.twitter_anchor', twitterAnchor)
 
     function twitterAnchor() {
-        ScrollPageTop()
+        scrollPageTop()
         var targetPage = $(this).attr('href');
         targetPage = targetPage.replace(location.origin, '')
         var currentPage = location.href;
@@ -386,16 +373,21 @@ $(function() {
 
             $(window).trigger('aquaproject_popstate');
         }
-        $.ajax({
-            url: href,
-            timeout: 60000,
-            type: 'GET',
-            dataType: 'html',
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true
+
+        fetch(
+            href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include'
             }
-        }).done(function(data) {
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+                showError()
+            }
+        }).then(data => {
             // Save Cache.
             AquaProjectCache[href] = data
             if (href != location.href.replace(location.origin, '')) {
@@ -415,36 +407,19 @@ $(function() {
             $(window).trigger('aquaproject_popstate');
 
             $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $('#ajax-progress-bar').css({
+                'width': '100%',
                 'transition': 'width 0.1s ease 0s'
-            });
-
-            function wait(sec) {
-                var objDef = new $.Deferred;
-                setTimeout(function() {
-                    objDef.resolve(sec);
-                }, sec * 1000);
-                return objDef.promise();
-            }
+            })
             wait(0.2).done(function() {
                 $('#ajax-progress-bar').css({
-                    'visibility': 'hidden'
-                });
-                $('#ajax-progress-bar').css({
-                    'width': '0%'
-                });
-                $('#ajax-progress-bar').css({
-                    'transition': 'width 0.6s ease 0s'
-                });
-            });
-        }).fail(function() {
-            $('#ajax-progress-bar').addClass('bg-danger');
-            $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+                    'visibility': 'hidden',
+                    'width': '0%',
+                    'transition': 'width 0.6s ease 0s',
+                })
+            })
+        }).catch(err => {
+            console.error(err)
+            showError()
         })
 
         function changeContentTwitterUser(screen_name) {
@@ -501,12 +476,18 @@ $(function() {
         }
     }
 
-    function ScrollPageTop() {
-        $('html').animate({
-            scrollTop: 0
-        }, {
-            duration: 1000
-        }, 'linear')
+    function scrollPageTop() {
+        scrollTop(500)
+
+        function scrollTop(n) {
+            var t = new Date,
+                i = window.pageYOffset,
+                r = setInterval(() => {
+                    var u = new Date - t;
+                    u > n && (clearInterval(r), u = n);
+                    window.scrollTo(0, i * (1 - u / n))
+                }, 10)
+        }
     }
 
     function twitterViewAllPictures() {
@@ -726,16 +707,20 @@ $(function() {
         });
         alreadyBottom = true;
 
-        $.ajax({
-            url: href,
-            timeout: 60000,
-            type: 'GET',
-            dataType: 'html',
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true
+        fetch(
+            href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
             }
-        }).done(function(data) {
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(data)
+                showError()
+            }
+        }).then(data => {
             if (load_type === 'new') {
                 $('.format_timeline > div:first').next().before($(data).find('.format_timeline').html())
             } else if (load_type === 'old') {
@@ -756,37 +741,20 @@ $(function() {
             AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
 
             $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $('#ajax-progress-bar').css({
+                'width': '100%',
                 'transition': 'width 0.1s ease 0s'
-            });
+            })
 
-            function wait(sec) {
-                var objDef = new $.Deferred;
-                setTimeout(function() {
-                    objDef.resolve(sec);
-                }, sec * 1000);
-                return objDef.promise();
-            }
             wait(0.2).done(function() {
                 $('#ajax-progress-bar').css({
-                    'visibility': 'hidden'
-                });
-                $('#ajax-progress-bar').css({
-                    'width': '0%'
-                });
-                $('#ajax-progress-bar').css({
+                    'visibility': 'hidden',
+                    'width': '0%',
                     'transition': 'width 0.6s ease 0s'
-                });
-            });
-        }).fail(function() {
-            console.error('fail. something happen.')
-            $('#ajax-progress-bar').addClass('bg-danger');
-            $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+                })
+            })
+        }).catch(err => {
+            console.error(err)
+            showError()
         })
 
         function loadMoreTweetLoader(load_type, showFlag) {
@@ -853,23 +821,26 @@ $(function() {
 
         function refreshTwitterTrends() {
             href = '/twitter/trends'
-            $.ajax({
-                url: href,
-                timeout: 60000,
-                type: 'GET',
-                dataType: 'html',
-                crossDomain: true,
-                xhrFields: {
-                    withCredentials: true
+            fetch(
+                href, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include',
                 }
-            }).done(function(data) {
+            ).then(response => {
+                if (response.ok) {
+                    return response.text()
+                } else {
+                    alert(response)
+                }
+            }).then(data => {
                 // Save Cache.
                 AquaProjectCache[href] = data
                 $('.side_content').html($(data).find('.side_content').html());
                 changeFontSize()
                 hideSideContentLoader()
-            }).fail(function() {
-                alert('twitter trends fail...')
+            }).catch(data => {
+                alert(data)
             })
         }
 
@@ -1005,4 +976,93 @@ $(function() {
     $(document).on('click', '.tweet-twitter_full_text_hashtags', function(event) {
         event.stopPropagation()
     })
+
+    $(document).on('click', '.twitter_user-follow_button', function() {
+        var follow_status = $(this).data('twitter_user-follow_status')
+        var screen_name = $(this).data('twitter_user-screen_name')
+        var friendships = ''
+        if (follow_status === true) friendships = 'destroy'
+        else if (follow_status === false) friendships = 'create'
+        $('.twitter_user-follow_button').each((index, element) => {
+            if ($(element).data('twitter_user-screen_name') === screen_name) {
+                $(element).prop('disabled', true)
+            }
+        })
+        fetch(
+            '/twitter/friendships/' + friendships, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "screen_name": screen_name,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(() => {
+            if (follow_status === true) {
+                $('.twitter_user-follow_button').each((index, element) => {
+                    if ($(element).data('twitter_user-screen_name') === screen_name) {
+                        $(element).removeClass('btn-primary')
+                        $(element).addClass('btn-outline-primary')
+                        $(element).text('Follow')
+                        $(element).data('twitter_user-follow_status', false)
+                        $(element).prop('disabled', false)
+                    }
+                })
+            } else if (follow_status === false) {
+                $('.twitter_user-follow_button').each((index, element) => {
+                    if ($(element).data('twitter_user-screen_name') === screen_name) {
+                        $(element).removeClass('btn-outline-primary')
+                        $(element).addClass('btn-primary')
+                        $(element).text('Following')
+                        $(element).data('twitter_user-follow_status', true)
+                        $(element).prop('disabled', false)
+                    }
+                })
+            }
+        }).catch(err => {
+            console.error(err)
+        })
+    })
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function wait(sec) {
+        var objDef = new $.Deferred;
+        setTimeout(function() {
+            objDef.resolve(sec);
+        }, sec * 1000);
+        return objDef.promise();
+    }
+
+    function showError() {
+        console.error('fail. something happen.')
+        $('#ajax-progress-bar').addClass('bg-danger');
+        $('#ajax-progress-bar').css({
+            'width': '100%'
+        });
+        $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+    }
 })

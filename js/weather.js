@@ -15,55 +15,42 @@ $(function() {
         $(window).trigger('aquaproject_popstate');
     }
 
-    $('#rbtn').on("click", function() {
-        wdwidth = $('.weather-day').width()
-        wdoutwidth = $('.weather-day').outerWidth()
-        dwwidth = $('.daily-weather').scrollLeft()
-        whwidth = $('.weather-hourly').width()
-        whoutwidth = $('.weather-hourly').outerWidth()
-        hwwidth = $('.hourly-weather').width()
-        $('.daily-weather').scrollLeft(wdwidth + wdoutwidth + dwwidth)
-        $('.hourly-weather').scrollLeft(whwidth + whoutwidth + hwwidth)
-    })
-
     $(document).on('click', '.daily-weather-left-btn', function() {
         wdwidth = $('.weather-day').width()
         wdoutwidth = $('.weather-day').outerWidth()
         dwwidth = $('.daily-weather').scrollLeft()
-        $('.daily-weather').animate({
-            scrollLeft: dwwidth - wdoutwidth - wdwidth
-        }, {
-            duration: 200
-        })
+        scrollContentLeft(
+            document.getElementsByClassName('daily-weather')[0],
+            -wdoutwidth - wdwidth,
+            200
+        )
     })
 
     $(document).on('click', '.daily-weather-right-btn', function() {
         wdwidth = $('.weather-day').width()
         wdoutwidth = $('.weather-day').outerWidth()
         dwwidth = $('.daily-weather').scrollLeft()
-        $('.daily-weather').animate({
-            scrollLeft: dwwidth + wdwidth + wdoutwidth
-        }, {
-            duration: 200
-        })
+        scrollContentLeft(
+            document.getElementsByClassName('daily-weather')[0],
+            wdwidth + wdoutwidth,
+            200
+        )
     })
 
     $(document).on('click', '.hourly-weather-left-btn', function() {
         whwidth = $('.weather-hourly').width()
         whoutwidth = $('.weather-hourly').outerWidth()
         hwwidth = $('.hourly-weather').scrollLeft()
-
-        $('.hourly-weather').animate({
-            scrollLeft: hwwidth - whoutwidth - whwidth
-        }, {
-            duration: 200
-        })
-
-        $('.hourly-weather-chart-block').animate({
-            scrollLeft: hwwidth - whoutwidth - whwidth
-        }, {
-            duration: 200
-        })
+        scrollContentLeft(
+            document.getElementsByClassName('weather-hourly')[0],
+            -whoutwidth - whwidth,
+            200
+        )
+        scrollContentLeft(
+            document.getElementsByClassName('hourly-weather-chart-block')[0],
+            -whoutwidth - whwidth,
+            200
+        )
     })
 
     $(document).on('click', '.hourly-weather-right-btn', function() {
@@ -71,17 +58,16 @@ $(function() {
         whoutwidth = $('.weather-hourly').outerWidth()
         hwwidth = $('.hourly-weather').scrollLeft()
 
-        $('.hourly-weather').animate({
-            scrollLeft: hwwidth + whoutwidth + whwidth
-        }, {
-            duration: 200
-        })
-
-        $('.hourly-weather-chart-block').animate({
-            scrollLeft: hwwidth + whoutwidth + whwidth
-        }, {
-            duration: 200
-        })
+        scrollContentLeft(
+            document.getElementsByClassName('weather-hourly')[0],
+            whoutwidth + whwidth,
+            200
+        )
+        scrollContentLeft(
+            document.getElementsByClassName('hourly-weather-chart-block')[0],
+            whoutwidth + whwidth,
+            200
+        )
     })
 
     function drawWeather() {
@@ -101,17 +87,22 @@ $(function() {
         var ctx = document.getElementById('weather-hourly-chart').getContext('2d')
         ctx.canvas.height = 100
         ctx.canvas.width = hourlyWeatherlist.length * hourlyWeatherWidth
-        $.cachedScript = function(url, options) {
-            options = $.extend(options || {}, {
-                dataType: "script",
-                cache: true,
-                url: url
-            });
-            return jQuery.ajax(options);
-        };
-        $.cachedScript("https://cdn.jsdelivr.net/npm/chart.js@2.8.0").done(function() {
-            drawChart()
-        });
+
+        const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {
+            function s(n, t) {
+                (t || !e.readyState || /loaded|complete/.test(e.readyState)) && (e.onload = null, e.onreadystatechange = null, e = undefined, t ? f() : u())
+            }
+            let e = document.createElement("script");
+            const o = t || document.getElementsByTagName("script")[0];
+            e.type = p;
+            e.async = i;
+            e.defer = r;
+            e.onload = s;
+            e.onreadystatechange = s;
+            e.src = n;
+            o.parentNode.insertBefore(e, o.nextSibling);
+        })
+        getScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js').then(() => drawChart())
 
         function drawChart() {
             var myChart = new Chart(ctx, {
@@ -148,5 +139,15 @@ $(function() {
                 }
             })
         }
+    }
+
+    function scrollContentLeft(n, t, i) {
+        var r = new Date,
+            u = n.scrollLeft,
+            f = setInterval(() => {
+                var e = new Date - r;
+                e > i && (clearInterval(f), e = i);
+                n.scrollLeft = u + t * (e / i)
+            }, 10)
     }
 })

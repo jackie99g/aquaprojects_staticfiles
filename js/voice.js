@@ -98,28 +98,31 @@ $(function() {
             var fb = new FormData();
             fb.append('audio', blob);
 
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-                    }
+            fetch(
+                '/voice', {
+                    method: 'POST',
+                    body: fb,
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    },
                 }
-            })
-            var date = new Date()
-            $.ajax({
-                url: 'voice',
-                type: 'POST',
-                data: fb,
-                processData: false,
-                contentType: false,
-            }).done(function(data) {
+            ).then(response => {
+                if (response.ok) {
+                    return response.text()
+                } else {
+                    console.error(response)
+                }
+            }).then(data => {
                 console.log(data)
                 var recognizeSpeech = document.createElement('p');
                 alert(data)
-                var donedate = new Date()
-            }).fail(function() {
-                alert('fail.')
+            }).catch(err => {
+                console.error(err)
+                alert('fail...')
             })
+
             var url = URL.createObjectURL(e.data);
             var preview = document.createElement('audio');
             preview.controls = true;
@@ -148,10 +151,10 @@ $(function() {
         return cookieValue;
     }
 
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
+    // function csrfSafeMethod(method) {
+    //     // these HTTP methods do not require CSRF protection
+    //     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    // }
 
     function createAudioMeter(audioContext, clipLevel, averaging, clipLag) {
         var processor = audioContext.createScriptProcessor(512);
@@ -210,14 +213,20 @@ $(function() {
         this.volume = Math.max(rms, this.volume * this.averaging);
     }
     $('#open').on('mousedown', function() {
-        ScrollPageTop()
+        scrollPageTop()
     })
 
-    function ScrollPageTop() {
-        $('html').animate({
-            scrollTop: 0
-        }, {
-            duration: 1000
-        }, 'linear')
+    function scrollPageTop() {
+        scrollTop(500)
+
+        function scrollTop(n) {
+            var t = new Date,
+                i = window.pageYOffset,
+                r = setInterval(() => {
+                    var u = new Date - t;
+                    u > n && (clearInterval(r), u = n);
+                    window.scrollTo(0, i * (1 - u / n))
+                }, 10)
+        }
     }
 })

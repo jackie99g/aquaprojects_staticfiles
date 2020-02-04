@@ -44,7 +44,7 @@ $(function() {
         }
     })
     $('.dashboard_anchor').on('click', function() {
-        ScrollPageTop()
+        scrollPageTop()
         var targetPage = $(this).attr('href');
         targetPage = targetPage.replace(location.origin, '')
         var currentPage = location.href.replace(location.origin, '');
@@ -264,16 +264,19 @@ $(function() {
             });
             $(window).trigger('aquaproject_popstate');
         }
-        $.ajax({
-            url: href,
-            timeout: 60000,
-            type: 'GET',
-            dataType: 'html',
-            crossDomain: true,
-            xhrFields: {
-                withCredentials: true
+        fetch(
+            href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include'
             }
-        }).done(function(data) {
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
             // Save Cache.
             AquaProjectCache[href] = data
             if (href != location.href.replace(location.origin, '')) {
@@ -295,10 +298,8 @@ $(function() {
             $(window).trigger('aquaproject_popstate');
 
             $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $('#ajax-progress-bar').css({
-                'transition': 'width 0.1s ease 0s'
+                'width': '100%',
+                'transition': 'width 0.1s ease 0s',
             });
 
             function wait(sec) {
@@ -310,21 +311,11 @@ $(function() {
             }
             wait(0.2).done(function() {
                 $('#ajax-progress-bar').css({
-                    'visibility': 'hidden'
-                });
-                $('#ajax-progress-bar').css({
-                    'width': '0%'
-                });
-                $('#ajax-progress-bar').css({
+                    'visibility': 'hidden',
+                    'width': '0%',
                     'transition': 'width 0.6s ease 0s'
                 });
             });
-        }).fail(function() {
-            $('#ajax-progress-bar').addClass('bg-danger');
-            $('#ajax-progress-bar').css({
-                'width': '100%'
-            });
-            $(history.state['changeLocation']).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
         })
     }
 
@@ -360,11 +351,17 @@ $(function() {
         }
     }
 
-    function ScrollPageTop() {
-        $('html').animate({
-            scrollTop: 0
-        }, {
-            duration: 1000
-        }, 'linear')
+    function scrollPageTop() {
+        scrollTop(500)
+
+        function scrollTop(n) {
+            var t = new Date,
+                i = window.pageYOffset,
+                r = setInterval(() => {
+                    var u = new Date - t;
+                    u > n && (clearInterval(r), u = n);
+                    window.scrollTo(0, i * (1 - u / n))
+                }, 10)
+        }
     }
 })
