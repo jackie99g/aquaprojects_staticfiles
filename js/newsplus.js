@@ -25,6 +25,10 @@ $(function() {
             e.src = n;
             o.parentNode.insertBefore(e, o.nextSibling);
         })
+        var delaycss = document.createElement('link');
+        delaycss.rel = 'stylesheet';
+        delaycss.href = 'https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.5.1/css/swiper.min.css';
+        document.head.appendChild(delaycss);
         getScript('https://unpkg.com/swiper/js/swiper.min.js').then(() => drawNewsplus(mode))
     }
 
@@ -140,15 +144,15 @@ $(function() {
                     credentials: 'include'
                 }
             ).then(response => {
-                if(response.ok) {
+                if (response.ok) {
                     return response.text()
                 } else {
                     console.error(response)
                     $('#ajax-progress-bar').addClass('bg-danger');
-                $('#ajax-progress-bar').css({
-                    'width': '100%'
-                });
-                $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
+                    $('#ajax-progress-bar').css({
+                        'width': '100%'
+                    });
+                    $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
                 }
             }).then(data => {
                 // Save Cache.

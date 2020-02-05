@@ -1,22 +1,4 @@
 $(function() {
-    $(document).ready(function() {
-        var show_left_sidebar_flag = localStorage.getItem('show_left_sidebar')
-        if (show_left_sidebar_flag == 'true') {
-            showLeftSidebar()
-        } else {
-            hideLeftSidebar()
-        }
-    })
-
-    $('.header_contents_shortcut').on('click', function() {
-        $('.account').css({
-            'visibility': 'hidden',
-        });
-        $('#main').css({
-            'display': 'block',
-        });
-    })
-
     var win = $(window),
         header = $('.header_contents'),
         hedaerHeight = header.outerHeight() + 10,
