@@ -25,7 +25,7 @@ $(function() {
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/settings') {
-        $(window).trigger('aquaproject_popstate');
+        window.dispatchEvent(new Event('aquaproject_popstate'));
     }
 
     $(document).on('click', '.twitter-slider-item', function() {

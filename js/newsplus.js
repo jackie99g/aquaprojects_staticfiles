@@ -6,9 +6,8 @@ $(function() {
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-        $(window).trigger('aquaproject_popstate');
+        window.dispatchEvent(new Event('aquaproject_popstate'));
     }
-    console.log('newsplus trigger')
 
     function drawNewsplusAll(mode) {
         const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {

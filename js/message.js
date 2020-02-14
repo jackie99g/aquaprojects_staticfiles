@@ -19,7 +19,7 @@ $(function() {
         }
     })
     if (location.pathname.replace(location.origin, '') === '/message') {
-        $(window).trigger('aquaproject_popstate');
+        window.dispatchEvent( new Event('aquaproject_popstate'));
     }
 
     function startMessage() {

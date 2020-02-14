@@ -166,6 +166,8 @@ $(function() {
             $('.dashboard_anchor_' + location.pathname.split('/')[1]).addClass('select_active_dashboard')
             if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
                 changeTwitterContent(history.state['targetPage'])
+            } else if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/settings') {
+                changeTwitterContent(history.state['targetPage'])
             } else {
                 changeContent(e.originalEvent.state['targetPage']);
             }
@@ -197,7 +199,7 @@ $(function() {
             if (history.state['scrollTop']) {
                 $(window).scrollTop(history.state['scrollTop'])
             }
-            $(window).trigger('aquaproject_popstate');
+            window.dispatchEvent(new Event('aquaproject_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%'
@@ -262,7 +264,7 @@ $(function() {
             $('#ajax-progress-bar').css({
                 'width': '100%'
             });
-            $(window).trigger('aquaproject_popstate');
+            window.dispatchEvent(new Event('aquaproject_popstate'));
         }
         fetch(
             href, {
@@ -295,7 +297,7 @@ $(function() {
                 doneFunc()
             }
 
-            $(window).trigger('aquaproject_popstate');
+            window.dispatchEvent(new Event('aquaproject_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%',

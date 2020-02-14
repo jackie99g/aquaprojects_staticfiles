@@ -243,7 +243,7 @@ a:hover {
 }
 
 .dashboard_pannel {
-    padding-top: 58.5px;
+    padding-top: 57px;
 }
 
 .custom_side_pannel_md {
@@ -712,6 +712,7 @@ a:hover {
 
 .check_css:hover:after {
     border-color: #0171bd;
+    background: rgba(245, 248, 250);
 }
 
 .check_css:after {
@@ -933,7 +934,6 @@ a:hover {
 
 .twitter_side_content {
     border-radius: 8px;
-    background-color: #F5F8FA;
 }
 
 .twitter_trends_block {
@@ -955,8 +955,8 @@ a:hover {
 @keyframes fadeInUp {
     0% {
         opacity: 0;
-        -webkit-transform: translate3d(0,100%,0);
-        transform: translate3d(0,100%,0)
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0)
     }
 
     to {
@@ -978,12 +978,62 @@ a:hover {
 
     to {
         opacity: 0;
-        -webkit-transform: translate3d(0,-100%,0);
-        transform: translate3d(0,-100%,0)
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0)
     }
 }
 
 .fadeOutUp {
     -webkit-animation-name: fadeOutUp;
     animation-name: fadeOutUp
+}
+
+.twitter-client {
+    display: block;
+}
+
+.twitter-trends {
+    display: none;
+}
+
+
+@media (min-width: 992px) {
+    .twitter-client {
+        display: flex;
+        width: fit-content;
+    }
+
+    .twitter-trends {
+        display: block;
+    }
+}
+
+.seamless_configuration-view {
+    margin: 0 0 0 12px;
+    padding: 12px 12px 12px 0;
+    cursor: pointer;
+}
+
+.seamless_configuration-view:hover {
+    background-color: #e6ecf0;
+}
+
+.seamless_configuration-edit {
+    padding: 12px;
+}
+
+.seamless_configuration-back_button {
+    cursor: pointer;
+}
+
+.seamless_configuration-input {
+    border: 0;
+    border-bottom: 1.5px solid gray;
+    padding: 4px 10px;
+    width: 100%;
+}
+
+.seamless_configuration-input:focus {
+    border-bottom: 1.5px solid #1da1f2;
+    outline: none;
 }

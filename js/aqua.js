@@ -187,7 +187,7 @@ $(function() {
         $('#main').removeClass('col-lg-10');
         $('#main').addClass('col-lg-8');
         $('#aside').removeClass('content_display');
-        $(window).trigger('aquaproject_twitter_timeline_background')
+        changeTwitterTimelineBackgroundSize()
         localStorage.setItem('show_side_bar', true)
     }
 
@@ -195,8 +195,15 @@ $(function() {
         $('#main').removeClass('col-lg-8');
         $('#main').addClass('col-lg-10');
         $('#aside').addClass('content_display');
-        $(window).trigger('aquaproject_twitter_timeline_background')
+        changeTwitterTimelineBackgroundSize()
         localStorage.setItem('show_side_bar', false)
+    }
+
+    function changeTwitterTimelineBackgroundSize() {
+        var mainWidth = $('#main').width()
+        $('.timeline_background').css({
+            'width': mainWidth + 'px'
+        })
     }
 
     $('input[name="check"]').change(function() {

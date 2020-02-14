@@ -7,14 +7,14 @@ $(function() {
             twitterViewAllPictures()
             twitterViewAllVideos()
             changeTwitterPictureHeight()
-            twitterSideBar()
+            twitterAccount()
             twitterTrends()
             setClearIcon()
             console.log('twitter! popstate event finished.')
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
-        $(window).trigger('aquaproject_popstate');
+        window.dispatchEvent(new Event('aquaproject_popstate'));
     }
 
     setInterval(() => {
@@ -130,7 +130,7 @@ $(function() {
         $(this).css({
             'display': 'none',
         })
-        $(window).trigger('aquaproject_popstate');
+        window.dispatchEvent(new Event('aquaproject_popstate'));
     }
 
     $(document).on('click', '.tweet-twitter_view_video', tweetTwitterViewVideo)
@@ -371,7 +371,7 @@ $(function() {
                 'width': '100%'
             });
 
-            $(window).trigger('aquaproject_popstate');
+            window.dispatchEvent(new Event('aquaproject_popstate'));
         }
 
         fetch(
@@ -404,7 +404,7 @@ $(function() {
                 doneFunc()
             }
 
-            $(window).trigger('aquaproject_popstate');
+            window.dispatchEvent(new Event('aquaproject_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%',
@@ -786,41 +786,60 @@ $(function() {
         event.stopPropagation()
     })
 
-    $(window).on('aquaproject_twitter_timeline_background', function() {
+    function changeTwitterTimelineBackgroundSize() {
         var mainWidth = $('#main').width()
         $('.timeline_background').css({
             'width': mainWidth + 'px'
         })
-    })
+    }
 
     $(window).resize(function() {
-        $(window).trigger('aquaproject_twitter_timeline_background')
+        changeTwitterTimelineBackgroundSize()
     })
 
-    $(window).trigger('aquaproject_twitter_timeline_background')
+    function twitterAccount() {
+        var href = '/twitter/account'
+        if (AquaProjectCache[href]) {
+            $('.twitter-account').html($(AquaProjectCache[href]).find('.twitter-account').html());
+            changeFontSize()
+        } else {
+            refreshTwitterAccount()
+        }
+
+        function refreshTwitterAccount() {
+            fetch(
+                href, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include'
+                }
+            ).then(response => {
+                if (response.ok) {
+                    return response.text()
+                } else {
+                    alert(response)
+                }
+            }).then(data => {
+                // Save Cache.
+                AquaProjectCache[href] = data
+                $('.twitter-account').html($(data).find('.twitter-account').html());
+            changeFontSize()
+            }).catch(err => {
+                alert(err)
+            })
+        }
+    }
 
     function twitterTrends() {
-        if ($('.side_content').find('.twitter_side_content').length === 0) {
-            refreshTwitterTrends()
+        var href = '/twitter/trends'
+        if (AquaProjectCache[href]) {
+            $('.twitter-trends').html($(AquaProjectCache[href]).find('.twitter-trends').html());
+            changeFontSize()
         } else {
-            if (localStorage.getItem('twitter-trends-last_refresh_time') == null) {
-                var now = new Date()
-                var unixTime = now.getTime() / 1000
-                refreshTwitterTrends()
-                localStorage.setItem('twitter-trends-last_refresh_time', unixTime)
-            } else {
-                var lastRefreshTime = localStorage.getItem('twitter-trends-last_refresh_time')
-                var currentTimeDate = new Date()
-                var currentTime = currentTimeDate.getTime() / 1000
-                if (currentTime - lastRefreshTime > 60) {
-                    refreshTwitterTrends()
-                    localStorage.setItem('twitter-trends-last_refresh_time', currentTime)
-                }
-            }
+            refreshTwitterTrends()
         }
 
         function refreshTwitterTrends() {
-            href = '/twitter/trends'
             fetch(
                 href, {
                     method: 'GET',
@@ -836,8 +855,8 @@ $(function() {
             }).then(data => {
                 // Save Cache.
                 AquaProjectCache[href] = data
-                $('.side_content').html($(data).find('.side_content').html());
-                changeFontSize()
+                $('.twitter-trends').html($(data).find('.twitter-trends').html());
+            changeFontSize()
                 hideSideContentLoader()
             }).catch(data => {
                 alert(data)
@@ -848,32 +867,6 @@ $(function() {
             $('.side_content_loader').css({
                 'display': 'none'
             })
-        }
-    }
-
-    // this is only to affect the sidebar.
-    function twitterSideBar() {
-        var show_side_bar_flag = localStorage.getItem('show_side_bar')
-        if (show_side_bar_flag == 'true') {
-            showSideBar()
-        } else {
-            hideSideBar()
-        }
-
-        function showSideBar() {
-            $('#main').removeClass('col-lg-10');
-            $('#main').addClass('col-lg-8');
-            $('#aside').removeClass('content_display');
-            $(window).trigger('aquaproject_twitter_timeline_background')
-            localStorage.setItem('show_side_bar', true)
-        }
-
-        function hideSideBar() {
-            $('#main').removeClass('col-lg-8');
-            $('#main').addClass('col-lg-10');
-            $('#aside').addClass('content_display');
-            $(window).trigger('aquaproject_twitter_timeline_background')
-            localStorage.setItem('show_side_bar', false)
         }
     }
 

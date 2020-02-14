@@ -1,32 +1,29 @@
 $(function() {
     var mymodal = document.getElementById('myModal')
-    var startBtn = document.getElementById('open')
-    var close = document.getElementById('close')
-    var microphone = document.getElementById('microphone')
     var microphoneshader = document.getElementById('microphoneShader');
     var audioContext = null;
     var meter = null;
     var recorder = null;
     var sendFlag;
 
-    close.onclick = function() {
+    $(document).on('click', '#close', () => {
         mymodal.style.display = 'none'
         sendFlag = false;
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
-    }
-    microphone.onclick = function() {
+    })
+    $(document).on('click', '#microphone', () => {
         mymodal.style.display = 'none'
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
-    }
-    mymodal.onclick = function() {
+    })
+    $(document).on('click', '#myModal', () => {
         mymodal.style.display = 'none'
         if (recorder && recorder.state == 'recording') recorder.stop();
         StopStream()
-    }
+    })
 
-    startBtn.onclick = function() {
+    $(document).on('click', '#open', () => {
         mymodal.style.display = 'flex'
         if (meter != null) {
             console.log(meter.volume)
@@ -49,7 +46,7 @@ $(function() {
         } catch (e) {
             alert('getUserMedia threw exception :' + e);
         }
-    }
+    })
 
     function StopStream() {
         if (!window.streamReference) return;
@@ -212,7 +209,7 @@ $(function() {
         // want "fast attack, slow release."
         this.volume = Math.max(rms, this.volume * this.averaging);
     }
-    $('#open').on('mousedown', function() {
+    $(document).on('mousedown', '#open' ,() => {
         scrollPageTop()
     })
 

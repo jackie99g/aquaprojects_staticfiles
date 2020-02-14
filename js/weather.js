@@ -12,7 +12,7 @@ $(function() {
         }
     })
     if (location.pathname.replace(location.origin, '') === '/weather') {
-        $(window).trigger('aquaproject_popstate');
+        window.dispatchEvent(new Event('aquaproject_popstate'));
     }
 
     $(document).on('click', '.daily-weather-left-btn', function() {
