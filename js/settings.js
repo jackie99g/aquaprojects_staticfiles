@@ -120,7 +120,7 @@ $(function() {
     })
 
     $(document).on('click', '.seamless_configuration-save_button', () => {
-        var background_url = $(this).parents('.seamless_configuration-edit').find('.seamless_configuration-input').val()
+        var background_url = $('.seamless_configuration-input').val()
         if (background_url === undefined) background_url = ''
         $('.status').text('Sending...')
         var jsondata = {
