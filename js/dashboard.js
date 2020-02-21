@@ -43,6 +43,7 @@ $(function() {
             }
         }
     })
+
     $('.dashboard_anchor').on('click', function() {
         scrollPageTop()
         var targetPage = $(this).attr('href');
@@ -80,6 +81,7 @@ $(function() {
         changeContent(targetPage);
         return false;
     })
+
     $(window).on('popstate', function(e) {
         // When we access the page at the first time, we don't do nothing.
         if (!e.originalEvent.state) return false;
@@ -168,6 +170,8 @@ $(function() {
                 changeTwitterContent(history.state['targetPage'])
             } else if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/settings') {
                 changeTwitterContent(history.state['targetPage'])
+            } else if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
+                changeTwitterContent(history.state['targetPage'])
             } else {
                 changeContent(e.originalEvent.state['targetPage']);
             }
@@ -185,6 +189,9 @@ $(function() {
         $('#ajax-progress-bar').css({
             'width': '80%'
         });
+
+        closeAccountInformation()
+
         // Cache exsists.
         if (AquaProjectCache[href]) {
             $(history.state['changeLocation']).html($(AquaProjectCache[href]).find(history.state['changeLocation']).html());
@@ -248,6 +255,9 @@ $(function() {
         $('#ajax-progress-bar').css({
             'width': '80%'
         });
+
+        closeAccountInformation()
+
         // Cache exsists.
         if (AquaProjectCache[href]) {
             if (history.state['drawLocationChanged'] == true) {
@@ -319,38 +329,48 @@ $(function() {
                 });
             });
         })
+
+        function ContentActive() {
+            if (location.pathname.indexOf('weather') >= 0) {
+                weatherContentActive()
+            }
+        }
+
+        function weatherContentActive() {
+            var windowWidth = $(window).width();
+            if (windowWidth < 768) {
+                $('.daily-weather').css({
+                    'overflow-x': 'auto'
+                });
+                $('.hourly-weather').css({
+                    'overflow-x': 'auto'
+                });
+                $('.hourly-weather-chart-block').css({
+                    'overflow-x': 'auto'
+                });
+            }
+            if (windowWidth >= 768) {
+                $('.daily-weather').css({
+                    'overflow-x': 'hidden'
+                });
+                $('.hourly-weather').css({
+                    'overflow-x': 'hiddent'
+                });
+                $('.hourly-weather-chart-block').css({
+                    'overflow-x': 'hidden'
+                });
+            }
+        }
     }
 
-    function ContentActive() {
-        if (location.pathname.indexOf('weather') >= 0) {
-            weatherContentActive()
-        }
-    }
-
-    function weatherContentActive() {
-        var windowWidth = $(window).width();
-        if (windowWidth < 768) {
-            $('.daily-weather').css({
-                'overflow-x': 'auto'
-            });
-            $('.hourly-weather').css({
-                'overflow-x': 'auto'
-            });
-            $('.hourly-weather-chart-block').css({
-                'overflow-x': 'auto'
-            });
-        }
-        if (windowWidth >= 768) {
-            $('.daily-weather').css({
-                'overflow-x': 'hidden'
-            });
-            $('.hourly-weather').css({
-                'overflow-x': 'hiddent'
-            });
-            $('.hourly-weather-chart-block').css({
-                'overflow-x': 'hidden'
-            });
-        }
+    function closeAccountInformation() {
+        $('.account').css({
+            'visibility': 'hidden',
+        });
+        $('#main').css({
+            'display': 'block',
+        });
+        $('.account').removeClass('animated fadeInUp faster')
     }
 
     function scrollPageTop() {

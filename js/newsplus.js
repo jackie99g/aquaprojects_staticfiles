@@ -1,281 +1,289 @@
 $(function() {
+    var touchingPositionPageX = 0
+    var touchStartScrollLeft = 0
+
+    var clickingNow = false
+    var clickingPositionOffsetX = 0
+    var clickingPositionPageX = 0
+    var currentSlideNumber = 0
+
     $(window).on('aquaproject_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-            console.log('newsplus!')
-            drawNewsplusAll('initialize')
+            var _currentSlideNumber = searchCurrentSlideNumber()
+            jumpToSlide(_currentSlideNumber, 0)
+            activateNewsplusAnchor()
+            scrollNewsplusAnchorLeft(_currentSlideNumber)
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
         window.dispatchEvent(new Event('aquaproject_popstate'));
     }
 
-    function drawNewsplusAll(mode) {
-        const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {
-            function s(n, t) {
-                (t || !e.readyState || /loaded|complete/.test(e.readyState)) && (e.onload = null, e.onreadystatechange = null, e = undefined, t ? f() : u())
-            }
-            let e = document.createElement("script");
-            const o = t || document.getElementsByTagName("script")[0];
-            e.type = p;
-            e.async = i;
-            e.defer = r;
-            e.onload = s;
-            e.onreadystatechange = s;
-            e.src = n;
-            o.parentNode.insertBefore(e, o.nextSibling);
-        })
-        var delaycss = document.createElement('link');
-        delaycss.rel = 'stylesheet';
-        delaycss.href = 'https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.5.1/css/swiper.min.css';
-        document.head.appendChild(delaycss);
-        getScript('https://unpkg.com/swiper/js/swiper.min.js').then(() => drawNewsplus(mode))
+    $(window).resize(() => {
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
+            var _currentSlideNumber = searchCurrentSlideNumber()
+            jumpToSlide(_currentSlideNumber, 0)
+            scrollNewsplusAnchorLeft(_currentSlideNumber)
+        }
+    })
+
+    $(document).on('click', '.box_anchor', boxAnchor)
+
+    function boxAnchor(e) {
+        var clickSlideNumber = $(`.${e.target.className}`).index(e.target)
+        jumpToSlide(clickSlideNumber, 200)
+        scrollNewsplusAnchorLeft(clickSlideNumber)
+
+        var targetPage = e.target.href.replace(location.origin, '')
+        var currentPage = location.href.replace(location.origin, '')
+        easyPushState(targetPage, currentPage)
+        changeContent(targetPage)
+        return false
     }
 
-    function drawNewsplus(mode) {
-        var galleryMenu = new Swiper('.gallery-menu', {
-            slidesPerView: 3,
-            freeMode: true,
-            watchSlidesVisibility: true,
-            watchSlidesProgress: true,
-            breakpoints: {
-                768: {
-                    slidesPerView: 7,
-                }
-            }
-        })
-        var galleryContents = new Swiper('.gallery-contents', {
-            navigation: {
-                prevEl: '.swiper-button-prev',
-                nextEl: '.swiper-button-next'
-            },
-            thumbs: {
-                swiper: galleryMenu
-            }
-        })
-        galleryContents.on('slideChangeTransitionStart', function() {
-            slideChange()
-        })
-        $('.contents_anchor').on('click', function() {
-            return false;
-        })
-
-        if (mode === 'initialize') {
-            console.log('newsplus initialize.')
-            startNewsplus()
+    function easyPushState(targetPage, currentPage, changeLocation = "#main") {
+        var state = {
+            'targetPage': targetPage,
+            'currentPage': currentPage,
+            'changeLocation': changeLocation
         }
+        history.pushState(state, null, targetPage)
+        document.title = 'Aqua Project - ' + targetPage
+        AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
+    }
 
-        function slideChange() {
-            scrollPageTop()
-            var url_list = []
-            var url_query_list = []
-            var contents_list = []
-            var contents_query_Now_list = []
-            var contents_query_Prev_list = []
-            var contents_active_slide = ''
-            var reObj = new RegExp('swiper_contents_')
-            $('.contents_anchor').each(function() {
-                url_list.push($(this).attr('href'))
-                url_query_list.push($(this).attr('href').split('q=')[1])
-            })
-            $('.swiper_contents').each(function() {
-                contents_list.push($(this).attr('class'))
-            })
-            // Now
-            contents_query_Now_list.push(contents_list[galleryContents.realIndex].split(' '))
-            contents_query_Now_list = contents_query_Now_list[0]
-            for (let index = 0; index < contents_query_Now_list.length; index++) {
-                if (reObj.test(contents_query_Now_list[index]) == true) {
-                    contents_active_slide = contents_query_Now_list[index]
-                }
+    function assistEasyPushState(assistSlideNumber) {
+        var targetPageAnchor = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')[assistSlideNumber]
+        var targetPage = targetPageAnchor.href.replace(location.origin, '')
+        var currentPage = location.href.replace(location.origin, '')
+        easyPushState(targetPage, currentPage)
+        return targetPage
+    }
+
+    function changeContent(href) {
+        activateNewsplusAnchor()
+        fetch(
+            href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include'
             }
-            // Prev
-            contents_query_Prev_list.push(contents_list[galleryContents.previousIndex].split(' '))
-            contents_query_Prev_list = contents_query_Prev_list[0]
-            for (let index = 0; index < contents_query_Prev_list.length; index++) {
-                if (reObj.test(contents_query_Prev_list[index]) == true) {
-                    contents_prev_active_slide = contents_query_Prev_list[index]
-                }
-            }
-            var targetPage = url_list[galleryContents.realIndex]
-            var currentPage = url_list[galleryContents.previousIndex]
-            var changeLocation = '.' + contents_active_slide
-            var contentsLocation = changeLocation
-            var state = {
-                'thisisexperiment': true,
-                'targetPage': targetPage,
-                'currentPage': currentPage,
-                'changeLocation': changeLocation
-            };
-            if (history.state == null) {
-                history.pushState(state, null, targetPage);
-            } else if (history.state['is_experiment_pushState'] != true) {
-                // When flag is false, it runs. the time when not run 'popState'.
-                history.pushState(state, null, targetPage);
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
             } else {
-                history.replaceState(state, null, targetPage)
-                document.title = 'Aqua Project - ' + targetPage
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[href] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
                 return false
             }
-            document.title = 'Aqua Project - ' + targetPage
-            changeContentInExperiment(targetPage, contentsLocation, changeLocation)
-        }
-
-        function changeContentInExperiment(uri, contentsLocation, changeLocation) {
-            $(changeLocation).html('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>');
-            $('#ajax-progress-bar').removeClass('bg-danger');
-            $('#ajax-progress-bar').css({
-                'visibility': 'visible'
-            });
-            $('#ajax-progress-bar').css({
-                'width': '80%'
-            });
-            // Cache exsists.
-            if (AquaProjectCache[uri]) {
-                $(changeLocation).html($(AquaProjectCache[uri]).find(history.state['changeLocation']).html());
-                $('#ajax-progress-bar').css({
-                    'width': '100%'
-                });
-            }
-            fetch(
-                uri, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include'
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                    $('#ajax-progress-bar').addClass('bg-danger');
-                    $('#ajax-progress-bar').css({
-                        'width': '100%'
-                    });
-                    $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
-                }
-            }).then(data => {
-                // Save Cache.
-                AquaProjectCache[uri] = data
-                var mc = $(data).find(contentsLocation).html();
-                $(changeLocation).html(mc);
-                $('#ajax-progress-bar').css({
-                    'width': '100%',
-                    'transition': 'width 0.1s ease 0s',
-                });
-
-                function wait(sec) {
-                    var objDef = new $.Deferred;
-                    setTimeout(function() {
-                        objDef.resolve(sec);
-                    }, sec * 1000);
-                    return objDef.promise();
-                }
-                wait(0.2).done(function() {
-                    $('#ajax-progress-bar').css({
-                        'visibility': 'hidden',
-                        'width': '0%',
-                        'transition': 'width 0.6s ease 0s',
-                    });
-                });
-            }).catch(err => {
-                console.error(err)
-            })
-        }
-
-        function startNewsplus() {
-            console.log('newsplus! StartNewsplus')
-            var slideNumber = 0
-            var currentPage = location.href;
-            currentPage = currentPage.split('/')
-            currentPage = currentPage[currentPage.length - 1]
-            if (location.search == '') {
-                slideNumber = 0
-            } else {
-                var contents_list = []
-                var contents_query_Now_list = []
-                $('.swiper_contents').each(function() {
-                    contents_list.push($(this).attr('class'))
-                })
-                for (let index = 0; index < contents_list.length; index++) {
-                    contents_query_Now_list.push(contents_list[index].split(' '))
-                }
-                for (let index = 0; index < contents_query_Now_list.length; index++) {
-                    for (let inner_index = 0; inner_index < contents_query_Now_list[index].length; inner_index++) {
-                        if ('swiper_contents_' + location.search.split('q=')[1] == contents_query_Now_list[index][inner_index]) {
-                            slideNumber = index
-                        }
-                    }
-                }
-            }
-            var state = {
-                'currentPage': currentPage,
-                'targetPage': currentPage,
-                'thisisexperiment': true,
-            }
-
-            if (history.state != null) {
-                if (history.state['drawLocationChanged'] == true) {
-                    state['is_experiment_pushState'] = true
-                }
-                if (history.state['is_experiment_pushState'] == undefined) {
-                    state['is_experiment_pushState'] = true
-                }
-            }
-            history.replaceState(state, null, currentPage)
-            galleryContents.slideTo(slideNumber)
-        }
-
-        $(window).on('popstate', function(e) {
-            // experiment
-            if (e.originalEvent.state['thisisexperiment'] == true) {
-                if (history.state['drawLocationChanged'] != true) { // 領域を変更しないとき
-                    var slideNumber = 1
-                    var slideNumber = 0
-                    if (location.search == '') {
-                        slideNumber = 0
-                    } else {
-                        var contents_list = []
-                        var contents_query_Now_list = []
-                        $('.swiper_contents').each(function() {
-                            contents_list.push($(this).attr('class'))
-                        })
-                        for (let index = 0; index < contents_list.length; index++) {
-                            contents_query_Now_list.push(contents_list[index].split(' '))
-                        }
-                        for (let index = 0; index < contents_query_Now_list.length; index++) {
-                            for (let inner_index = 0; inner_index < contents_query_Now_list[index].length; inner_index++) {
-                                if ('swiper_contents_' + location.search.split('q=')[1] == contents_query_Now_list[index][inner_index]) {
-                                    slideNumber = index
-                                }
-                            }
-                        }
-                    }
-                    var state = {
-                        'thisisexperiment': true,
-                        'targetPage': history.state['targetPage'],
-                        'currentPage': history.state['currentPage'],
-                        'changeLocation': history.state['changeLocation'],
-                        'is_experiment_pushState': true,
-                    };
-                    history.replaceState(state, null, history.state['targetPage'])
-                    galleryContents.slideTo(slideNumber)
-                    return false;
-                }
-            }
+            $('#main').html($(data).find('#main').html());
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+        }).catch(err => {
+            console.error(err)
         })
     }
 
-    function scrollPageTop() {
-        scrollTop(500)
+    function searchCurrentSlideNumber() {
+        var currentSlideNumber = 0
+        var currentPage = location.href.replace(location.origin, '')
+        var boxAnchorContainer = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')
+        for (let index = 0; index < boxAnchorContainer.length; index++) {
+            if (currentPage === boxAnchorContainer[index].href.replace(location.origin, '')) {
+                currentSlideNumber = index
+            }
+        }
+        return currentSlideNumber
+    }
 
-        function scrollTop(n) {
-            var t = new Date,
-                i = window.pageYOffset,
-                r = setInterval(() => {
-                    var u = new Date - t;
-                    u > n && (clearInterval(r), u = n);
-                    window.scrollTo(0, i * (1 - u / n))
-                }, 10)
+    function activateNewsplusAnchor() {
+        var currentSlideAnchorStore = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')
+        for (let index = 0; index < currentSlideAnchorStore.length; index++) {
+            currentSlideAnchorStore[index].style.background = ''
+            currentSlideAnchorStore[index].style.borderBottom = ''
+            currentSlideAnchorStore[index].style.color = ''
+
+        }
+        currentSlideAnchorStore[currentSlideNumber].style.background = '#e8f5fe'
+        currentSlideAnchorStore[currentSlideNumber].style.borderBottom = '1px solid #1da1f2'
+        currentSlideAnchorStore[currentSlideNumber].style.color = '#1da1f2'
+    }
+
+    function scrollNewsplusAnchorLeft(newsplusAnchorSlideNumber) {
+        var boxAnchorWidth = document.querySelector('.box_anchor').offsetWidth
+        document.querySelector('.box_anchor_container').scrollLeft = (newsplusAnchorSlideNumber - 1) * boxAnchorWidth
+    }
+
+    $(document).on('touchstart', '.box_container', boxContainerTouchStart)
+    $(document).on('touchmove', '.box_container', boxContainerTouchMove)
+    $(document).on('touchend', '.box_container', boxContainerTouchEnd)
+    // $(document).on('mousedown', '.box_container', boxContainerMouseDown)
+    // $(document).on('mousemove', '.box_container', boxContainerMouseMove)
+    // $(document).on('mouseup', '.box_container', boxContainerMouseUp)
+    // $(document).on('mouseleave', '.box_container', boxContainerMouseLeave)
+    // $(document).on('click', '.prevSlideBtn', prevSlideBtn)
+    // $(document).on('click', '.nextSlideBtn', nextSlideBtn)
+
+    function boxContainerTouchStart(e) {
+        touchingPositionPageX = e.changedTouches[0].pageX
+        touchStartScrollLeft = this.scrollLeft
+    }
+
+    function boxContainerTouchMove(e) {
+        this.scrollLeft = touchStartScrollLeft + touchingPositionPageX - e.changedTouches[0].pageX
+    }
+
+    function boxContainerTouchEnd(e) {
+        if (touchingPositionPageX - e.changedTouches[0].pageX > this.offsetWidth / 4) {
+            scrollContentLeft(
+                this,
+                ($('.box_element').index(e.target.closest('.box_element')) + 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+            currentSlideNumber += 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        } else if (touchingPositionPageX - e.changedTouches[0].pageX < -(this.offsetWidth / 4)) {
+            scrollContentLeft(
+                this,
+                ($('.box_element').index(e.target.closest('.box_element')) - 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft,
+                200
+            )
+            currentSlideNumber -= 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        } else {
+            scrollContentLeft(
+                this,
+                $('.box_element').index(e.target.closest('.box_element')) * e.target.closest('.box_element').offsetWidth - this.scrollLeft,
+                200
+            )
+        }
+        touchingPositionPageX = 0
+        touchStartScrollLeft = 0
+    }
+
+    function boxContainerMouseDown(e) {
+        clickingNow = true
+        clickingPositionOffsetX = e.offsetX
+        clickingPositionPageX = e.pageX
+    }
+
+    function boxContainerMouseMove(e) {
+        if (clickingNow) {
+            this.scrollLeft = this.scrollLeft + clickingPositionOffsetX - e.offsetX
         }
     }
-})
+
+    function boxContainerMouseUp(e) {
+        if (clickingPositionPageX - e.pageX > this.offsetWidth / 4) {
+            scrollContentLeft(
+                this,
+                ($('.box_element').index(e.target.closest('.box_element')) + 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+            currentSlideNumber += 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        } else if (clickingPositionPageX - e.pageX < -(this.offsetWidth / 4)) {
+            scrollContentLeft(
+                this,
+                ($('.box_element').index(e.target.closest('.box_element')) - 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+            currentSlideNumber -= 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        } else {
+            scrollContentLeft(
+                this,
+                $('.box_element').index(e.target.closest('.box_element')) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+        }
+        clickingNow = false
+    }
+
+    function boxContainerMouseLeave(e) {
+        if (!clickingNow) return false
+        if (clickingPositionPageX - e.pageX > this.offsetWidth / 4) {
+            scrollContentLeft(
+                this,
+                ($('.box_element').index(e.target.closest('.box_element')) + 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+            currentSlideNumber += 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        } else if (clickingPositionPageX - e.pageX < -(this.offsetWidth / 4)) {
+            scrollContentLeft(
+                this,
+                ($('.box_element').index(e.target.closest('.box_element')) - 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+            currentSlideNumber -= 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        } else {
+            scrollContentLeft(
+                this,
+                $('.box_element').index(e.target.closest('.box_element')) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
+            )
+        }
+        clickingNow = false
+    }
+
+    function scrollContentLeft(n, t, i) {
+        var r = new Date,
+            u = n.scrollLeft,
+            f = setInterval(() => {
+                var e = new Date - r;
+                e > i && (clearInterval(f), e = i);
+                n.scrollLeft = u + t * (e / i)
+            }, 10)
+    }
+
+    function changeContentLeft(n, t) {
+        var u = n.scrollLeft
+        n.scrollLeft = u + t
+    }
+
+    function prevSlideBtn() {
+        scrollContentLeft(
+            document.getElementsByClassName('box_container')[0],
+            (currentSlideNumber - 1) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
+            200
+        )
+        if (currentSlideNumber > 0) {
+            currentSlideNumber -= 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        }
+    }
+
+    function nextSlideBtn() {
+        scrollContentLeft(
+            document.getElementsByClassName('box_container')[0],
+            (currentSlideNumber + 1) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
+            200
+        )
+        if (currentSlideNumber < document.getElementsByClassName('box_element').length - 1) {
+            currentSlideNumber += 1
+            var href = assistEasyPushState(currentSlideNumber)
+            changeContent(href)
+        }
+    }
+
+    function jumpToSlide(jumpToSlideNumber, duration = 200) {
+        if (duration < 100) {
+            changeContentLeft(
+                document.getElementsByClassName('box_container')[0],
+                (jumpToSlideNumber) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
+            )
+        } else {
+            scrollContentLeft(
+                document.getElementsByClassName('box_container')[0],
+                (jumpToSlideNumber) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
+                duration
+            )
+        }
+        currentSlideNumber = jumpToSlideNumber
+    }
+});
