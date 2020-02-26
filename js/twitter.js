@@ -7,7 +7,7 @@ $(function() {
             twitterViewAllPictures()
             twitterViewAllVideos()
             changeTwitterPictureHeight()
-            twitterAccount()
+            twitterProfile()
             twitterTrends()
             setClearIcon()
             console.log('twitter! popstate event finished.')
@@ -965,16 +965,16 @@ $(function() {
         changeTwitterTimelineBackgroundSize()
     })
 
-    function twitterAccount() {
-        var href = '/twitter/account'
+    function twitterProfile() {
+        var href = '/twitter/profile'
         if (AquaProjectCache[href]) {
-            $('.twitter-account').html($(AquaProjectCache[href]).find('.twitter-account').html());
+            $('.twitter-profile').html($(AquaProjectCache[href]).find('.twitter-profile').html());
             changeFontSize()
         } else {
-            refreshTwitterAccount()
+            refreshtwitterProfile()
         }
 
-        function refreshTwitterAccount() {
+        function refreshtwitterProfile() {
             fetch(
                 href, {
                     method: 'GET',
@@ -990,7 +990,7 @@ $(function() {
             }).then(data => {
                 // Save Cache.
                 AquaProjectCache[href] = data
-                $('.twitter-account').html($(data).find('.twitter-account').html());
+                $('.twitter-profile').html($(data).find('.twitter-profile').html());
                 changeFontSize()
             }).catch(err => {
                 alert(err)
@@ -1137,6 +1137,134 @@ $(function() {
     $(document).on('click', '.tweet-twitter_full_text_hashtags', function(event) {
         event.stopPropagation()
     })
+
+    $(document).on('click', '.twitter_user-lists_button', function() {
+        var lists_status = $(this).data('twitter_user-lists_status')
+        var screen_name = $(this).data('twitter_user-screen_name')
+        $('.twitter_user-lists_button').each((index, element) => {
+            if ($(element).data('twitter_user-screen_name') === screen_name) {
+                $(element).prop('disabled', true)
+            }
+        })
+        if (lists_status === 'unknown') {
+            listsMembers(screen_name)
+        } else if (lists_status === 'tracked') {
+            listsMembersDestroy(screen_name)
+        } else if (lists_status === 'untracked') {
+            listsMembersCreate(screen_name)
+        }
+    })
+
+    function listsMembers(screen_name) {
+        fetch(
+            '/twitter/lists/members', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "screen_name": screen_name,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            $('.twitter_user-lists_button').each((index, element) => {
+                if ($(element).data('twitter_user-screen_name') === screen_name) {
+                    $(element).prop('disabled', false)
+                    if (data === 'untracked') {
+                        var userplus = '<i class="fas fa-user-plus"></i>'
+                        $(element).empty()
+                        $(element).append(userplus)
+                        $(element).data('twitter_user-lists_status', 'untracked')
+                    } else if (data === 'tracked') {
+                        var usercheck = '<i class="fas fa-user-check"></i>'
+                        $(element).empty()
+                        $(element).append(usercheck)
+                        $(element).data('twitter_user-lists_status', 'tracked')
+                    } else {
+                        console.error(err)
+                    }
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    function listsMembersCreate(screen_name) {
+        fetch(
+            '/twitter/lists/members/create', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "screen_name": screen_name,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(() => {
+            $('.twitter_user-lists_button').each((index, element) => {
+                if ($(element).data('twitter_user-screen_name') === screen_name) {
+                    $(element).prop('disabled', false)
+                    var usercheck = '<i class="fas fa-user-check"></i>'
+                    $(element).empty()
+                    $(element).append(usercheck)
+                    $(element).data('twitter_user-lists_status', 'tracked')
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    function listsMembersDestroy(screen_name) {
+        fetch(
+            '/twitter/lists/members/destroy', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "screen_name": screen_name,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(() => {
+            $('.twitter_user-lists_button').each((index, element) => {
+                if ($(element).data('twitter_user-screen_name') === screen_name) {
+                    $(element).prop('disabled', false)
+                    var userplus = '<i class="fas fa-user-plus"></i>'
+                    $(element).empty()
+                    $(element).append(userplus)
+                    $(element).data('twitter_user-lists_status', 'untracked')
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
 
     $(document).on('click', '.twitter_user-follow_button', function() {
         var follow_status = $(this).data('twitter_user-follow_status')

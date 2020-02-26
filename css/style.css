@@ -955,7 +955,7 @@ a:hover {
 }
 
 .twitter-trends,
-.twitter-account {
+.twitter-profile {
     display: none;
 }
 
@@ -1019,7 +1019,7 @@ a:hover {
         display: block;
     }
 
-    .twitter-account {
+    .twitter-profile {
         display: flex;
     }
 }
