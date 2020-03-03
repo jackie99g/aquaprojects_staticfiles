@@ -112,10 +112,10 @@ $(function() {
                 history.pushState(state, null, targetPage);
             } else {
                 history.replaceState(state, null, targetPage)
-                document.title = 'Aqua Project - ' + targetPage
+                document.title = 'Aqua Projects - ' + targetPage
                 return false
             }
-            document.title = 'Aqua Project - ' + targetPage
+            document.title = 'Aqua Projects - ' + targetPage
             changeContentInExperiment(targetPage, contentsLocation, changeLocation)
         }
 

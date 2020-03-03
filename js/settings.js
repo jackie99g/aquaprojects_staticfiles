@@ -11,7 +11,7 @@ $(function() {
         $(this).parents('.seamless_configuration').siblings().css('display', 'none')
         AquaProjectCache[targetPage] = $('html').html()
 
-        document.title = 'Aqua Project - ' + history.state['targetPage']
+        document.title = 'Aqua Projects - ' + history.state['targetPage']
 
         return false;
     })
@@ -28,7 +28,7 @@ $(function() {
         edit.siblings().css('display', 'flex')
         edit.parents('.seamless_configuration').siblings().css('display', 'block')
 
-        document.title = 'Aqua Project - ' + history.state['targetPage']
+        document.title = 'Aqua Projects - ' + history.state['targetPage']
     })
 
     function easyPushState(targetPage, currentPage, changeLocation='#main') {

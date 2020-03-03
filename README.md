@@ -1,3 +1,3 @@
-# Aqua_project_staticfiles
+# aquaprojects_staticfiles
 
-Aqua Project staticsfiles source files.
+aqua projects staticfiles source files.

@@ -48,7 +48,7 @@ $(function() {
             'changeLocation': changeLocation
         }
         history.pushState(state, null, targetPage)
-        document.title = 'Aqua Project - ' + targetPage
+        document.title = 'Aqua Projects - ' + targetPage
         AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
     }
 

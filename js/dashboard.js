@@ -66,7 +66,7 @@ $(function() {
             history.replaceState(replaceStateData, null, history['targetPage'])
         }
         history.pushState(state, null, targetPage);
-        document.title = 'Aqua Project - ' + targetPage
+        document.title = 'Aqua Projects - ' + targetPage
         $('.dashboard_anchor').removeClass('select_active_dashboard')
         $(this).addClass('select_active_dashboard')
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
@@ -175,7 +175,7 @@ $(function() {
             } else {
                 changeContent(e.originalEvent.state['targetPage']);
             }
-            document.title = 'Aqua Project - ' + e.originalEvent.state['targetPage']
+            document.title = 'Aqua Projects - ' + e.originalEvent.state['targetPage']
             return false;
         }
     })

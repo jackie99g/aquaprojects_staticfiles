@@ -84,14 +84,8 @@ h1 {
     padding-top: 2px;
 }
 
-@font-face {
-    font-family: "Billabong";
-    src: local("billabong");
-    src: url("https://jackie99g.github.io/Aqua_project_staticfiles/css/Billabong.ttf");
-}
-
 a {
-    color: black;
+    color: inherit
 }
 
 a:hover {
@@ -163,7 +157,6 @@ a:hover {
 
 .logo {
     display: inline-block;
-    padding: 5px;
 }
 
 .username {
@@ -221,12 +214,6 @@ a:hover {
 
 .dashboard_button>a {
     color: white;
-}
-
-.logo>h3>a {
-    font-family: "billabong";
-    color: black;
-    text-decoration: none;
 }
 
 .username>a {
@@ -377,7 +364,6 @@ a:hover {
 }
 
 .news_noimage {
-    font-family: billabong;
     font-size: 36px;
     color: black;
 }
@@ -629,7 +615,6 @@ a:hover {
 .modal-content {
     margin-left: auto;
     margin-right: 40px;
-    padding-top: 15px;
     width: 100px;
     height: 100px;
     font-size: 70px;
@@ -639,49 +624,42 @@ a:hover {
     color: red;
     background: white;
     box-shadow: 3px 3px rgba(4, 88, 167, 0.1);
+    z-index: 0;
     cursor: pointer;
 }
 
-.share_btn {
-    padding: 0;
+.aqua_voice_btn_size {
     width: 60px;
     height: 60px;
-    font-size: 45px;
+}
+
+.share_btn {
+    z-index: 2;
+    padding: 0;
     position: fixed;
-    border-radius: 50%;
-    bottom: 70px;
-    right: 20px;
     border: 0;
+    border-radius: 50%;
+    background: white;
+    bottom: 65px;
+    right: 20px;
     box-shadow: 8px 8px 8px 8px rgba(6, 134, 255, 0.15);
 }
 
 @media only screen and (min-width: 768px) {
-    .share_btn {
-        padding: 0;
+    .aqua_voice_btn_size {
         width: 80px;
         height: 80px;
-        font-size: 60px;
-        position: fixed;
-        border-radius: 50%;
+    }
+
+    .share_btn {
         bottom: 20px;
-        right: 20px;
-        border: 0;
-        cursor: pointer;
     }
 }
 
 .share_btn:hover {
-    background: linear-gradient(135deg, #86f3be 0%, #8ddaea 100%);
     box-shadow: 8px 8px 8px 8px rgba(6, 134, 255, 0.15);
     opacity: 0.8;
     transform: scale(0.95);
-}
-
-.shtw {
-    color: white !important;
-    background: linear-gradient(135deg, #86f3be 0%, #8ddaea 100%);
-    font-family: "billabong";
-    z-index: 2;
 }
 
 .close_icon {
@@ -830,7 +808,8 @@ a:hover {
     text-overflow: ellipsis;
 }
 
-.tweet-twitter_screen_name {
+.tweet-twitter_screen_name,
+.twitter_user-screen_name {
     color: #657786;
     font-weight: normal;
 }
