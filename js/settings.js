@@ -31,7 +31,7 @@ $(function() {
         document.title = 'Aqua Projects - ' + history.state['targetPage']
     })
 
-    function easyPushState(targetPage, currentPage, changeLocation='#main') {
+    function easyPushState(targetPage, currentPage, changeLocation = '#main') {
         var state = {
             'targetPage': targetPage,
             'currentPage': currentPage,
@@ -96,8 +96,7 @@ $(function() {
 
     $(document).on('click', '.settings-delete_account', () => {
         fetch(
-            '/settings/delete/user',
-            {
+            '/settings/delete/user', {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
@@ -119,17 +118,29 @@ $(function() {
         })
     })
 
-    $(document).on('click', '.seamless_configuration-save_button', () => {
-        var background_url = $('.seamless_configuration-input').val()
-        if (background_url === undefined) background_url = ''
+    $(document).on('click', '.seamless_configuration-save_button', function() {
+        var configuration_input_text =
+            $(this)
+            .parents('.seamless_configuration')
+            .find('.seamless_configuration-input').val()
+        if (configuration_input_text === undefined) configuration_input_text = ''
+
         $('.status').text('Sending...')
+
         var jsondata = {
             user_metadata: {
-                timeline_background: background_url
+                timeline_background: configuration_input_text
             }
         }
+        var category = location.pathname.split('/')[2]
+        if (category !== 'background') {
+            jsondata = {
+                [category]: configuration_input_text
+            }
+        }
+
         fetch(
-            '/settings/background', {
+            location.pathname, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
