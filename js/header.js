@@ -21,7 +21,7 @@ $(function() {
         var prop = $('.load_pictures').prop('checked');
         if (prop) {
             twitterViewPictures()
-            changeTwitterPictureHeight()
+            changeTwitterPictureSize()
         } else {
             twitterHiddenPictures()
         }
@@ -33,7 +33,7 @@ $(function() {
             if ($(element).data('possibly_sensitive') === 'False') {
                 if ($(element).parent().find('.tweet-twitter_view_picture').css('display') !== 'none') {
                     var data_img_src = $(element).data('img-src')
-                    var img_element = `<img class="tweet-twitter_picture_img" src="${data_img_src}" style="object-fit: cover; width: 100%; height: ${localStorage.getItem('twitter-image_size')}px; border-radius: 12px; cursor: pointer;" loading="lazy">`
+                    var img_element = `<img class="tweet-twitter_picture_img" src="${data_img_src}" style="object-fit: cover; height: ${localStorage.getItem('twitter-image_size')}px; border-radius: 12px; cursor: pointer;" loading="lazy">`
                     $(element).append(img_element)
                 }
             }
@@ -116,16 +116,19 @@ $(function() {
         })
     }
 
-    function changeTwitterPictureHeight() {
-        $('.tweet-twitter_picture_length').each(function(index, element) {
+    function changeTwitterPictureSize() {
+        var picture_height = localStorage.getItem('twitter-image_size')
+
+        $('.tweet-twitter_picture_length').each((index, element) => {
+            var picture_width = $(element).width()
             var picture_length = parseInt($(element).data('picture_length'))
-            if (picture_length == 3) {
-                var tweet_twitter_pictures = $(element).parent()
-                var picture_height = localStorage.getItem('twitter-image_size')
-                tweet_twitter_pictures.find('.tweet-twitter_picture_img').each(function(index, element_img) {
-                    $(element).css({
-                        'margin-top': '0',
-                    })
+            var tweet_twitter_picture_img =
+                $(element)
+                .parents('.tweet-twitter_pictures')
+                .find('.tweet-twitter_picture_img')
+
+            if (picture_length === 3) {
+                tweet_twitter_picture_img.each((index, element_img) => {
                     if (index == 0) {
                         $(element_img).css({
                             'border-radius': '12px 0 0 12px',
@@ -146,22 +149,19 @@ $(function() {
                     }
                     if (index == 0) {
                         $(element_img).css({
-                            'height': picture_height + 'px'
+                            'height': `${picture_height}px`,
+                            'width': `${picture_width / 2}px`
                         })
                     } else if (index > 0) {
                         $(element_img).css({
-                            'height': picture_height / 2 + 'px'
+                            'height': `${picture_height / 2}px`,
+                            'width': `${picture_width / 2}px`,
                         })
                     }
                 })
             }
-            if (picture_length == 4) {
-                var tweet_twitter_pictures = $(element).parent()
-                var picture_width = localStorage.getItem('twitter-image_size')
-                tweet_twitter_pictures.find('.tweet-twitter_picture_img').each(function(index, element_img) {
-                    $(element).css({
-                        'margin-top': '0',
-                    })
+            if (picture_length === 4) {
+                tweet_twitter_picture_img.each((index, element_img) => {
                     if (index == 0) {
                         $(element_img).css({
                             'border-radius': '12px 0 0 0',
@@ -188,17 +188,13 @@ $(function() {
                         })
                     }
                     $(element_img).css({
-                        'height': picture_width / 2 + 'px'
+                        'height': `${picture_height / 2}px`,
+                        'width': `${picture_width / 2}px`,
                     })
                 })
             }
-            if (picture_length == 2) {
-                var tweet_twitter_pictures = $(element).parent()
-                var picture_width = tweet_twitter_pictures.find('.tweet-twitter_picture_img').height()
-                tweet_twitter_pictures.find('.tweet-twitter_picture_img').each(function(index, element_img) {
-                    $(element).css({
-                        'margin-top': '0',
-                    })
+            if (picture_length === 2) {
+                tweet_twitter_picture_img.each((index, element_img) => {
                     if (index == 0) {
                         $(element_img).css({
                             'border-radius': '12px 0 0 12px',
@@ -210,6 +206,16 @@ $(function() {
                             'padding-left': '2px',
                         })
                     }
+                    $(element_img).css({
+                        'height': `${picture_height}px`,
+                        'width': `${picture_width / 2}px`,
+                    })
+                })
+            }
+            if (picture_length === 1) {
+                tweet_twitter_picture_img.css({
+                    'height': `${picture_height}px`,
+                    'width': `${picture_width}px`,
                 })
             }
         })
