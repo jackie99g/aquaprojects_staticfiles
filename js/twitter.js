@@ -89,6 +89,16 @@ $(function() {
 
     var touchingPositionPageX = 0
     var touchStartScrollLeft = 0
+    var currentSlideNumber = {
+        number: 0
+    }
+    var currentSlideNumberProxy = new Proxy(currentSlideNumber, {
+        set: (target, property, value) => {
+            target[property] = value
+            tweetTwitterPictureCloseDisplayController()
+            return true
+        }
+    })
 
     function boxContainerTouchStart(e) {
         touchingPositionPageX = e.changedTouches[0].pageX
@@ -106,14 +116,14 @@ $(function() {
                 ($(`.${e.target.className}`).index(e.target) + 1) * e.target.offsetWidth - this.scrollLeft,
                 200
             )
-            currentSlideNumber += 1
+            currentSlideNumberProxy.number += 1
         } else if (touchingPositionPageX - e.changedTouches[0].pageX < -(this.offsetWidth / 4)) {
             scrollContentLeft(
                 this,
                 ($(`.${e.target.className}`).index(e.target) - 1) * e.target.offsetWidth - this.scrollLeft,
                 200
             )
-            currentSlideNumber -= 1
+            currentSlideNumberProxy.number -= 1
         } else {
             scrollContentLeft(
                 this,
@@ -128,7 +138,6 @@ $(function() {
     var clickingNow = false
     var clickingPositionOffsetX = 0
     var clickingPositionPageX = 0
-    var currentSlideNumber = 0
 
     function boxContainerMouseDown(e) {
         clickingNow = true
@@ -149,14 +158,14 @@ $(function() {
                 ($(`.${e.target.className}`).index(e.target) + 1) * e.target.offsetWidth - this.scrollLeft,
                 200
             )
-            currentSlideNumber += 1
+            currentSlideNumberProxy.number += 1
         } else if (clickingPositionPageX - e.pageX < -(this.offsetWidth / 4)) {
             scrollContentLeft(
                 this,
                 ($(`.${e.target.className}`).index(e.target) - 1) * e.target.offsetWidth - this.scrollLeft,
                 200
             )
-            currentSlideNumber -= 1
+            currentSlideNumberProxy.number -= 1
         } else {
             scrollContentLeft(
                 this,
@@ -175,14 +184,14 @@ $(function() {
                 ($(`.${e.target.className}`).index(e.target) + 1) * e.target.offsetWidth - this.scrollLeft,
                 200
             )
-            currentSlideNumber += 1
+            currentSlideNumberProxy.number += 1
         } else if (clickingPositionPageX - e.pageX < -(this.offsetWidth / 4)) {
             scrollContentLeft(
                 this,
                 ($(`.${e.target.className}`).index(e.target) - 1) * e.target.offsetWidth - this.scrollLeft,
                 200
             )
-            currentSlideNumber -= 1
+            currentSlideNumberProxy.number -= 1
         } else {
             scrollContentLeft(
                 this,
@@ -196,22 +205,22 @@ $(function() {
     function prevSlideBtn() {
         scrollContentLeft(
             document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0],
-            (currentSlideNumber - 1) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
+            (currentSlideNumberProxy.number - 1) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
             200
         )
-        if (currentSlideNumber > 0) {
-            currentSlideNumber -= 1
+        if (currentSlideNumberProxy.number > 0) {
+            currentSlideNumberProxy.number -= 1
         }
     }
 
     function nextSlideBtn() {
         scrollContentLeft(
             document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0],
-            (currentSlideNumber + 1) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
+            (currentSlideNumberProxy.number + 1) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
             200
         )
-        if (currentSlideNumber < document.getElementsByClassName('tweet-twitter_picture_zoom-element').length - 1) {
-            currentSlideNumber += 1
+        if (currentSlideNumberProxy.number < document.getElementsByClassName('tweet-twitter_picture_zoom-element').length - 1) {
+            currentSlideNumberProxy.number += 1
         }
     }
 
@@ -228,7 +237,7 @@ $(function() {
                 duration
             )
         }
-        currentSlideNumber = jumpToSlideNumber
+        currentSlideNumberProxy.number = jumpToSlideNumber
     }
 
     function scrollContentLeft(n, t, i) {
@@ -263,6 +272,21 @@ $(function() {
     $(document).on('click', '.tweet-twitter_picture_zoom-close', tweetTwitterPictureZoomClose)
     $(document).on('click', '.tweet-twitter_picture_zoom-element_img', tweetTwitterPictureZoomClose)
 
+    function tweetTwitterPictureCloseDisplayController() {
+        var tweetTwitterPictureZoomElementLength = document.getElementsByClassName('tweet-twitter_picture_zoom-element').length
+
+        if (currentSlideNumberProxy.number === 0) {
+            $('.tweet-twitter_picture_zoom-prev').css('display', 'none')
+        } else {
+            $('.tweet-twitter_picture_zoom-prev').css('display', '')
+        }
+
+        if (currentSlideNumberProxy.number === tweetTwitterPictureZoomElementLength - 1) {
+            $('.tweet-twitter_picture_zoom-next').css('display', 'none')
+        } else {
+            $('.tweet-twitter_picture_zoom-next').css('display', '')
+        }
+    }
 
     $(document).on('keydown', function(event) {
         if ($('.tweet-twitter_picture_zoom').css('display') != 'none') {
@@ -592,19 +616,23 @@ $(function() {
         })
 
         function changeContentTwitterUser(screen_name) {
+            // Copy ..tweet-load_more_new_tweet
+            var tweetLoadMoreNewTweet = $('.tweet-load_more_new_tweet')[0].outerHTML
             // The following will be changed:
             // .twitter_user-background_image -> Expand image.
             // .twitter_user-profile_image -> Add .tweet-twitter_icon, twitter_anchor, image property.
             // .twitter_user-name_screen_name -> Add twitter_anchor
             // .twitter_user-location -> css:display
             // .twitter_user-main -> css:padding
-            // .twitter_user -> border-bottom
+            // .tweet-load_more_new_tweet -> Paste
+            // .format_timeline-home-block -> css: display:none
+            // .tweet-twitter_user-profile_timelines_navigation-block -> css: display:''
             $('.twitter_user').each(function(index, element) {
                 if ($(element).data('twitter_user-screen_name') === screen_name) {
                     $('.timeline').html($(element).prop('outerHTML'))
 
                     var TwitterUserBackgroundImage = $('.timeline').find('.twitter_user-background_image').data('img-src')
-                    var TwitterUserBackgroundImageIMG = `<img src="${TwitterUserBackgroundImage}" style="width: 100%; height: 100%;" loading="lazy">`
+                    var TwitterUserBackgroundImageIMG = `<img src="${TwitterUserBackgroundImage}" loading="lazy">`
                     $('.timeline').find('.twitter_user-background_image').append(TwitterUserBackgroundImageIMG)
 
                     $('.timeline').find('.twitter_user-profile_image').css('height', '50px')
@@ -628,7 +656,11 @@ $(function() {
 
                     $('.timeline').find('.twitter_user-main').css('padding', '0 10px')
 
-                    $('.twitter_user').css('border-bottom', 'solid 1px #e6ecf0')
+                    $('.timeline:last').append(tweetLoadMoreNewTweet)
+                    $('.format_timeline-home-block').css('display', 'none')
+                    $('.tweet-twitter_user-profile_timelines_navigation-block').css('display', '')
+                    tweetTwitterUserProfileTimelineNavigationSelected(document.querySelector('.tweet-twitter_user-profile_timeline_navigation-tweets'))
+
                     $('.timeline:last').append('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>')
                 }
             })
@@ -896,7 +928,9 @@ $(function() {
                 showError()
             }
         }).then(data => {
+            var current_scrollHeight = 0
             if (load_type === 'new') {
+                current_scrollHeight = document.body.scrollHeight
                 $('.format_timeline > div:first').next().before($(data).find('.format_timeline').html())
             } else if (load_type === 'old') {
                 $('.format_timeline > div:last').prev().after($(data).find('.format_timeline').html())
@@ -912,6 +946,11 @@ $(function() {
             changeFontSize()
             changeTwitterPictureSize()
             setClearIcon()
+
+            if (load_type === 'new') {
+                var diff = document.body.scrollHeight - current_scrollHeight
+                window.scrollTo(window.scrollX, window.scrollY + diff)
+            }
 
             AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
 
@@ -1328,6 +1367,226 @@ $(function() {
             console.error(err)
         })
     })
+
+    $(document).on('click', '.tweet-twitter_favorite', function(event) {
+        event.stopPropagation()
+
+        var tweet_favorited = $(this).data('tweet_favorited')
+        var tweet_id = $(this).data('tweet_id')
+        $('.tweet-twitter_favorite').each((index, element) => {
+            if (parseInt($(element).data('tweet_id')) === tweet_id) {
+                $(element).prop('disabled', true)
+            }
+        })
+        if (tweet_favorited === 'true' || tweet_favorited === 'True') {
+            favoritesDestroy(tweet_id)
+        } else {
+            favoritesCreate(tweet_id)
+        }
+    })
+
+    function favoritesCreate(tweet_id) {
+        fetch(
+            '/twitter/favorites/create', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "tweet_id": tweet_id,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            if ($(data).find('.format_timeline').children('.tweet').length !== 1) {
+                console.error('Aquring data has more than 1 tweet.')
+            }
+            $('.tweet-twitter_favorite').each((index, element) => {
+                if ($(element).data('tweet_id') === tweet_id) {
+                    $(data).find('.tweet-twitter_social').each((index, dataElement) => {
+                        if ($(dataElement).find('.tweet-twitter_favorite').data('tweet_id') === tweet_id) {
+                            $(element).parents('.tweet-twitter_social').html($(dataElement).html())
+                        }
+                    })
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    function favoritesDestroy(tweet_id) {
+        fetch(
+            '/twitter/favorites/destroy', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "tweet_id": tweet_id,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            if ($(data).find('.format_timeline').children('.tweet').length !== 1) {
+                console.error('Aquring data has more than 1 tweet.')
+            }
+            $('.tweet-twitter_favorite').each((index, element) => {
+                if ($(element).data('tweet_id') === tweet_id) {
+                    $(data).find('.tweet-twitter_social').each((index, dataElement) => {
+                        if ($(dataElement).find('.tweet-twitter_favorite').data('tweet_id') === tweet_id) {
+                            $(element).parents('.tweet-twitter_social').html($(dataElement).html())
+                        }
+                    })
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    $(document).on('click', '.tweet-twitter_user-profile_timelines_navigation-item', function(event) {
+        event.stopPropagation()
+        var href = this.querySelector('a').href
+        tweetTwitterUserProfileTimelineNavigationSelected(this)
+        tweetTwitterUserProfileTimelineNavigationPushState(href)
+        tweetTwitterUserProfileTimelineNavigationLoader()
+        tweetTwitterUserProfileTimelineNavigationFetch(href.replace(location.origin, ''), true)
+        return false
+    })
+
+    function tweetTwitterUserProfileTimelineNavigationSelected(element) {
+        var tweetTwitterUserProfileTimelinesNavigationItem =
+            document.querySelectorAll('.tweet-twitter_user-profile_timelines_navigation-item')
+
+        for (let index = 0; index < tweetTwitterUserProfileTimelinesNavigationItem.length; index++) {
+            tweetTwitterUserProfileTimelinesNavigationItem[index].classList.remove(
+                'tweet-twitter_user-profile_timeline_navigation-selected'
+            )
+        }
+
+        element.classList.add('tweet-twitter_user-profile_timeline_navigation-selected')
+    }
+
+    function tweetTwitterUserProfileTimelineNavigationPushState(href) {
+        var targetPage = href
+        targetPage = targetPage.replace(location.origin, '')
+        var currentPage = location.href;
+        currentPage = currentPage.replace(location.origin, '')
+        var state = {
+            'targetPage': targetPage,
+            'currentPage': currentPage,
+            'changeLocation': '#main'
+        };
+        var replaceState = $.extend(true, {}, history.state)
+        replaceState['scrollTop'] = $(window).scrollTop()
+        history.replaceState(replaceState, null, currentPage)
+        history.pushState(state, null, targetPage);
+    }
+
+    function tweetTwitterUserProfileTimelineNavigationLoader() {
+        var tweets = document.querySelectorAll('.tweet')
+        for (let index = 0; index < tweets.length; index++) {
+            tweets[index].remove()
+        }
+        document.querySelector('.tweet-load_more_old_tweet').remove()
+        document.querySelector('.tweet-load_more_new_tweet').insertAdjacentHTML(
+            'afterend', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+        )
+    }
+
+    function tweetTwitterUserProfileTimelineNavigationFetch(href, useCache = true) {
+        $('#ajax-progress-bar').removeClass('bg-danger');
+        $('#ajax-progress-bar').css('visibility', 'visible');
+
+        // Cache exsists.
+        if (AquaProjectCache[href]) {
+            if (history.state['drawLocationChanged'] == true) {
+                $('#main').html($(AquaProjectCache[href]).find('#main').html());
+            } else {
+                $(history.state['changeLocation']).html($(AquaProjectCache[href]).find(history.state['changeLocation']).html());
+            }
+            $('#ajax-progress-bar').css('width', '100%');
+
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+
+            if (useCache === true) {
+                $('#ajax-progress-bar').css({
+                    'width': '100%',
+                    'transition': 'width 0.1s ease 0s'
+                })
+                wait(0.2).done(function() {
+                    $('#ajax-progress-bar').css({
+                        'visibility': 'hidden',
+                        'width': '0%',
+                        'transition': 'width 0.6s ease 0s',
+                    })
+                })
+
+                return false
+            }
+        }
+
+        $('#ajax-progress-bar').css('width', '80%');
+
+        fetch(
+            href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include'
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+                showError()
+            }
+        }).then(data => {
+            // Save Cache.
+            AquaProjectCache[href] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+            if (history.state['drawLocationChanged'] == true) {
+                $('#main').html($(data).find('#main').html());
+            } else {
+                $(history.state['changeLocation']).html($(data).find(history.state['changeLocation']).html());
+            }
+
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+
+            $('#ajax-progress-bar').css({
+                'width': '100%',
+                'transition': 'width 0.1s ease 0s'
+            })
+            wait(0.2).done(function() {
+                $('#ajax-progress-bar').css({
+                    'visibility': 'hidden',
+                    'width': '0%',
+                    'transition': 'width 0.6s ease 0s',
+                })
+            })
+        }).catch(err => {
+            console.error(err)
+            showError()
+        })
+    }
 
     function getCookie(name) {
         var cookieValue = null;

@@ -2,6 +2,7 @@
     --mainColor: #fff;
     --buttonColor: #1da1f2;
     --buttonDisableColor: #f2f2f2;
+    --theme-color-blue: #1b95e0;
 }
 
 .btn,
@@ -782,7 +783,6 @@ a:hover {
     color: #657786;
     margin-bottom: 8px;
     margin-left: 28px;
-    font-size: 12px;
 }
 
 .tweet-twitter_icon {
@@ -842,12 +842,10 @@ a:hover {
     justify-content: space-between;
 }
 
-.tweet-twitter_favorite {
-    margin-right: 8px;
-}
-
-.tweet-twitter_retweet {
-    margin-right: 8px;
+.tweet-twitter_favorite,
+.tweet-twitter_retweet,
+.tweet-twitter_share {
+    flex-basis: calc(100% / 3);
 }
 
 .tweet:hover {
@@ -859,16 +857,8 @@ a:hover {
     text-decoration: underline;
 }
 
-.tweet-twitter_favorite {
-    color: red;
-}
-
-.tweet-twitter_retweet {
-    color: green;
-}
-
-.tweet-twitter_share {
-    color: blue;
+.tweet-twitter_anchor {
+    color: var(--theme-color-blue);
 }
 
 .tweet-twitter_pictures_border {
@@ -886,6 +876,14 @@ a:hover {
 .tweet-twitter_full_text_hashtags:hover,
 .tweet-twitter_full_text_user:hover {
     text-decoration: underline;
+}
+
+.twitter_user-profile_image {
+    margin-bottom: 8px;
+}
+
+.twitter_user-screen_name {
+    padding-bottom: 8px;
 }
 
 .animated {
@@ -986,6 +984,43 @@ a:hover {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+.tweet-twitter_user-profile_timeline_navigation-tweets,
+.tweet-twitter_user-profile_timeline_navigation-tweets_and_replies,
+.tweet-twitter_user-profile_timeline_navigation-media,
+.tweet-twitter_user-profile_timeline_navigation-likes {
+    flex: auto;
+    text-align: center;
+    padding: 12px;
+    color: #657786;
+}
+
+.tweet-twitter_user-profile_timeline_navigation-tweets:hover,
+.tweet-twitter_user-profile_timeline_navigation-tweets_and_replies:hover,
+.tweet-twitter_user-profile_timeline_navigation-media:hover,
+.tweet-twitter_user-profile_timeline_navigation-likes:hover {
+    background: rgb(232, 245, 254);
+    border-bottom: 1px solid rgb(29, 161, 242);
+    color: rgb(29, 161, 242);
+}
+
+.tweet-twitter_user-profile_timeline_navigation-selected {
+    border-bottom: 1px solid rgb(29, 161, 242);
+    color: rgb(29, 161, 242);
+}
+
+.twitter_user-background_image>img {
+    width: 100vw;
+    height: 140px;
+    object-fit: cover;
+}
+
+@media (min-width: 600px) {
+    .twitter_user-background_image>img {
+        width: 598px;
+        height: 199.406px;
+    }
 }
 
 @media (min-width: 992px) {
