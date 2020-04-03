@@ -1011,7 +1011,7 @@ a:hover {
 }
 
 .twitter_user-background_image>img {
-    width: calc(100vw-2px);
+    width: calc(100vw - 2px);
     height: 140px;
     object-fit: cover;
 }
