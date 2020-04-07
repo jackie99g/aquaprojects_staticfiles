@@ -22,7 +22,7 @@ $(function() {
         if (location.href.replace(location.origin, '') === '/twitter') {
             var currentTime = new Date()
             console.log(currentTime)
-            var tweet_id = $('.format_timeline > div:first').next().data('tweet_id');
+            var tweet_id = $('.format_timeline > div:first').data('tweet_id');
             if (document.hidden === false) {
                 loadMoreTweet(tweet_id, 'new');
             }
@@ -616,17 +616,14 @@ $(function() {
         })
 
         function changeContentTwitterUser(screen_name) {
-            // Copy ..tweet-load_more_new_tweet
-            var tweetLoadMoreNewTweet = $('.tweet-load_more_new_tweet')[0].outerHTML
             // The following will be changed:
             // .twitter_user-background_image -> Expand image.
             // .twitter_user-profile_image -> Add .tweet-twitter_icon, twitter_anchor, image property.
             // .twitter_user-name_screen_name -> Add twitter_anchor
             // .twitter_user-location -> css:display
             // .twitter_user-main -> css:padding
-            // .tweet-load_more_new_tweet -> Paste
-            // .format_timeline-home-block -> css: display:none
-            // .tweet-twitter_user-profile_timelines_navigation-block -> css: display:''
+            // .twitter_user-profile_timelines_navigation-block -> css: display: ''
+            // .twitter_user-profile_timelines_navigation-tweets -> Add .twitter_user-profile_timelines_navigation-selected
             $('.twitter_user').each(function(index, element) {
                 if ($(element).data('twitter_user-screen_name') === screen_name) {
                     $('.timeline').html($(element).prop('outerHTML'))
@@ -656,10 +653,9 @@ $(function() {
 
                     $('.timeline').find('.twitter_user-main').css('padding', '0 10px')
 
-                    $('.timeline:last').append(tweetLoadMoreNewTweet)
-                    $('.format_timeline-home-block').css('display', 'none')
-                    $('.tweet-twitter_user-profile_timelines_navigation-block').css('display', '')
-                    tweetTwitterUserProfileTimelineNavigationSelected(document.querySelector('.tweet-twitter_user-profile_timeline_navigation-tweets'))
+                    document.querySelector('.timeline').querySelector('.twitter_user-profile_timelines_navigation-block').style.display = ''
+
+                    twitterUserProfileTimelineNavigationSelected(document.querySelector('.twitter_user-profile_timeline_navigation-tweets'))
 
                     $('.timeline:last').append('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>')
                 }
@@ -881,7 +877,7 @@ $(function() {
     }
 
     $(document).on('click', '.tweet-load_more_new_tweet', function() {
-        var tweet_id = $('.format_timeline > div:first').next().data('tweet_id');
+        var tweet_id = $('.format_timeline > div:first').data('tweet_id');
         loadMoreTweet(tweet_id, 'new');
     })
     $(document).on('click', '.tweet-load_more_old_tweet', function() {
@@ -931,7 +927,7 @@ $(function() {
             var current_scrollHeight = 0
             if (load_type === 'new') {
                 current_scrollHeight = document.body.scrollHeight
-                $('.format_timeline > div:first').next().before($(data).find('.format_timeline').html())
+                $('.format_timeline > div:first').before($(data).find('.format_timeline').html())
             } else if (load_type === 'old') {
                 $('.format_timeline > div:last').prev().after($(data).find('.format_timeline').html())
             }
@@ -1459,30 +1455,30 @@ $(function() {
         })
     }
 
-    $(document).on('click', '.tweet-twitter_user-profile_timelines_navigation-item', function(event) {
+    $(document).on('click', '.twitter_user-profile_timelines_navigation-item', function(event) {
         event.stopPropagation()
         var href = this.querySelector('a').href
-        tweetTwitterUserProfileTimelineNavigationSelected(this)
-        tweetTwitterUserProfileTimelineNavigationPushState(href)
-        tweetTwitterUserProfileTimelineNavigationLoader()
-        tweetTwitterUserProfileTimelineNavigationFetch(href.replace(location.origin, ''), true)
+        twitterUserProfileTimelineNavigationSelected(this)
+        twitterUserProfileTimelineNavigationPushState(href)
+        twitterUserProfileTimelineNavigationLoader()
+        twitterUserProfileTimelineNavigationFetch(href.replace(location.origin, ''), true)
         return false
     })
 
-    function tweetTwitterUserProfileTimelineNavigationSelected(element) {
-        var tweetTwitterUserProfileTimelinesNavigationItem =
-            document.querySelectorAll('.tweet-twitter_user-profile_timelines_navigation-item')
+    function twitterUserProfileTimelineNavigationSelected(element) {
+        var twitterUserProfileTimelinesNavigationItem =
+            document.querySelectorAll('.twitter_user-profile_timelines_navigation-item')
 
-        for (let index = 0; index < tweetTwitterUserProfileTimelinesNavigationItem.length; index++) {
-            tweetTwitterUserProfileTimelinesNavigationItem[index].classList.remove(
-                'tweet-twitter_user-profile_timeline_navigation-selected'
+        for (let index = 0; index < twitterUserProfileTimelinesNavigationItem.length; index++) {
+            twitterUserProfileTimelinesNavigationItem[index].classList.remove(
+                'twitter_user-profile_timeline_navigation-selected'
             )
         }
 
-        element.classList.add('tweet-twitter_user-profile_timeline_navigation-selected')
+        element.classList.add('twitter_user-profile_timeline_navigation-selected')
     }
 
-    function tweetTwitterUserProfileTimelineNavigationPushState(href) {
+    function twitterUserProfileTimelineNavigationPushState(href) {
         var targetPage = href
         targetPage = targetPage.replace(location.origin, '')
         var currentPage = location.href;
@@ -1498,18 +1494,18 @@ $(function() {
         history.pushState(state, null, targetPage);
     }
 
-    function tweetTwitterUserProfileTimelineNavigationLoader() {
+    function twitterUserProfileTimelineNavigationLoader() {
         var tweets = document.querySelectorAll('.tweet')
         for (let index = 0; index < tweets.length; index++) {
             tweets[index].remove()
         }
         document.querySelector('.tweet-load_more_old_tweet').remove()
-        document.querySelector('.tweet-load_more_new_tweet').insertAdjacentHTML(
-            'afterend', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+        document.querySelector('.format_timeline').insertAdjacentHTML(
+            'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
         )
     }
 
-    function tweetTwitterUserProfileTimelineNavigationFetch(href, useCache = true) {
+    function twitterUserProfileTimelineNavigationFetch(href, useCache = true) {
         $('#ajax-progress-bar').removeClass('bg-danger');
         $('#ajax-progress-bar').css('visibility', 'visible');
 
