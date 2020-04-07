@@ -986,26 +986,26 @@ a:hover {
     object-fit: contain;
 }
 
-.tweet-twitter_user-profile_timeline_navigation-tweets,
-.tweet-twitter_user-profile_timeline_navigation-tweets_and_replies,
-.tweet-twitter_user-profile_timeline_navigation-media,
-.tweet-twitter_user-profile_timeline_navigation-likes {
+.twitter_user-profile_timeline_navigation-tweets,
+.twitter_user-profile_timeline_navigation-tweets_and_replies,
+.twitter_user-profile_timeline_navigation-media,
+.twitter_user-profile_timeline_navigation-likes {
     flex: auto;
     text-align: center;
     padding: 12px;
     color: #657786;
 }
 
-.tweet-twitter_user-profile_timeline_navigation-tweets:hover,
-.tweet-twitter_user-profile_timeline_navigation-tweets_and_replies:hover,
-.tweet-twitter_user-profile_timeline_navigation-media:hover,
-.tweet-twitter_user-profile_timeline_navigation-likes:hover {
+.twitter_user-profile_timeline_navigation-tweets:hover,
+.twitter_user-profile_timeline_navigation-tweets_and_replies:hover,
+.twitter_user-profile_timeline_navigation-media:hover,
+.twitter_user-profile_timeline_navigation-likes:hover {
     background: rgb(232, 245, 254);
     border-bottom: 1px solid rgb(29, 161, 242);
     color: rgb(29, 161, 242);
 }
 
-.tweet-twitter_user-profile_timeline_navigation-selected {
+.twitter_user-profile_timeline_navigation-selected {
     border-bottom: 1px solid rgb(29, 161, 242);
     color: rgb(29, 161, 242);
 }
