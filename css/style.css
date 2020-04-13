@@ -764,8 +764,6 @@ a:hover {
 .timeline {
     width: 100%;
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
     border-left: solid 1px #e6ecf0;
     border-right: solid 1px #e6ecf0;
     position: relative;
@@ -1026,7 +1024,7 @@ a:hover {
 @media (min-width: 992px) {
     .twitter-client {
         display: flex;
-        width: fit-content;
+        justify-content: center;
     }
 
     .twitter-trends {
