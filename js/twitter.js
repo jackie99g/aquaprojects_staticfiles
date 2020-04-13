@@ -616,6 +616,7 @@ $(function() {
         })
 
         function changeContentTwitterUser(screen_name) {
+            var twitterTitle = document.querySelector('.twitter_title-block').outerHTML
             // The following will be changed:
             // .twitter_user-background_image -> Expand image.
             // .twitter_user-profile_image -> Add .tweet-twitter_icon, twitter_anchor, image property.
@@ -627,6 +628,10 @@ $(function() {
             $('.twitter_user').each(function(index, element) {
                 if ($(element).data('twitter_user-screen_name') === screen_name) {
                     $('.timeline').html($(element).prop('outerHTML'))
+
+                    document.querySelector('.timeline').insertAdjacentHTML('afterbegin', twitterTitle)
+                    var twitterUserName = document.querySelector('.twitter_user-name > span').innerHTML
+                    document.querySelector('.twitter_title-home-text').innerHTML = twitterUserName
 
                     var TwitterUserBackgroundImage = $('.timeline').find('.twitter_user-background_image').data('img-src')
                     var TwitterUserBackgroundImageIMG = `<img src="${TwitterUserBackgroundImage}" loading="lazy">`
@@ -663,9 +668,15 @@ $(function() {
         }
 
         function changeContentTweet(tweet_id) {
+
+            var twitterTitle = document.querySelector('.twitter_title-block').outerHTML
+
             $('.tweet').each(function(index, element) {
                 if ($(element).data('tweet_id') === tweet_id) {
                     $('.timeline').html($(element).prop('outerHTML'))
+
+                    document.querySelector('.timeline').insertAdjacentHTML('afterbegin', twitterTitle)
+                    document.querySelector('.twitter_title-home-text').innerHTML = 'Tweets'
 
                     $('.timeline:last').append('<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>')
                 }
@@ -1582,6 +1593,96 @@ $(function() {
             console.error(err)
             showError()
         })
+    }
+
+    document.addEventListener('focus', function(e) {
+        if (e.target.classList.contains('twitter-search_box-input')) {
+            document.querySelector('.twitter-search_box-border').style.border = '2px solid #1da1f2'
+            document.querySelector('.twitter-search_box-icon').style.color = '#1da1f2'
+            if (document.querySelector('.twitter-search_box-input').value !== '') {
+                document.querySelector('.twitter-search_box-close').style.display = 'flex'
+            }
+        }
+    }, true)
+
+    document.addEventListener('blur', function(e) {
+        if (e.target.classList.contains('twitter-search_box-input')) {
+            document.querySelector('.twitter-search_box-border').style.border = '2px solid #e6ecf0'
+            document.querySelector('.twitter-search_box-icon').style.color = '#657786'
+            document.querySelector('.twitter-search_box-close').style.display = 'none'
+            if (document.querySelector('.twitter-search_box-input').dataset.cleared === 'true') {
+                document.querySelector('.twitter-search_box-input').focus()
+                document.querySelector('.twitter-search_box-input').dataset.cleared = false
+            }
+        }
+    }, true)
+
+    document.addEventListener('mousedown', function(e) {
+
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'twitter-search_box-close')) {
+            document.querySelector('.twitter-search_box-input').value = ''
+            document.querySelector('.twitter-search_box-close').style.display = 'none'
+            document.querySelector('.twitter-search_box-input').dataset.cleared = true
+        }
+    })
+
+    document.addEventListener('input', (e) => {
+        if (e.target.classList.contains('twitter-search_box-input')) {
+            if (document.querySelector('.twitter-search_box-input').value !== '') {
+                document.querySelector('.twitter-search_box-close').style.display = 'flex'
+            } else {
+                document.querySelector('.twitter-search_box-close').style.display = 'none'
+            }
+        }
+    })
+
+    document.addEventListener('keydown', e => {
+        if (e.target.classList.contains('twitter-search_box-input') && e.keyCode == 13 && e.target.value !== '') {
+            var query = document.querySelector('.twitter-search_box-input').value
+            var href = `/twitter/search?q=${query}`
+            twitterUserProfileTimelineNavigationPushState(href)
+            twitterSearchLoader()
+            scrollPageTop()
+            twitterUserProfileTimelineNavigationFetch(href, true)
+            document.querySelector('.twitter-search_box-input').blur()
+            document.querySelector('.twitter_title-home-text').innerHTML = query
+        }
+    })
+
+    function twitterSearchLoader() {
+
+        function removeElement(selector) {
+            if (document.querySelector(selector) !== null) {
+                document.querySelector(selector).remove()
+            }
+        }
+
+        removeElement('#twitter_user')
+
+        var tweets = document.querySelectorAll('.tweet')
+        for (let index = 0; index < tweets.length; index++) {
+            tweets[index].remove()
+        }
+
+        removeElement('.tweet-load_more_old_tweet')
+
+        document.querySelector('.format_timeline').insertAdjacentHTML(
+            'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+        )
     }
 
     function getCookie(name) {
