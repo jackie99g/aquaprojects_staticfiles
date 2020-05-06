@@ -1466,6 +1466,97 @@ $(function() {
         })
     }
 
+    $(document).on('click', '.tweet-twitter_retweet', function(event) {
+        event.stopPropagation()
+
+        var tweet_retweet = $(this).data('tweet_retweeted')
+        var tweet_id = $(this).data('tweet_id')
+        $('.tweet-twitter_retweet').each((index, element) => {
+            if (parseInt($(element).data('tweet_id')) === tweet_id) {
+                $(element).prop('disabled', true)
+            }
+        })
+        if (tweet_retweet === 'true' || tweet_retweet === 'True') {
+            statusesUnretweet(tweet_id)
+        } else {
+            statusesRetweet(tweet_id)
+        }
+    })
+
+    function statusesRetweet(tweet_id) {
+        fetch(
+            '/twitter/statuses/retweet', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "tweet_id": tweet_id,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            if ($(data).find('.format_timeline').children('.tweet').length !== 1) {
+                console.error('Aquring data has more than 1 tweet.')
+            }
+            $('.tweet-twitter_retweet').each((index, element) => {
+                if ($(element).data('tweet_id') === tweet_id) {
+                    $(data).find('.tweet-twitter_social').each((index, dataElement) => {
+                        if ($(dataElement).find('.tweet-twitter_retweet').data('tweet_id') === tweet_id) {
+                            $(element).parents('.tweet-twitter_social').html($(dataElement).html())
+                        }
+                    })
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
+    function statusesUnretweet(tweet_id) {
+        fetch(
+            '/twitter/statuses/unretweet', {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    "tweet_id": tweet_id,
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            },
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            if ($(data).find('.format_timeline').children('.tweet').length !== 1) {
+                console.error('Aquring data has more than 1 tweet.')
+            }
+            $('.tweet-twitter_retweet').each((index, element) => {
+                if ($(element).data('tweet_id') === tweet_id) {
+                    $(data).find('.tweet-twitter_social').each((index, dataElement) => {
+                        if ($(dataElement).find('.tweet-twitter_retweet').data('tweet_id') === tweet_id) {
+                            $(element).parents('.tweet-twitter_social').html($(dataElement).html())
+                        }
+                    })
+                }
+            })
+        }).catch(err => {
+            console.error(err)
+        })
+    }
+
     $(document).on('click', '.twitter_user-profile_timelines_navigation-item', function(event) {
         event.stopPropagation()
         var href = this.querySelector('a').href
