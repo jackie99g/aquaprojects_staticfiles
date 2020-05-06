@@ -1,0 +1,640 @@
+$(function() {
+    window.addEventListener('aquaproject_popstate', function() {
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
+            convertLocalTime()
+            changeViewOfConversationOrMessage()
+        }
+    })
+    if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
+        window.dispatchEvent(new Event('aquaproject_popstate'));
+    }
+    window.addEventListener("resize", () => {
+        changeViewOfConversationOrMessage()
+    })
+
+    document.addEventListener('focus', function(e) {
+        if (e.target.classList.contains('message-view_message-input')) {
+            document.querySelector('.message-view_message-border').style.border = '1px solid #1da1f2'
+            document.querySelector('.message-view_message-icon').style.color = '#1da1f2'
+            if (document.querySelector('.message-view_message-input').value !== '') {
+                document.querySelector('.message-view_message-close').style.display = 'flex'
+            }
+        }
+    }, true)
+
+    document.addEventListener('blur', function(e) {
+        if (e.target.classList.contains('message-view_message-input')) {
+            document.querySelector('.message-view_message-border').style.border = '1px solid #e6ecf0'
+            document.querySelector('.message-view_message-icon').style.color = '#657786'
+            document.querySelector('.message-view_message-close').style.display = 'none'
+            if (document.querySelector('.message-view_message-input').dataset.cleared === 'true') {
+                document.querySelector('.message-view_message-input').focus()
+                document.querySelector('.message-view_message-input').dataset.cleared = false
+            }
+        }
+    }, true)
+
+    document.addEventListener('mousedown', function(e) {
+
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-view_message-close')) {
+            document.querySelector('.message-view_message-input').value = ''
+            document.querySelector('.message-view_message-close').style.display = 'none'
+            // Add
+            document.querySelector('.message-view_message-send').style.color = '#657786'
+            document.querySelector('.message-view_message-input').dataset.cleared = true
+        }
+    })
+
+    document.addEventListener('input', e => {
+        if (e.target.classList.contains('message-view_message-input')) {
+            if (document.querySelector('.message-view_message-input').value !== '') {
+                document.querySelector('.message-view_message-close').style.display = 'flex'
+                // Add
+                document.querySelector('.message-view_message-send').style.color = '#1da1f2'
+            } else {
+                document.querySelector('.message-view_message-close').style.display = 'none'
+                // Add
+                document.querySelector('.message-view_message-send').style.color = '#657786'
+            }
+        }
+    })
+
+    document.addEventListener('keydown', e => {
+        if (e.target.classList.contains('message-view_message-input') && e.keyCode == 13 && e.target.value !== '') {
+            var query = document.querySelector('.message-view_message-input').value
+            var conversation_id = document.querySelector('.message-view_message-input').dataset.conversation_id
+            createMessage(query, conversation_id)
+            document.querySelector('.message-view_message-input').value = ''
+            document.querySelector('.message-view_message-send').style.color = '#657786'
+            document.querySelector('.message-view_message-input').blur()
+        }
+    })
+
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-view_message-send')) {
+            var query = document.querySelector('.message-view_message-input').value
+            if (query !== '') {
+                var conversation_id = document.querySelector('.message-view_message-input').dataset.conversation_id
+                createMessage(query, conversation_id)
+                document.querySelector('.message-view_message-input').value = ''
+                document.querySelector('.message-view_message-send').style.color = '#657786'
+                document.querySelector('.message-view_message-input').blur()
+            }
+        }
+    })
+
+    function createMessage(message_text, conversation_id) {
+        var href = location.href.replace(location.origin, '')
+        var request = '/api/message/message'
+        fetch(
+            request, {
+                method: 'POST',
+                mode: "cors",
+                credentials: 'include',
+                body: JSON.stringify({
+                    'message_text': message_text,
+                    'conversation_id': conversation_id
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[request] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+
+            var dataNode = document.createRange().createContextualFragment(data)
+            var dataJson = JSON.parse(dataNode.querySelector('pre').innerHTML)
+            var messageNode =
+                `<div class="message-view_message" style="padding: 12px 8px;" data-message_id="${ dataJson['message_id'] }">
+                    <div class="message-view_message-timestamp" style="text-align: center; padding: 4px; color: #657786;" data-created_at="${ dataJson['created_at'] }"></div>
+                    <div class="message-view_message-user_message" style="display: flex; justify-content: flex-end; padding: 4px;">
+                        <div class="message-view_message-text" style="padding: 8px 12px; border-radius: 30px; background: #1da1f2; color: white;">${ dataJson['message_text'] }</div>
+                    </div>
+                </div>`
+            document.querySelector('.message-view_message-block .message-view_message-list')
+                .insertAdjacentHTML('beforeend', messageNode)
+
+            last_message_auto_addition(conversation_id)
+
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+        })
+    }
+
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (e.target.classList.contains('message-view_message-timestamp')) {
+            var message_id = findParents(e.target, 'message-view_message').dataset.message_id
+            deleteMessage(message_id)
+        }
+    })
+
+    function deleteMessage(message_id) {
+        var href = location.href.replace(location.origin, '')
+        var request = `/api/message/message/${ message_id }`
+        fetch(
+            request, {
+                method: "DELETE",
+                mode: "cors",
+                credentials: "include",
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[request] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+            var messageViewMessage = document.querySelectorAll('.message-view_message')
+            for (let index = 0; index < messageViewMessage.length; index++) {
+                if (messageViewMessage[index].dataset.message_id === message_id) {
+                    messageViewMessage[index].remove()
+                }
+            }
+
+            var conversation_id = document.querySelector('.message-view_message-input').dataset['conversation_id']
+            last_message_auto_addition(conversation_id)
+
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+        })
+    }
+
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-conversation')) {
+            var conversation_id = findParents(e.target, 'message-conversation').dataset.conversation_id
+            var conversation_name = findParents(e.target, 'message-conversation')
+                .querySelector('.message-conversation-main-name').innerHTML
+            var conversation_picture = findParents(e.target, 'message-conversation')
+                .querySelector('.message-conversation-icon > img').src
+            var conversation_last_activity = findParents(e.target, 'message-conversation')
+                .querySelector('.message-conversation-main-last_text').innerHTML
+            loadMessage(conversation_id, conversation_name, conversation_picture, conversation_last_activity)
+        }
+    })
+
+    function loadMessage(conversation_id, conversation_name, conversation_picture, conversation_last_activity) {
+
+        var messageViewMessageBlockChild =
+            document.querySelectorAll('.message-view_message-block > div')
+        for (let index = 0; index < messageViewMessageBlockChild.length; index++) {
+            messageViewMessageBlockChild[index].style.display = 'none'
+        }
+
+        document.querySelector('.message-view_message-load_message').style.display = ''
+
+        document.querySelector(
+            '.message-view_message-load_message .message-view_message-title-user-icon > img'
+        ).src = conversation_picture
+        document.querySelector(
+            '.message-view_message-load_message .message-view_message-title-user-main-name > div'
+        ).innerHTML = conversation_name
+        document.querySelector(
+            '.message-view_message-load_message .message-view_message-border input'
+        ).dataset.conversation_id = conversation_id
+        document.querySelector(
+            '.message-view_message-load_message .message-view_message-title-user-main-last_activity'
+        ).innerHTML = conversation_last_activity
+
+        var href = `/messageview/${ conversation_id }`
+
+        messagePushState(href)
+
+        window.dispatchEvent(new Event('aquaproject_popstate'));
+
+        fetch(
+            href, {
+                method: "GET",
+                mode: "cors",
+                credentials: "include",
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[href] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+
+            var dataNode = document.createRange().createContextualFragment(data)
+            document.querySelector('.message-view_message-block').innerHTML =
+                dataNode.querySelector('.message-view_message-block').innerHTML
+
+            last_message_auto_addition(conversation_id)
+
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+        })
+    }
+
+    function messagePushState(href) {
+        var targetPage = href
+        targetPage = targetPage.replace(location.origin, '')
+        var currentPage = location.href;
+        currentPage = currentPage.replace(location.origin, '')
+        var state = {
+            'targetPage': targetPage,
+            'currentPage': currentPage,
+            'changeLocation': '#main'
+        };
+        var replaceState = $.extend(true, {}, history.state)
+        replaceState['scrollTop'] = $(window).scrollTop()
+        history.replaceState(replaceState, null, currentPage)
+        history.pushState(state, null, targetPage);
+    }
+
+    document.addEventListener('focus', function(e) {
+        if (e.target.classList.contains('message-conversation-create-name-input')) {
+            document.querySelector('.message-conversation-create-name-border').style.border = '1px solid #1da1f2'
+            document.querySelector('.message-conversation-create-name-icon').style.color = '#1da1f2'
+            if (document.querySelector('.message-conversation-create-name-input').value !== '') {
+                document.querySelector('.message-conversation-create-name-close').style.display = 'flex'
+            }
+        }
+    }, true)
+
+    document.addEventListener('blur', function(e) {
+        if (e.target.classList.contains('message-conversation-create-name-input')) {
+            document.querySelector('.message-conversation-create-name-border').style.border = '1px solid #e6ecf0'
+            document.querySelector('.message-conversation-create-name-icon').style.color = '#657786'
+            document.querySelector('.message-conversation-create-name-close').style.display = 'none'
+            if (document.querySelector('.message-conversation-create-name-input').dataset.cleared === 'true') {
+                document.querySelector('.message-conversation-create-name-input').focus()
+                document.querySelector('.message-conversation-create-name-input').dataset.cleared = false
+            }
+        }
+    }, true)
+
+    document.addEventListener('mousedown', function(e) {
+
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-conversation-create-name-close')) {
+            document.querySelector('.message-conversation-create-name-input').value = ''
+            document.querySelector('.message-conversation-create-name-close').style.display = 'none'
+            document.querySelector('.message-conversation-create-name-input').dataset.cleared = true
+        }
+    })
+
+    document.addEventListener('input', e => {
+        if (e.target.classList.contains('message-conversation-create-name-input')) {
+            if (document.querySelector('.message-conversation-create-name-input').value !== '') {
+                document.querySelector('.message-conversation-create-name-close').style.display = 'flex'
+            } else {
+                document.querySelector('.message-conversation-create-name-close').style.display = 'none'
+            }
+        }
+    })
+
+    document.addEventListener('keydown', e => {
+        if (e.target.classList.contains('message-conversation-create-name-input') && e.keyCode == 13 && e.target.value !== '') {
+            // var query = document.querySelector('.message-conversation-create-name-input').value
+            // var conversation_id = document.querySelector('.message-conversation-create-name-input').dataset.conversation_id
+            // createMessage(query, conversation_id)
+            document.querySelector('.message-conversation-create-name-input').value = ''
+            // document.querySelector('.message-conversation-create-name-send').style.color = '#657786'
+            document.querySelector('.message-conversation-create-name-input').blur()
+        }
+    })
+
+    document.addEventListener('focus', function(e) {
+        if (e.target.classList.contains('message-conversation-create-participant-input')) {
+            document.querySelector('.message-conversation-create-participant-border').style.border = '1px solid #1da1f2'
+            document.querySelector('.message-conversation-create-participant-icon').style.color = '#1da1f2'
+            if (document.querySelector('.message-conversation-create-participant-input').value !== '') {
+                document.querySelector('.message-conversation-create-participant-close').style.display = 'flex'
+            }
+        }
+    }, true)
+
+    document.addEventListener('blur', function(e) {
+        if (e.target.classList.contains('message-conversation-create-participant-input')) {
+            document.querySelector('.message-conversation-create-participant-border').style.border = '1px solid #e6ecf0'
+            document.querySelector('.message-conversation-create-participant-icon').style.color = '#657786'
+            document.querySelector('.message-conversation-create-participant-close').style.display = 'none'
+            if (document.querySelector('.message-conversation-create-participant-input').dataset.cleared === 'true') {
+                document.querySelector('.message-conversation-create-participant-input').focus()
+                document.querySelector('.message-conversation-create-participant-input').dataset.cleared = false
+            }
+        }
+    }, true)
+
+    document.addEventListener('mousedown', function(e) {
+
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-conversation-create-participant-close')) {
+            document.querySelector('.message-conversation-create-participant-input').value = ''
+            document.querySelector('.message-conversation-create-participant-close').style.display = 'none'
+            document.querySelector('.message-conversation-create-participant-input').dataset.cleared = true
+        }
+    })
+
+    document.addEventListener('input', e => {
+        if (e.target.classList.contains('message-conversation-create-participant-input')) {
+            if (document.querySelector('.message-conversation-create-participant-input').value !== '') {
+                document.querySelector('.message-conversation-create-participant-close').style.display = 'flex'
+            } else {
+                document.querySelector('.message-conversation-create-participant-close').style.display = 'none'
+            }
+        }
+    })
+
+    document.addEventListener('keydown', e => {
+        if (e.target.classList.contains('message-conversation-create-participant-input') && e.keyCode == 13 && e.target.value !== '') {
+            // var query = document.querySelector('.message-conversation-create-participant-input').value
+            // var conversation_id = document.querySelector('.message-conversation-create-participant-input').dataset.conversation_id
+            // createMessage(query, conversation_id)
+            document.querySelector('.message-conversation-create-participant-input').value = ''
+            // document.querySelector('.message-conversation-create-participant-send').style.color = '#657786'
+            document.querySelector('.message-conversation-create-participant-input').blur()
+        }
+    })
+
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, ('message-conversation-title-new_conversation'))) {
+            if (document.querySelector('.message-conversation-list').style.display === 'block') {
+                document.querySelector('.message-conversation-list').style.display = 'none'
+                document.querySelector('.message-conversation-create').style.display = 'block'
+            } else {
+                document.querySelector('.message-conversation-list').style.display = 'block'
+                document.querySelector('.message-conversation-create').style.display = 'none'
+            }
+        }
+    })
+
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('message-conversation-create-decide')) {
+            var conversationName = document.querySelector('.message-conversation-create-name-input').value
+            var participant_uid = document.querySelector('.message-conversation-create-participant-input').value
+            if (conversationName !== '' && participant_uid !== '') {
+                createConversation(conversationName, participant_uid)
+            }
+        }
+    })
+
+    function createConversation(conversationName, participant_uid) {
+        var href = location.href.replace(location.origin, '')
+        var request = '/api/message/conversation'
+        fetch(
+            request, {
+                method: "POST",
+                mode: "cors",
+                credentials: "include",
+                body: JSON.stringify({
+                    "conversation_name": conversationName,
+                    "participant_uid": participant_uid
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[request] = data
+            if (href != location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+
+            var dataNode = document.createRange().createContextualFragment(data)
+            var dataJson = JSON.parse(dataNode.querySelector('pre').innerHTML)
+            var conversationNode =
+                `<div class="message-conversation" data-conversation_id="${ dataJson['conversation_id'] }" style="cursor: pointer;">
+                    <div class="message-conversation-icon_main" style="display: flex; padding: 8px;">
+                        <div class="message-conversation-icon">
+                            <img src="${ dataJson['participant'][0]['picture'] }" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 8px;">
+                        </div>
+                        <div class="message-conversation-main" style="display: flex; align-items: center; overflow: hidden;">
+                            <div class="message-conversation-main-name" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${ dataJson['conversation_name'] }
+                            </div>
+                            <div class="message-conversation-main-last_text" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #657786;">
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+            document.querySelector('.message-conversation-block .message-conversation-list')
+                .insertAdjacentHTML('beforeend', conversationNode)
+
+            document.querySelector('.message-conversation-list').style.display = 'block'
+            document.querySelector('.message-conversation-create').style.display = 'none'
+
+            window.dispatchEvent(new Event('aquaproject_popstate'));
+        })
+    }
+
+    function last_message_auto_addition(conversation_id) {
+        var messageViewMessage = document.querySelectorAll('.message-view_message .message-view_message-text')
+        if (messageViewMessage.length !== 0) {
+            var last_message = messageViewMessage[messageViewMessage.length - 1].innerHTML
+            document.querySelector('.message-view_message-title-user-main-last_activity').innerHTML = last_message
+            var messageConversationList = document.querySelectorAll('.message-conversation-list .message-conversation')
+            if (messageConversationList.length !== 0) {
+                for (let index = 0; index < messageConversationList.length; index++) {
+                    if (messageConversationList[index].dataset['conversation_id'] === conversation_id) {
+                        messageConversationList[index].querySelector('.message-conversation-main-last_text').innerHTML = last_message
+                    }
+
+                }
+            }
+        }
+    }
+
+    function convertLocalTime() {
+        var created_at = document.querySelectorAll('.message-view_message-timestamp')
+        if (!created_at.length) return false
+        for (let index = 0; index < created_at.length; index++) {
+            var createdDateString = created_at[index].dataset['created_at']
+            created_at[index].innerHTML = calculateTime(createdDateString)
+        }
+    }
+
+    function calculateTime(createdDateString) {
+        var currentDate = new Date()
+        var createdDate = new Date(createdDateString)
+        var displayTime = ''
+        var month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        var displayCreatedHour = createdDate.getHours()
+        var displayCreatedAMPM = 'AM'
+        if (displayCreatedHour > 12) {
+            displayCreatedHour -= 12
+            displayCreatedAMPM = 'PM'
+        }
+        if (currentDate.getDate() == createdDate.getDate()) {
+            displayTime = `${ displayCreatedHour }:${ createdDate.getMinutes() } ${ displayCreatedAMPM }`
+        } else {
+            displayTime = `${ month_list[createdDate.getMonth()] } ${ createdDate.getDate() }, ${ createdDate.getFullYear() }, ${ displayCreatedHour }:${ createdDate.getMinutes() } ${ displayCreatedAMPM }`
+        }
+
+        return displayTime
+    }
+
+    function changeViewOfConversationOrMessage() {
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] !== '/messageview') return false
+        var messageConversationBlock = document.querySelector('.message-conversation-block')
+        var messageViewMessageBlock = document.querySelector('.message-view_message-block')
+        if (window.innerWidth >= 768) {
+            if (location.href.replace(location.origin, '').split('/').length === 2) {
+                // conversation list page
+                messageConversationBlock.style.display = ''
+                messageViewMessageBlock.style.display = ''
+            } else {
+                // message list page
+                messageConversationBlock.style.display = ''
+                messageViewMessageBlock.style.display = ''
+            }
+        } else {
+            if (location.href.replace(location.origin, '').split('/').length === 2) {
+                // conversation list page
+                messageConversationBlock.classList.add('col-12')
+                messageViewMessageBlock.classList.remove('col-12')
+                messageConversationBlock.style.display = ''
+                messageViewMessageBlock.style.display = 'none'
+            } else {
+                // message list page
+                messageConversationBlock.classList.remove('col-12')
+                messageViewMessageBlock.classList.add('col-12')
+                messageConversationBlock.style.display = 'none'
+                messageViewMessageBlock.style.display = ''
+            }
+        }
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+})
