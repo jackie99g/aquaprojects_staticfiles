@@ -160,19 +160,29 @@ $(function() {
         }
     });
 
-    $('body').on('click', function(e) {
-        var click_class = e.target.className
-        if (click_class != 'user_picture' && click_class != 'account' && click_class != 'account_name' && click_class != 'account_content' && click_class != 'account_content account_user_info' && click_class != 'account_picture' && click_class != 'account_content_email' && click_class != 'tgl tgl-flat prop' && click_class != 'tgl tgl-flat animation' && click_class != 'tgl tgl-flat load_pictures' && click_class != 'tgl tgl-flat load_videos' && click_class != 'tgl tgl-flat load_clear_icon' && click_class != 'tgl tgl-flat show_left_sidebar' && click_class != 'tgl-btn' && click_class != 'toggle_button_message') {
-            $('.account').css({
-                'visibility': 'hidden',
-            });
-            $('#main').css({
-                'display': 'block',
-            });
-            $('.account').removeClass('animated fadeInUp faster')
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.className !== '' && target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (target.className !== '' && currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
         }
 
-    });
+        if (!findParents(e.target, 'account') && !findParents(e.target, 'username')) {
+            var accountArea = document.querySelector('.account')
+            accountArea.style.visibility = 'hidden'
+            accountArea.classList.remove('animated', 'fadeInUp', 'faster')
+            var mainArea = document.querySelector('#main')
+            mainArea.style.display = ''
+        }
+    })
 
     $('input[name="check"]').change(function() {
         var prop = $('.prop').prop('checked');
