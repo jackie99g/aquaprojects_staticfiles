@@ -3,6 +3,7 @@ $(function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
             convertLocalTime()
             changeViewOfConversationOrMessage()
+            startWebsocketConnection()
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
@@ -142,20 +143,52 @@ $(function() {
 
             var dataNode = document.createRange().createContextualFragment(data)
             var dataJson = JSON.parse(dataNode.querySelector('pre').innerHTML)
+
             var messageNode =
-                `<div class="message-view_message" style="padding: 12px 8px;" data-message_id="${ dataJson['message_id'] }">
-                    <div class="message-view_message-timestamp" style="text-align: center; padding: 4px; color: #657786;" data-created_at="${ dataJson['created_at'] }"></div>
-                    <div class="message-view_message-user_message" style="display: flex; justify-content: flex-end; padding: 4px;">
-                        <div class="message-view_message-text" style="padding: 8px 12px; border-radius: 30px; background: #1da1f2; color: white;">${ dataJson['message_text'] }</div>
-                    </div>
-                </div>`
+                createNewMessageCode(dataJson['message_id'], dataJson['created_at'], dataJson['message_text'])
+
             document.querySelector('.message-view_message-block .message-view_message-list')
                 .insertAdjacentHTML('beforeend', messageNode)
 
             last_message_auto_addition(conversation_id)
 
+            var messageItem =
+                createMessageItem(dataJson['message_id'], dataJson['created_at'], dataJson['message_text'], conversation_id)
+            var sender_picture =
+                document.querySelector('.message-profile-conversation .message-profile-conversation-icon > img').src
+            Object.assign(messageItem, {
+                'sender_picture': sender_picture
+            })
+
+            AutonotifyMessageHasSended(messageItem)
+
             window.dispatchEvent(new Event('aquaproject_popstate'));
         })
+    }
+
+    function createNewMessageCode(message_id, created_at, message_text) {
+        var messageNode =
+            `<div class="message-view_message" style="padding: 12px 8px;" data-message_id="${message_id}">
+                <div class="message-view_message-timestamp" style="text-align: center; padding: 4px; color: #657786;" data-created_at="${created_at}"></div>
+                <div class="message-view_message-user_message" style="display: flex; justify-content: flex-end; padding: 4px;">
+                <div class="message-view_message-text" style="padding: 8px 12px; border-radius: 30px; background: #1da1f2; color: white;">${message_text}</div>
+                </div>
+            </div>`
+        return messageNode
+    }
+
+    function createNewMessageOthersSendedCode(message_id, created_at, message_text, sender_picture) {
+        var messageNode =
+            `<div class="message-view_message" style="padding: 12px 8px;" data-message_id="${message_id}">
+                <div class="message-view_message-timestamp" style="text-align: center; padding: 4px; color: #657786;" data-created_at="${created_at}"></div>
+                <div class="message-view_message-user_message" style="display: flex; align-items: flex-end; padding: 4px;">
+                <div class="message-view_message-user" style="margin-right: 8px;">
+                    <img src="${sender_picture}" style="width: 40px; height: 40px; border-radius: 50%;">
+                </div>
+                <div class="message-view_message-text" style="padding: 8px 12px; border-radius: 30px; background: #e6ecf0;">${message_text}</div>
+                </div>
+            </div>`
+        return messageNode
     }
 
     document.addEventListener('click', e => {
@@ -598,29 +631,233 @@ $(function() {
         if (window.innerWidth >= 768) {
             if (location.href.replace(location.origin, '').split('/').length === 2) {
                 // conversation list page
+                messageConversationBlock.classList.add('col-md-3')
+                messageConversationBlock.style.width = ''
                 messageConversationBlock.style.display = ''
                 messageViewMessageBlock.style.display = ''
             } else {
                 // message list page
+                messageViewMessageBlock.classList.add('col-md-9')
+                messageViewMessageBlock.style.width = ''
                 messageConversationBlock.style.display = ''
                 messageViewMessageBlock.style.display = ''
             }
         } else {
             if (location.href.replace(location.origin, '').split('/').length === 2) {
                 // conversation list page
-                messageConversationBlock.classList.add('col-12')
-                messageViewMessageBlock.classList.remove('col-12')
+                // messageConversationBlock.classList.add('col-12')
+                // messageViewMessageBlock.classList.remove('col-12')
+                messageConversationBlock.classList.remove('col-md-3')
+                messageConversationBlock.style.width = '100%'
                 messageConversationBlock.style.display = ''
                 messageViewMessageBlock.style.display = 'none'
             } else {
                 // message list page
-                messageConversationBlock.classList.remove('col-12')
-                messageViewMessageBlock.classList.add('col-12')
+                // messageConversationBlock.classList.remove('col-12')
+                // messageViewMessageBlock.classList.add('col-12')
+                messageViewMessageBlock.classList.remove('col-md-9')
+                messageViewMessageBlock.style.width = '100%'
                 messageConversationBlock.style.display = 'none'
                 messageViewMessageBlock.style.display = ''
             }
         }
     }
+
+    var socket = null
+
+    function startWebsocketConnection() {
+        if (socket) return false
+        const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {
+            function s(n, t) {
+                (t || !e.readyState || /loaded|complete/.test(e.readyState)) && (e.onload = null, e.onreadystatechange = null, e = undefined, t ? f() : u())
+            }
+            let e = document.createElement("script");
+            const o = t || document.getElementsByTagName("script")[0];
+            e.type = p;
+            e.async = i;
+            e.defer = r;
+            e.onload = s;
+            e.onreadystatechange = s;
+            e.src = n;
+            o.parentNode.insertBefore(e, o.nextSibling);
+        })
+        getScript('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js').then(() => {
+            socket = io.connect();
+            socket.on('connect', (msg) => {
+                socket.emit('get_sid', {})
+            })
+            socket.on('get_sid', (msg) => {
+                var sid = msg['sid']
+                notifyWebsocketConnectionHasStarted(sid)
+            })
+            socket.on('mail_event', (msg) => {
+                var message_id = msg['data']['message_id']
+                var created_at = msg['data']['created_at']
+                var message_text = msg['data']['message_text']
+                var conversation_id = msg['data']['conversation_id']
+                var sender_picture = msg['data']['sender_picture']
+                var profileIcon = document.querySelector('.message-profile-conversation .message-profile-conversation-icon > img').src
+                if (sender_picture === profileIcon) return false
+                var messageNode =
+                    createNewMessageOthersSendedCode(message_id, created_at, message_text, sender_picture)
+
+                document.querySelector('.message-view_message-block .message-view_message-list')
+                    .insertAdjacentHTML('beforeend', messageNode)
+
+                last_message_auto_addition(conversation_id)
+
+                window.dispatchEvent(new Event('aquaproject_popstate'));
+            })
+        })
+    }
+
+    function chooseMessageConversationSids(data) {
+        var dataNode = document.createRange().createContextualFragment(data)
+        var dataJson = JSON.parse(dataNode.querySelector('pre').innerHTML)
+
+        var participant = dataJson['participant']
+        var participant_user_metadata_sid = []
+        for (let index = 0; index < participant.length; index++) {
+            var user_metadata = JSON.parse(participant[index]['user_metadata'])
+            if (user_metadata['message_websocket_sid'] && user_metadata['message_websocket']) {
+                if (user_metadata['message_websocket'] !== 'active') continue
+                participant_user_metadata_sid.push(user_metadata['message_websocket_sid'])
+            }
+        }
+        return participant_user_metadata_sid
+    }
+
+    function notifyMessageHasSended(sids, messageItem) {
+        if (socket === null) return false
+        for (let index = 0; index < sids.length; index++) {
+            socket.emit('mail_event', {
+                'sid': sids[index],
+                'data': messageItem,
+            })
+        }
+    }
+
+    function createMessageItem(message_id, created_at, message_text, conversation_id) {
+        var messageItem = {
+            'message_id': message_id,
+            'created_at': created_at,
+            'message_text': message_text,
+            'conversation_id': conversation_id
+        }
+        return messageItem
+    }
+
+    function AutonotifyMessageHasSended(messageItem) {
+        var request = `/api/messageapi/conversation/${messageItem['conversation_id']}`
+        return fetch(
+            request, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[request] = data
+            var sids_list = chooseMessageConversationSids(data)
+            notifyMessageHasSended(sids_list, messageItem)
+        })
+    }
+
+    function notifyWebsocketConnectionHasStarted(sid) {
+        var request = '/api/message/account/state'
+        fetch(
+            request, {
+                method: 'POST',
+                mode: "cors",
+                credentials: 'include',
+                body: JSON.stringify({
+                    'message_websocket': 'active',
+                    'message_websocket_sid': `${sid}`
+                }),
+                headers: {
+                    "X-CSRFToken": getCookie('csrftoken')
+                }
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+            }
+        }).then(data => {
+            AquaProjectCache[request] = data
+            var dataNode = document.createRange().createContextualFragment(data)
+            var dataJson = JSON.parse(dataNode.querySelector('pre').innerHTML)
+        })
+    }
+
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.className !== '' && target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (target.className !== '' && currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-profile-conversation')) {
+            if (socket === null) return false
+            socket.emit('get_my_sid', {})
+            socket.on('get_my_sid', (msg) => {
+                var sid = msg['sid']
+                document.querySelector('.message-conversation-get_sid').innerHTML = `sid: ${sid}`
+            })
+        }
+    })
+
+    document.addEventListener('click', e => {
+        function findParents(target, className) {
+            if (target.className !== '' && target.classList.contains(className)) {
+                return target
+            }
+            var currentNode = target.parentNode
+            if (currentNode === document) {
+                return false
+            } else if (target.className !== '' && currentNode.classList.contains(className)) {
+                return currentNode
+            } else {
+                return findParents(currentNode, className)
+            }
+        }
+
+        if (findParents(e.target, 'message-view_message-title-information')) {
+            if (!location.pathname.split('/')[2]) return false
+            var conversation_id = location.pathname.split('/')[2]
+            var request = `/api/messageapi/conversation/${conversation_id}`
+            fetch(
+                request, {
+                    method: 'DELETE',
+                    mode: "cors",
+                    credentials: 'include',
+                    headers: {
+                        "X-CSRFToken": getCookie('csrftoken')
+                    }
+                }
+            ).then(response => {
+                if (response.ok) {
+                    return response.text()
+                } else {
+                    console.error(response)
+                }
+            })
+        }
+    })
 
     function getCookie(name) {
         var cookieValue = null;
