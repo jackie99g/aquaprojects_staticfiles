@@ -165,10 +165,6 @@ a:hover {
     margin: auto 5px auto auto;
 }
 
-.user_picture {
-    cursor: pointer;
-}
-
 .account {
     position: fixed;
     top: 58.5px;
@@ -207,7 +203,7 @@ a:hover {
     border: solid 1px #23a0f2;
     background-color: #23a0f2;
     text-align: center;
-    margin: 50px auto auto auto;
+    margin: 50px auto auto;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 5px;
@@ -227,6 +223,7 @@ a:hover {
     width: 30px;
     height: 30px;
     margin-right: 5px;
+    cursor: pointer;
 }
 
 .dashboard_pannel {
@@ -270,7 +267,7 @@ a:hover {
 .side_content_lg {
     margin-right: auto;
     word-break: break-all;
-    padding: 4px 0 4px 0;
+    padding: 4px 0;
 }
 
 .custom_aside_pannel_lg {
@@ -370,24 +367,23 @@ a:hover {
 }
 
 .news_image {
-    width: 160px;
-    height: 90px;
-    background-size: cover;
-    background-position: center;
+    width: 192px;
+    height: 108px;
+    object-fit: cover;
     border-radius: 4px;
 }
 
 .news_image_sm {
-    height: 150px;
+    height: 200px;
     padding: 0;
-    background-size: cover;
-    background-position: center;
+    object-fit: cover;
     border-radius: 4px;
 }
 
 .contents_anchor {
     padding: 12px;
     padding-bottom: 4px;
+    text-align: center;
 }
 
 .select_active {
@@ -579,10 +575,6 @@ a:hover {
 
 .swiper-slide {
     text-align: left;
-}
-
-.contents_anchor {
-    text-align: center;
 }
 
 .gallery-menu {
@@ -826,7 +818,7 @@ a:hover {
 }
 
 .tweet-twitter_picture {
-    display: none;
+    object-fit: cover;
 }
 
 .tweet-twitter_urls {
@@ -860,7 +852,7 @@ a:hover {
 }
 
 .tweet-twitter_pictures_border {
-    margin: 12px 0 0 0;
+    margin: 12px 0 0;
     border: 1px solid #CCD6DD;
     border-radius: 12px;
 }
@@ -882,11 +874,6 @@ a:hover {
 
 .twitter_user-screen_name {
     padding-bottom: 8px;
-}
-
-.animated {
-    animation-duration: 1s;
-    animation-fill-mode: both
 }
 
 @keyframes fadeInUp {
@@ -1077,14 +1064,14 @@ a:hover {
 }
 
 .box_anchor {
-    padding: 12px 12px 8px 12px;
+    padding: 12px 12px 8px;
     flex: 0 0 auto;
     width: calc(100% / 3);
 }
 
 @media (min-width: 768px) {
     .box_anchor {
-        padding: 12px 12px 8px 12px;
+        padding: 12px 12px 8px;
         flex: 1 0 auto;
         width: auto;
     }
