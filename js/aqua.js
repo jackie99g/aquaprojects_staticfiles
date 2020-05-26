@@ -1,6 +1,6 @@
 $(function() {
     $(document).ready(function() {
-        var windowWidth = $(window).width();
+        var windowWidth = window.innerWidth;
         console.log(windowWidth);
         if (windowWidth < 768) {
             $('.main_content').css({
@@ -162,13 +162,13 @@ $(function() {
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.className !== '' && target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (target.className !== '' && currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
