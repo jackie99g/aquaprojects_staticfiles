@@ -5,7 +5,7 @@ $(function() {
         progress = $('.progress'),
         startPos = 0;
 
-    win.on('load scroll', function() {
+    win.on('scroll', function() {
         var value = $(this).scrollTop();
         if (value > startPos && value > hedaerHeight) {
             header.css('top', '-' + hedaerHeight + 'px');
@@ -21,7 +21,6 @@ $(function() {
         var prop = $('.load_pictures').prop('checked');
         if (prop) {
             twitterViewPictures()
-            changeTwitterPictureSize()
         } else {
             twitterHiddenPictures()
         }
@@ -29,42 +28,18 @@ $(function() {
 
     function twitterViewPictures() {
         localStorage.setItem('twitter-view_pictures', true)
-        $('.tweet-twitter_picture').each(function(index, element) {
-            if ($(element).data('possibly_sensitive') === 'False') {
-                if ($(element).parent().find('.tweet-twitter_view_picture').css('display') !== 'none') {
-                    var data_img_src = $(element).data('img-src')
-                    var img_element = `<img class="tweet-twitter_picture_img" src="${data_img_src}" style="object-fit: cover; height: ${localStorage.getItem('twitter-image_size')}px; border-radius: 12px; cursor: pointer;" loading="lazy">`
-                    $(element).append(img_element)
-                }
-            }
-            $(element).css({
-                'display': 'block'
-            })
-        })
-        $('.tweet-twitter_view_picture').each(function(index, element) {
-            if ($(element).parent().find('.tweet-twitter_picture').data('possibly_sensitive') === 'False') {
-                $(element).css({
-                    'display': 'none',
-                })
-            }
-        })
+        var tweetTwitterPicture = document.querySelectorAll('.tweet-twitter_picture')
+        for (let index = 0; index < tweetTwitterPicture.length; index++) {
+            tweetTwitterPicture[index].src = tweetTwitterPicture[index].dataset.src
+        }
     }
 
     function twitterHiddenPictures() {
         localStorage.removeItem('twitter-view_pictures')
-        $('.tweet-twitter_picture_img').each(function(index, element) {
-            if ($(element).parent().parent().find('.tweet-twitter_view_picture').css('display') === 'none') {
-                $(element).parent().css({
-                    'display': 'block'
-                })
-                $(element).remove()
-            }
-        })
-        $('.tweet-twitter_view_picture').each(function(index, element) {
-            $(element).css({
-                'display': 'block',
-            })
-        })
+        var tweetTwitterPicture = document.querySelectorAll('.tweet-twitter_picture')
+        for (let index = 0; index < tweetTwitterPicture.length; index++) {
+            tweetTwitterPicture[index].src = 'https://jackie99g.github.io/aquaprojects_staticfiles/images/icon.svg'
+        }
     }
 
     $('input[name="check"]').change(function() {
@@ -116,111 +91,6 @@ $(function() {
         })
     }
 
-    function changeTwitterPictureSize() {
-        var picture_height = localStorage.getItem('twitter-image_size')
-
-        $('.tweet-twitter_picture_length').each((index, element) => {
-            var picture_width = $(element).width()
-            var picture_length = parseInt($(element).data('picture_length'))
-            var tweet_twitter_picture_img =
-                $(element)
-                .parents('.tweet-twitter_pictures')
-                .find('.tweet-twitter_picture_img')
-
-            if (picture_length === 3) {
-                tweet_twitter_picture_img.each((index, element_img) => {
-                    if (index == 0) {
-                        $(element_img).css({
-                            'border-radius': '12px 0 0 12px',
-                            'padding-right': '2px',
-                        })
-                    } else if (index == 1) {
-                        $(element_img).css({
-                            'border-radius': '0 12px 0 0',
-                            'padding-bottom': '2px',
-                            'padding-left': '2px',
-                        })
-                    } else if (index == 2) {
-                        $(element_img).css({
-                            'border-radius': '0 0 12px',
-                            'padding-top': '2px',
-                            'padding-left': '2px',
-                        })
-                    }
-                    if (index == 0) {
-                        $(element_img).css({
-                            'height': `${picture_height}px`,
-                            'width': `${picture_width / 2}px`
-                        })
-                    } else if (index > 0) {
-                        $(element_img).css({
-                            'height': `${picture_height / 2}px`,
-                            'width': `${picture_width / 2}px`,
-                        })
-                    }
-                })
-            }
-            if (picture_length === 4) {
-                tweet_twitter_picture_img.each((index, element_img) => {
-                    if (index == 0) {
-                        $(element_img).css({
-                            'border-radius': '12px 0 0 0',
-                            'padding-bottom': '2px',
-                            'padding-right': '2px',
-                        })
-                    } else if (index == 1) {
-                        $(element_img).css({
-                            'border-radius': '0 12px 0 0',
-                            'padding-bottom': '2px',
-                            'padding-left': '2px',
-                        })
-                    } else if (index == 2) {
-                        $(element_img).css({
-                            'border-radius': '0 0 0 12px',
-                            'padding-top': '2px',
-                            'padding-right': '2px',
-                        })
-                    } else if (index == 3) {
-                        $(element_img).css({
-                            'border-radius': '0 0 12px 0',
-                            'padding-top': '2px',
-                            'padding-left': '2px',
-                        })
-                    }
-                    $(element_img).css({
-                        'height': `${picture_height / 2}px`,
-                        'width': `${picture_width / 2}px`,
-                    })
-                })
-            }
-            if (picture_length === 2) {
-                tweet_twitter_picture_img.each((index, element_img) => {
-                    if (index == 0) {
-                        $(element_img).css({
-                            'border-radius': '12px 0 0 12px',
-                            'padding-right': '2px',
-                        })
-                    } else if (index == 1) {
-                        $(element_img).css({
-                            'border-radius': '0 12px 12px 0',
-                            'padding-left': '2px',
-                        })
-                    }
-                    $(element_img).css({
-                        'height': `${picture_height}px`,
-                        'width': `${picture_width / 2}px`,
-                    })
-                })
-            }
-            if (picture_length === 1) {
-                tweet_twitter_picture_img.css({
-                    'height': `${picture_height}px`,
-                    'width': `${picture_width}px`,
-                })
-            }
-        })
-    }
-
     $('input[name="check"]').change(function() {
         var prop = $('.load_clear_icon').prop('checked');
         if (prop) {
@@ -232,30 +102,18 @@ $(function() {
 
     function twitterViewClearIcon() {
         localStorage.setItem('twitter-view_clear_icon', true)
-        $('.tweet-twitter_icon').find('img').each(function(index, element) {
-            var tweetTwitterIcon = $(element).attr('src')
-            tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
-            $(element).attr('src', tweetTwitterIcon)
-        })
-        $('.twitter_user-profile_image').find('img').each(function(index, element) {
-            var tweetTwitterIcon = $(element).attr('src')
-            tweetTwitterIcon = tweetTwitterIcon.replace('_normal', '_400x400')
-            $(element).attr('src', tweetTwitterIcon)
-        })
+        var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
+        for (let index = 0; index < tweetTwitterIconImg.length; index++) {
+            tweetTwitterIconImg[index].src.replace('_normal', '_400x400')
+        }
     }
 
     function twitterHideClearIcon() {
         localStorage.removeItem('twitter-view_clear_icon')
-        $('.tweet-twitter_icon').find('img').each(function(index, element) {
-            var tweetTwitterIcon = $(element).attr('src')
-            tweetTwitterIcon = tweetTwitterIcon.replace('_400x400', '_normal')
-            $(element).attr('src', tweetTwitterIcon)
-        })
-        $('.twitter_user-profile_image').find('img').each(function(index, element) {
-            var tweetTwitterIcon = $(element).attr('src')
-            tweetTwitterIcon = tweetTwitterIcon.replace('_400x400', '_normal')
-            $(element).attr('src', tweetTwitterIcon)
-        })
+        var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
+        for (let index = 0; index < tweetTwitterIconImg.length; index++) {
+            tweetTwitterIconImg[index].src.replace('_400x400', '_normal')
+        }
     }
 
     $(document).on('click', '.header-summarize_button', function() {
