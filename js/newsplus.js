@@ -62,6 +62,7 @@ $(function() {
 
     function changeContent(href) {
         activateNewsplusAnchor()
+        processAjaxProgressBar()
         fetch(
             href, {
                 method: 'GET',
@@ -82,6 +83,7 @@ $(function() {
             }
             $('#main').html($(data).find('#main').html());
             window.dispatchEvent(new Event('aquaproject_popstate'));
+            completeAjaxProgressBar()
         }).catch(err => {
             console.error(err)
         })
@@ -110,6 +112,24 @@ $(function() {
         currentSlideAnchorStore[currentSlideNumber].style.background = '#e8f5fe'
         currentSlideAnchorStore[currentSlideNumber].style.borderBottom = '1px solid #1da1f2'
         currentSlideAnchorStore[currentSlideNumber].style.color = '#1da1f2'
+    }
+
+    function processAjaxProgressBar() {
+        var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
+        ajaxProgressBar.classList ? ajaxProgressBar.classList.remove('bg-danger') : false
+        ajaxProgressBar.style.visibility = 'visible';
+        ajaxProgressBar.style.width = '80%'
+    }
+
+    function completeAjaxProgressBar() {
+        var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
+        ajaxProgressBar.style.width = '100%';
+        ajaxProgressBar.style.transition = 'width 0.1s ease';
+        setTimeout(() => {
+            ajaxProgressBar.style.visibility = 'hidden';
+            ajaxProgressBar.style.width = '0%';
+            ajaxProgressBar.style.transition = '';
+        }, 200);
     }
 
     function scrollNewsplusAnchorLeft(newsplusAnchorSlideNumber) {

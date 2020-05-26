@@ -38,13 +38,13 @@ $(function() {
     document.addEventListener('mousedown', function(e) {
 
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -87,13 +87,13 @@ $(function() {
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -193,13 +193,13 @@ $(function() {
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -252,13 +252,13 @@ $(function() {
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -306,6 +306,8 @@ $(function() {
 
         window.dispatchEvent(new Event('aquaproject_popstate'));
 
+        processAjaxProgressBar()
+
         fetch(
             href, {
                 method: "GET",
@@ -334,8 +336,28 @@ $(function() {
 
             last_message_auto_addition(conversation_id)
 
+            completeAjaxProgressBar()
+
             window.dispatchEvent(new Event('aquaproject_popstate'));
         })
+
+        function processAjaxProgressBar() {
+            var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
+            ajaxProgressBar.classList ? ajaxProgressBar.classList.remove('bg-danger') : false
+            ajaxProgressBar.style.visibility = 'visible';
+            ajaxProgressBar.style.width = '80%'
+        }
+
+        function completeAjaxProgressBar() {
+            var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
+            ajaxProgressBar.style.width = '100%';
+            ajaxProgressBar.style.transition = 'width 0.1s ease';
+            setTimeout(() => {
+                ajaxProgressBar.style.visibility = 'hidden';
+                ajaxProgressBar.style.width = '0%';
+                ajaxProgressBar.style.transition = '';
+            }, 200);
+        }
     }
 
     function messagePushState(href) {
@@ -379,13 +401,13 @@ $(function() {
     document.addEventListener('mousedown', function(e) {
 
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -445,13 +467,13 @@ $(function() {
     document.addEventListener('mousedown', function(e) {
 
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -488,13 +510,13 @@ $(function() {
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -683,7 +705,7 @@ $(function() {
         })
         getScript('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js').then(() => {
             socket = io.connect();
-            socket.on('connect', (msg) => {
+            socket.on('connect', () => {
                 socket.emit('get_sid', {})
             })
             socket.on('get_sid', (msg) => {
@@ -791,20 +813,18 @@ $(function() {
             }
         }).then(data => {
             AquaProjectCache[request] = data
-            var dataNode = document.createRange().createContextualFragment(data)
-            var dataJson = JSON.parse(dataNode.querySelector('pre').innerHTML)
         })
     }
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.className !== '' && target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (target.className !== '' && currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
@@ -823,13 +843,13 @@ $(function() {
 
     document.addEventListener('click', e => {
         function findParents(target, className) {
-            if (target.className !== '' && target.classList.contains(className)) {
+            if (target.className.length !== 0 && target.classList.contains(className)) {
                 return target
             }
             var currentNode = target.parentNode
-            if (currentNode === document) {
+            if (currentNode === document || currentNode === null) {
                 return false
-            } else if (target.className !== '' && currentNode.classList.contains(className)) {
+            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
                 return currentNode
             } else {
                 return findParents(currentNode, className)
