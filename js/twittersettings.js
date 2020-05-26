@@ -48,6 +48,11 @@ $(function() {
                 })
             }
         })
+
+        var currentDate = new Date()
+        currentDate.setFullYear(currentDate.getFullYear() + 1)
+        var expires = currentDate.toUTCString()
+        document.cookie = `ap_font_size=${persentage}; path=/twitter; expires=${expires}`
     })
 
     function changeFontSize() {
