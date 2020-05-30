@@ -6,7 +6,6 @@ $(function() {
             changeFontSize()
             setTweetCreated_at()
             twitterViewAllPictures()
-            twitterViewAllVideos()
             twitterProfile()
             twitterTrends()
             setClearIcon()
@@ -206,14 +205,22 @@ $(function() {
             formatTimelineOldTweets.appendChild(element)
         }
 
-        var tweetLoadMoreOldTweet = dataNode.querySelector('.format_timeline .tweet-load_more_old_tweet')
+        var tweetLoadMoreOldTweet = `
+        <div class="tweet-load_more_old_tweet" style="border-bottom: solid 1px #e6ecf0; cursor: pointer; height: 49px; display: flex; flex-direction: column; justify-content: center;">
+                <div class="tweet-load_more_old_tweet_loader" style="text-align: center; display: none;">
+                    <div class="loader" style="font-size: 2px; margin: 0 auto"></div>
+                </div>
+                <div class="tweet-load_more_old_tweet_message" style="text-align: center;"><i class="fab fa-twitter"></i></div>
+                <div class="tweet-load_more_old_tweet_message" style="text-align: center;">Load more old tweet</div>
+            </div>
+        `
 
         formatTimeline.style.height = ''
         formatTimeline.querySelector('.twitter_new_tweets_of_no_content').remove()
         formatTimeline.querySelector('.twitter_old_tweets_of_no_content').remove()
         formatTimeline.insertBefore(formatTimelineNewTweets, formatTimeline.firstChild)
         formatTimeline.appendChild(formatTimelineOldTweets)
-        formatTimeline.insertAdjacentElement('beforeend', tweetLoadMoreOldTweet)
+        formatTimeline.insertAdjacentHTML('beforeend', tweetLoadMoreOldTweet)
     }
 
     var tweetTwitterPictureClick = null
@@ -234,10 +241,39 @@ $(function() {
             }
         }
 
-        if (findParents(e.target, 'tweet-twitter_picture')) {
+        function searchNearNode(target, className) {
+            var searchParentNode = target.parentNode
+            if (searchParentNode === null) {
+                return false
+            }
+            var nearNodeList = searchParentNode.children
+            for (let index = 0; index < Array.from(nearNodeList).length; index++) {
+                const element = Array.from(nearNodeList)[index];
+                for (let index = 0; index < className.length; index++) {
+                    const cn = className[index];
+                    if (element.classList.length !== 0 && element.classList.contains(cn)) {
+                        return element
+                    }
+                }
+            }
+        }
+
+        var ecl = [
+            'tweet-twitter_video-play_icon',
+            'tweet-twitter_video-duration',
+        ]
+
+        if (findParents(e.target, 'tweet-twitter_picture') || searchNearNode(e.target, ecl)) {
             tweetTwitterPictureClick = true
 
+            if (e.target.classList.contains('tweet-twitter_video')) {
+                return false
+            }
+
             var tweetTwitterPictureImg = findParents(e.target, 'tweet-twitter_picture')
+            if (!tweetTwitterPictureImg) {
+                tweetTwitterPictureImg = searchNearNode(e.target, ['tweet-twitter_picture'])
+            }
 
             if (tweetTwitterPictureImg.src !== tweetTwitterPictureImg.dataset.src) {
                 tweetTwitterPictureImg.src = tweetTwitterPictureImg.dataset.src
@@ -245,6 +281,23 @@ $(function() {
             }
 
             var tweetTwitterPictures = findParents(e.target, 'tweet-twitter_pictures')
+            if (tweetTwitterPictures.querySelector('video')) {
+                var tweetTwitterPicturesVideo = tweetTwitterPictures.querySelector('video')
+                Array.from(tweetTwitterPicturesVideo.parentNode.children).forEach(element => {
+                    element.style.display = 'none'
+                })
+
+                var tweetTwitterPicturesVideoClone = tweetTwitterPicturesVideo.cloneNode(true)
+                tweetTwitterPicturesVideoClone.style.display = ''
+                videoCloneSource = tweetTwitterPicturesVideoClone.querySelector('source')
+                videoCloneSource.src = videoCloneSource.dataset.src
+                tweetTwitterPicturesVideo.insertAdjacentElement('afterend', tweetTwitterPicturesVideoClone)
+
+                tweetTwitterPicturesVideo.remove()
+
+                return false
+            }
+
             var tweetTwitterPictureElements = tweetTwitterPictures.querySelectorAll('.tweet-twitter_picture')
             var currentImgSrc = findParents(e.target, 'tweet-twitter_picture').dataset.src
             var currentImgNumber = 0
@@ -279,7 +332,7 @@ $(function() {
             for (let index = 0; index < ttpzn.length; index++) {
                 const element = ttpzn[index];
                 element.style.background = `${rgb_color})`
-                
+
             }
 
             if (ttpz.style.display === 'none') {
@@ -526,31 +579,6 @@ $(function() {
         component.removeClass('fadeOutUp')
         component.addClass('animated fadeOutUp')
     }
-
-    $(document).on('click', '.tweet-twitter_view_video', tweetTwitterViewVideo)
-
-    function tweetTwitterViewVideo(event) {
-        event.stopPropagation()
-        var twitter_view_video_data_video_bitrate = $(this).data('video-bitrate')
-        $(this).parent().find('.tweet-twitter_video').each(function(index, element) {
-            var data_video_src = $(element).data('video-src')
-            var data_video_bitrate = $(element).data('video-bitrate')
-            var video_element = '<video class="tweet-twitter_video_movie" style="width: 100%; height: 285px; border-radius: 12px; margin-top: 12px; outline: none; cursor: pointer;" controls><source src="' + data_video_src + '" data-bitrate="' + data_video_bitrate + '"></video>'
-            if (twitter_view_video_data_video_bitrate === data_video_bitrate) {
-                $(element).append(video_element)
-                $(element).css({
-                    'display': 'block'
-                })
-            }
-        })
-        $(this).css({
-            'display': 'none',
-        })
-    }
-
-    $(document).on('click', '.tweet-twitter_video', function(event) {
-        event.stopPropagation()
-    })
 
     var twittterCreateListName = ''
     var twitterCreateListDescription = ''
@@ -839,6 +867,7 @@ $(function() {
         function changeContentTwitterUser(screen_name) {
             var twitterTitle = document.querySelector('.twitter_title-block').outerHTML
             // The following will be changed:
+            // twitter_user -> Add id as twitter_user
             // .twitter_user-background_image -> Expand image.
             // .twitter_user-profile_image -> Add .tweet-twitter_icon, twitter_anchor, image property.
             // .twitter_user-name_screen_name -> Add twitter_anchor
@@ -846,9 +875,14 @@ $(function() {
             // .twitter_user-main -> css:padding
             // .twitter_user-profile_timelines_navigation-block -> css: display: ''
             // .twitter_user-profile_timelines_navigation-tweets -> Add .twitter_user-profile_timelines_navigation-selected
+            // .timeline -> Add loading html
+            // .twitter_user -> call setTweetCreated_at
             $('.twitter_user').each(function(index, element) {
                 if ($(element).data('twitter_user-screen_name') === screen_name) {
                     $('.timeline').html($(element).prop('outerHTML'))
+
+                    var twitterUserContent = document.querySelector('.twitter_user')
+                    twitterUserContent.id = 'twitter_user'
 
                     document.querySelector('.timeline').insertAdjacentHTML('afterbegin', twitterTitle)
                     var twitterUserName = document.querySelector('.twitter_user-name > span').innerHTML
@@ -889,6 +923,8 @@ $(function() {
                     timelineArea.insertAdjacentHTML(
                         'beforeend', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
                     )
+
+                    setTweetCreated_at()
                 }
             })
         }
@@ -953,49 +989,6 @@ $(function() {
             tweetTwitterPicture[index].src = 'https://jackie99g.github.io/aquaprojects_staticfiles/images/icon.svg'
         }
     }
-        
-
-    function twitterViewAllVideos() {
-        var prop = $('.load_videos').prop('checked');
-        var twitterViewVideos = localStorage.getItem('twitter-view_videos')
-        if (twitterViewVideos != null) {
-            if (prop) {
-                $('.tweet-twitter_view_video').each(function(index, twitter_view_video) {
-                    if ($(twitter_view_video).css('display') !== 'none') {
-                        var twitter_view_video_data_video_bitrate = $(twitter_view_video).data('video-bitrate')
-                        $(twitter_view_video).parent().find('.tweet-twitter_video').each(function(index, element) {
-                            var data_video_src = $(element).data('video-src')
-                            var data_video_bitrate = $(element).data('video-bitrate')
-                            var video_element = '<video class="tweet-twitter_video_movie" style="width: 100%; height: 285px; border-radius: 12px; margin-top: 12px; outline: none; cursor: pointer;" controls><source src="' + data_video_src + '" data-bitrate="' + data_video_bitrate + '"></video>'
-                            if (twitter_view_video_data_video_bitrate === data_video_bitrate) {
-                                $(element).append(video_element)
-                                $(element).css({
-                                    'display': 'block'
-                                })
-                            }
-                        })
-                        $(twitter_view_video).css({
-                            'display': 'none',
-                        })
-                    }
-                })
-            } else {
-                $('.tweet-twitter_video_movie').each(function(index, element) {
-                    if ($(element).parent().parent().find('.tweet-twitter_view_video').css('display') === 'none') {
-                        $(element).parent().css({
-                            'display': 'block'
-                        })
-                        $(element).remove()
-                    }
-                })
-                $('.tweet-twitter_view_video').each(function(index, all_video_element) {
-                    $(all_video_element).css({
-                        'display': 'block'
-                    })
-                })
-            }
-        }
-    }
 
     $(document).on('click', '.tweet-load_more_new_tweet', function() {
         var tweet_id = $('.format_timeline > div:first').data('tweet_id');
@@ -1057,7 +1050,6 @@ $(function() {
             setTweetCreated_at()
 
             twitterViewAllPictures()
-            twitterViewAllVideos()
             alreadyBottom = false;
 
             changeFontSize()
@@ -1300,24 +1292,40 @@ $(function() {
         }
 
         if (prop) {
-            setClearTwitterIcon
+            setClearTwitterIcon()
         } else {
-            setLowTwitterIcon
+            setLowTwitterIcon()
         }
     }
 
     function setClearTwitterIcon() {
         var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
         for (let index = 0; index < tweetTwitterIconImg.length; index++) {
-            tweetTwitterIconImg[index].src.replace('_normal', '_400x400')
+            const element = tweetTwitterIconImg[index];
+            var imgSrc = element.src
+            element.src = imgSrc.replace('_normal', '_400x400')
         }
+        var twitterUserTwitterIconImg = document.querySelector('.twitter_user-twitter_icon img')
+        if (!twitterUserTwitterIconImg) {
+            return false
+        }
+        var iconImgSrc = twitterUserTwitterIconImg.src
+        twitterUserTwitterIconImg.src = iconImgSrc.replace('_normal', '_400x400')
     }
 
     function setLowTwitterIcon() {
         var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
         for (let index = 0; index < tweetTwitterIconImg.length; index++) {
-            tweetTwitterIconImg[index].src.replace('_400x400', '_normal')
+            const element = tweetTwitterIconImg[index];
+            var imgSrc = element.src
+            element.src = imgSrc.replace('_400x400', '_normal')
         }
+        var twitterUserTwitterIconImg = document.querySelector('.twitter_user-twitter_icon img')
+        if (!twitterUserTwitterIconImg) {
+            return false
+        }
+        var iconImgSrc = twitterUserTwitterIconImg.src
+        twitterUserTwitterIconImg.src = iconImgSrc.replace('_400x400', '_normal')
     }
 
     $(document).on('click', '.tweet-twitter_full_text_hashtags', function(event) {
