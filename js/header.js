@@ -43,55 +43,6 @@ $(function() {
     }
 
     $('input[name="check"]').change(function() {
-        var prop = $('.load_videos').prop('checked');
-        if (prop) {
-            twitterViewVideos()
-        } else {
-            twitterHiddenVideos()
-        }
-    });
-
-    function twitterViewVideos() {
-        localStorage.setItem('twitter-view_videos', true)
-        $('.tweet-twitter_view_video').each(function(index, twitter_view_video) {
-            if ($(twitter_view_video).css('display') !== 'none') {
-                var twitter_view_video_data_video_bitrate = $(twitter_view_video).data('video-bitrate')
-                $(twitter_view_video).parent().find('.tweet-twitter_video').each(function(index, element) {
-                    var data_video_src = $(element).data('video-src')
-                    var data_video_bitrate = $(element).data('video-bitrate')
-                    var video_element = '<video class="tweet-twitter_video_movie" style="width: 100%; height: ' + localStorage.getItem('twitter-image_size') + 'px; border-radius: 12px; margin-top: 12px; outline: none; cursor: pointer;" controls><source src="' + data_video_src + '" data-bitrate="' + data_video_bitrate + '"></video>'
-                    if (twitter_view_video_data_video_bitrate === data_video_bitrate) {
-                        $(element).append(video_element)
-                        $(element).css({
-                            'display': 'block'
-                        })
-                    }
-                })
-                $(twitter_view_video).css({
-                    'display': 'none',
-                })
-            }
-        })
-    }
-
-    function twitterHiddenVideos() {
-        localStorage.removeItem('twitter-view_videos')
-        $('.tweet-twitter_video_movie').each(function(index, element) {
-            if ($(element).parent().parent().find('.tweet-twitter_view_video').css('display') === 'none') {
-                $(element).parent().css({
-                    'display': 'block'
-                })
-                $(element).remove()
-            }
-        })
-        $('.tweet-twitter_view_video').each(function(index, all_video_element) {
-            $(all_video_element).css({
-                'display': 'block'
-            })
-        })
-    }
-
-    $('input[name="check"]').change(function() {
         var prop = $('.load_clear_icon').prop('checked');
         if (prop) {
             twitterViewClearIcon()
@@ -104,16 +55,32 @@ $(function() {
         localStorage.setItem('twitter-view_clear_icon', true)
         var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
         for (let index = 0; index < tweetTwitterIconImg.length; index++) {
-            tweetTwitterIconImg[index].src.replace('_normal', '_400x400')
+            const element = tweetTwitterIconImg[index];
+            var imgSrc = element.src
+            element.src = imgSrc.replace('_normal', '_400x400')
         }
+        var twitterUserTwitterIconImg = document.querySelector('.twitter_user-twitter_icon img')
+        if (!twitterUserTwitterIconImg) {
+            return false
+        }
+        var iconImgSrc = twitterUserTwitterIconImg.src
+        twitterUserTwitterIconImg.src = iconImgSrc.replace('_normal', '_400x400')
     }
 
     function twitterHideClearIcon() {
         localStorage.removeItem('twitter-view_clear_icon')
         var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
         for (let index = 0; index < tweetTwitterIconImg.length; index++) {
-            tweetTwitterIconImg[index].src.replace('_400x400', '_normal')
+            const element = tweetTwitterIconImg[index];
+            var imgSrc = element.src
+            element.src = imgSrc.replace('_400x400', '_normal')
         }
+        var twitterUserTwitterIconImg = document.querySelector('.twitter_user-twitter_icon img')
+        if (!twitterUserTwitterIconImg) {
+            return false
+        }
+        var iconImgSrc = twitterUserTwitterIconImg.src
+        twitterUserTwitterIconImg.src = iconImgSrc.replace('_400x400', '_normal')
     }
 
     $(document).on('click', '.header-summarize_button', function() {
