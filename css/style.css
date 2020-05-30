@@ -10,6 +10,10 @@ h1 {
     font-size: inherit;
 }
 
+video {
+    outline: none;
+}
+
 .animated {
     animation-duration: 0.3s !important;
 }
