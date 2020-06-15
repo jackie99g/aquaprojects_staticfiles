@@ -40,12 +40,18 @@ $(function() {
     var target_tweet_id = ''
     var twitter_each_tweets_height = []
 
+    var tweetsIntersectionObserver = null
+
     function initTweetIntersectionObserver() {
-        const observer = new IntersectionObserver(processTweetsIntersectionObserve)
+        if (tweetsIntersectionObserver) {
+            tweetsIntersectionObserver.disconnect()
+            tweetsIntersectionObserver = null
+        }
+        tweetsIntersectionObserver = new IntersectionObserver(processTweetsIntersectionObserve)
         const tweets = document.querySelectorAll('.tweet')
         for (let index = 0; index < tweets.length; index++) {
             const element = tweets[index];
-            observer.observe(element)
+            tweetsIntersectionObserver.observe(element)
         }
         if (history.state && history.state['twitter_target_tweet_id']) {
             target_tweet_id = history.state['twitter_target_tweet_id']
@@ -114,6 +120,18 @@ $(function() {
                         })
                     }
                     twitter_each_tweets_height = insertTweets.concat(twitter_each_tweets_height)
+                }
+                if (history.state && target_tweet_id && twitter_each_tweets_height) {
+                    var replaceState = Object.assign({}, history.state)
+                    replaceState['scrollTop'] = window.scrollY
+                    replaceState['twitter_target_tweet_id'] = target_tweet_id
+                    replaceState['twitter_each_tweets_height'] = twitter_each_tweets_height
+                    if (replaceState['format_timeline_height'] === undefined) {
+                        replaceState['format_timeline_height'] =
+                            document.querySelector('.format_timeline').scrollHeight
+                    }
+                    var currentPage = location.href.replace(location.origin, '')
+                    history.replaceState(replaceState, null, currentPage)
                 }
                 console.log(twitter_each_tweets_height)
             });
@@ -225,22 +243,32 @@ $(function() {
 
     var tweetTwitterPictureClick = null
 
-    // tweet-twitter_picture
+    // tweet-twitter_user_tooltip
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
+        if (findParents(e.target, 'tweet-twitter_user_tooltip')) {
+            tweetTwitterPictureClick = true
+            if (findParents(e.target, 'twitter_anchor')) {
+                tweetTwitterPictureClick = false
             }
         }
+    })
 
+    // tweet-twitter_favorite, tweet-twitter_retweet
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'tweet-twitter_social')) {
+            tweetTwitterPictureClick = true
+        }
+    })
+
+    // tweet-twitter_full_text_hashtags
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'tweet-twitter_full_text_hashtags')) {
+            tweetTwitterPictureClick = true
+        }
+    })
+
+    // tweet-twitter_picture
+    document.addEventListener('click', e => {
         function searchNearNode(target, className) {
             var searchParentNode = target.parentNode
             if (searchParentNode === null) {
@@ -730,20 +758,6 @@ $(function() {
 
     // twitter_anchor
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'twitter_anchor')) {
             if (tweetTwitterPictureClick) {
                 tweetTwitterPictureClick = false
@@ -797,13 +811,19 @@ $(function() {
             if (history.state['drawLocationChanged'] == true) {
                 var mainArea = document.querySelector('#main')
                 while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
-                mainArea.insertAdjacentElement('afterbegin', AquaProjectCache[href].querySelector('#main'))
+                while (AquaProjectCache[href].querySelector('#main').firstChild) {
+                    mainArea.appendChild(
+                        AquaProjectCache[href].querySelector('#main').firstChild
+                    )
+                }
             } else {
                 var changeLocation = document.querySelector(history.state['changeLocation'])
                 while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-                changeLocation.insertAdjacentElement(
-                    'afterbegin', AquaProjectCache[href].querySelector(history.state['changeLocation'])
-                )
+                while (AquaProjectCache[href].querySelector(history.state['changeLocation']).firstChild) {
+                    changeLocation.appendChild(
+                        AquaProjectCache[href].querySelector(history.state['changeLocation']).firstChild
+                    )
+                }
             }
             // After data added, to do this method.
             if (doneFunc != undefined) {
@@ -1104,10 +1124,6 @@ $(function() {
         }
     }
 
-    $(document).on('click', '.tweet-twitter_urls', function(event) {
-        event.stopPropagation()
-    })
-
     function changeTwitterTimelineBackgroundSize() {
         var windowWidth = window.innerWidth
         var timelineBackground = document.querySelectorAll('.timeline_background')
@@ -1280,10 +1296,6 @@ $(function() {
         $(this).find('.tweet-twitter_user_tooltip').css('display', 'none');
     });
 
-    $(document).on('click', '.tweet-twitter_user_tooltip', function(event) {
-        event.stopPropagation()
-    })
-
     function setClearIcon() {
         var prop = document.querySelector('.load_clear_icon').checked
         var twitterViewClearIcon = localStorage.getItem('twitter-view_clear_icon')
@@ -1327,10 +1339,6 @@ $(function() {
         var iconImgSrc = twitterUserTwitterIconImg.src
         twitterUserTwitterIconImg.src = iconImgSrc.replace('_400x400', '_normal')
     }
-
-    $(document).on('click', '.tweet-twitter_full_text_hashtags', function(event) {
-        event.stopPropagation()
-    })
 
     $(document).on('click', '.twitter_user-lists_button', function() {
         var lists_status = $(this).data('twitter_user-lists_status')
@@ -1517,8 +1525,6 @@ $(function() {
     })
 
     $(document).on('click', '.tweet-twitter_favorite', function(event) {
-        event.stopPropagation()
-
         var tweet_favorited = $(this).data('tweet_favorited')
         var tweet_id = $(this).data('tweet_id')
         $('.tweet-twitter_favorite').each((index, element) => {
@@ -1608,8 +1614,6 @@ $(function() {
     }
 
     $(document).on('click', '.tweet-twitter_retweet', function(event) {
-        event.stopPropagation()
-
         var tweet_retweet = $(this).data('tweet_retweeted')
         var tweet_id = $(this).data('tweet_id')
         $('.tweet-twitter_retweet').each((index, element) => {
@@ -1856,21 +1860,6 @@ $(function() {
     }, true)
 
     document.addEventListener('mousedown', function(e) {
-
-        function findParents(target, className) {
-            if (target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document) {
-                return false
-            } else if (currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'twitter-search_box-close')) {
             document.querySelector('.twitter-search_box-input').value = ''
             document.querySelector('.twitter-search_box-close').style.display = 'none'
@@ -1921,6 +1910,20 @@ $(function() {
         document.querySelector('.format_timeline').insertAdjacentHTML(
             'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
         )
+    }
+
+    function findParents(target, className) {
+        if (target.className.length !== 0 && target.classList.contains(className)) {
+            return target
+        }
+        var currentNode = target.parentNode
+        if (currentNode === document || currentNode === null) {
+            return false
+        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
+            return currentNode
+        } else {
+            return findParents(currentNode, className)
+        }
     }
 
     function getCookie(name) {
