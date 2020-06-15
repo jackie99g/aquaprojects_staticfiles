@@ -197,7 +197,7 @@ $(function() {
 
         var cacheNode = AquaProjectCache[href]
         if (cacheNode) {
-            if (history.state['twitter_target_tweet_id']) {
+            if (history.state['twitter_target_tweet_id'] !== undefined) {
                 calculateTweetsToDisplay(cacheNode)
             } else {
                 var changeLocation = document.querySelector(history.state['changeLocation'])
@@ -206,7 +206,7 @@ $(function() {
                     changeLocation.appendChild(element)
                 });
             }
-            if (history.state['scrollTop']) {
+            if (history.state['scrollTop'] !== undefined) {
                 window.scroll(0, history.state['scrollTop'])
                 window.dispatchEvent(new Event('aquaproject_popstate'));
             }
