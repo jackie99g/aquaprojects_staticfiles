@@ -164,6 +164,54 @@ $(function() {
         })
     })
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'sidebar_position')) {
+            var sidebarPositionElement = findParents(e.target, 'sidebar_position')
+            var checked = sidebarPositionElement.querySelector('input').checked
+            var SIDEBAR_POSITION = 0
+            if (checked) {
+                SIDEBAR_POSITION = 1
+                sidebarPositionElement.querySelector('input').checked = 'checked'
+            } else {
+                sidebarPositionElement.querySelector('input').checked = ''
+            }
+            sidebarPosition(SIDEBAR_POSITION)
+            var currentDate = new Date()
+            currentDate.setFullYear(currentDate.getFullYear() + 1)
+            var expires = currentDate.toUTCString()
+            document.cookie = `ap_sidebar_position=${SIDEBAR_POSITION}; path=/; expires=${expires}`
+        }
+
+        function sidebarPosition(sidebarPositionNumber) {
+            var customSidePannelSm = document.querySelector('.dashboard_pannel .custom_side_pannel_sm')
+            var customSidePannelSmParent = customSidePannelSm.parentNode
+            var dashboardAnchorGroup = customSidePannelSmParent.querySelector('.dashboard_anchor_group')
+            if (sidebarPositionNumber === 0) {
+                customSidePannelSmParent.style.width = '100%'
+                dashboardAnchorGroup.classList.remove('flex_box_sm')
+                dashboardAnchorGroup.classList.add('flex_box_sm_0')
+            } else {
+                customSidePannelSmParent.style.width = ''
+                dashboardAnchorGroup.classList.remove('flex_box_sm_0')
+                dashboardAnchorGroup.classList.add('flex_box_sm')
+            }
+        }
+    })
+
+    function findParents(target, className) {
+        if (target.className.length !== 0 && target.classList.contains(className)) {
+            return target
+        }
+        var currentNode = target.parentNode
+        if (currentNode === document || currentNode === null) {
+            return false
+        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
+            return currentNode
+        } else {
+            return findParents(currentNode, className)
+        }
+    }
+
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
