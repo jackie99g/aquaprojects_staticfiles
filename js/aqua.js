@@ -68,9 +68,9 @@ $(function() {
     $('.user_picture').on('click', function() {
         var visible_state = $('.account').css('visibility');
         if ($('.account').css('visibility') == 'hidden') {
-            $('.account').addClass('animated fadeInUp faster')
+            $('.account').addClass('animated fadeInUpSmall faster')
         } else {
-            $('.account').removeClass('animated fadeInUp faster')
+            $('.account').removeClass('animated fadeInUpSmall faster')
         }
         var windowWidth = $(window).width();
         if (windowWidth < 768) {
@@ -178,7 +178,7 @@ $(function() {
         if (!findParents(e.target, 'account') && !findParents(e.target, 'username')) {
             var accountArea = document.querySelector('.account')
             accountArea.style.visibility = 'hidden'
-            accountArea.classList.remove('animated', 'fadeInUp', 'faster')
+            accountArea.classList.remove('animated', 'fadeInUpSmall', 'faster')
             var mainArea = document.querySelector('#main')
             mainArea.style.display = ''
         }
