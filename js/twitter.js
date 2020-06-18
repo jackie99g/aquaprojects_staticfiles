@@ -353,15 +353,6 @@ $(function() {
             }
 
             var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
-            var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
-
-            var rgb_color = `rgb(${generateRandomNumber(0, 172)}, ${generateRandomNumber(0, 172)}, ${generateRandomNumber(0, 172)}`
-            ttpz.style.background = `${rgb_color}, 0.9)`
-            for (let index = 0; index < ttpzn.length; index++) {
-                const element = ttpzn[index];
-                element.style.background = `${rgb_color})`
-
-            }
 
             if (ttpz.style.display === 'none') {
                 ttpz.style.display = 'flex'
@@ -369,10 +360,6 @@ $(function() {
 
             jumpToSlide(currentImgNumber, 0)
             tweetTwitterPictureZoomOpen(currentImgNumber)
-
-            function generateRandomNumber(random_min_number, random_max_number) {
-                return Math.floor(Math.random() * (random_max_number - random_min_number) + random_min_number)
-            }
         }
     })
 
@@ -432,6 +419,7 @@ $(function() {
         }
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
+        AverageColorByImageOnTweetTwitterPictureZoom()
     }
 
     var clickingNow = false
@@ -510,6 +498,7 @@ $(function() {
         if (currentSlideNumberProxy.number > 0) {
             currentSlideNumberProxy.number -= 1
         }
+        AverageColorByImageOnTweetTwitterPictureZoom()
     }
 
     function nextSlideBtn() {
@@ -521,6 +510,7 @@ $(function() {
         if (currentSlideNumberProxy.number < document.getElementsByClassName('tweet-twitter_picture_zoom-element').length - 1) {
             currentSlideNumberProxy.number += 1
         }
+        AverageColorByImageOnTweetTwitterPictureZoom()
     }
 
     function jumpToSlide(jumpToSlideNumber, duration = 200) {
@@ -537,6 +527,7 @@ $(function() {
             )
         }
         currentSlideNumberProxy.number = jumpToSlideNumber
+        AverageColorByImageOnTweetTwitterPictureZoom()
     }
 
     function scrollContentLeft(n, t, i) {
@@ -564,6 +555,13 @@ $(function() {
             var tweet_twitter_picture_zoom = $('.tweet-twitter_picture_zoom')
             if (tweet_twitter_picture_zoom.css('display') === 'flex') {
                 tweet_twitter_picture_zoom.css('display', 'none')
+            }
+            var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
+            var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
+            ttpz.style.background = ''
+            for (let index = 0; index < ttpzn.length; index++) {
+                const element = ttpzn[index];
+                element.style.background = ''
             }
         }, 200);
     }
@@ -606,6 +604,39 @@ $(function() {
     function startFadeOutUP(component) {
         component.removeClass('fadeOutUp')
         component.addClass('animated fadeOutUp')
+    }
+
+    function AverageColorByImageOnTweetTwitterPictureZoom() {
+        var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
+        var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
+
+        var ttpzc = ttpz.querySelector('.tweet-twitter_picture_zoom-container')
+        var ttpzce = ttpzc.querySelectorAll('.tweet-twitter_picture_zoom-element img')
+
+        var ImgTable = []
+        for (let index = 0; index < ttpzce.length; index++) {
+            const element = ttpzce[index];
+            ImgTable.push(element.src)
+        }
+
+        averageColorByImage(ImgTable[currentSlideNumberProxy.number]).then(res => {
+            var rgb_color = `rgb(${res[0]}, ${res[1]}, ${res[2]}`
+            ttpz.style.background = `${rgb_color}, 0.9)`
+            for (let index = 0; index < ttpzn.length; index++) {
+                const element = ttpzn[index];
+                element.style.background = `${rgb_color})`
+            }
+        })
+
+        setTimeout(() => {
+            if (ttpz.style.display !== 'none' && ttpz.style.background === '') {
+                ttpz.style.background = 'white'
+                for (let index = 0; index < ttpzn.length; index++) {
+                    const element = ttpzn[index];
+                    element.style.background = 'black'
+                }
+            }
+        }, 1000);
     }
 
     var twittterCreateListName = ''
@@ -1910,6 +1941,32 @@ $(function() {
         document.querySelector('.format_timeline').insertAdjacentHTML(
             'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
         )
+    }
+
+    function averageColorByImage(src) {
+        const canvas = document.createElement("canvas")
+        const ctx = canvas.getContext('2d');
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"
+            img.onload = () => {
+                canvas.height = img.height;
+                canvas.width = img.width;
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, img.width, img.height)
+                let rgba = [0, 0, 0, 0]
+
+                imageData.data.forEach((v, i) => {
+                    rgba[i % 4] = rgba[i % 4] + v
+                })
+                const r = rgba[0] / (img.width * img.height)
+                const g = rgba[1] / (img.width * img.height)
+                const b = rgba[2] / (img.width * img.height)
+                resolve([r, g, b])
+            };
+            img.onerror = (e) => reject(e)
+            img.src = src;
+        });
     }
 
     function findParents(target, className) {
