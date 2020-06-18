@@ -982,7 +982,7 @@ a:hover {
     justify-content: center;
     align-items: center;
     z-index: 2;
-    background: rgba(64, 41, 45, 0.9);
+    transition: all 0.1s;
 }
 
 .tweet-twitter_picture_zoom-container {
@@ -1005,7 +1005,6 @@ a:hover {
 .tweet-twitter_picture_zoom-navigator {
     position: absolute;
     color: white;
-    background: rgba(64, 41, 45, 0.8);
     border-radius: 50%;
     width: 30px;
     height: 30px;
@@ -1013,6 +1012,7 @@ a:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transition: all 0.1s;
     cursor: pointer;
 }
 
