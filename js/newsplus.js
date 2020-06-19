@@ -104,12 +104,10 @@ $(function() {
     function activateNewsplusAnchor() {
         var currentSlideAnchorStore = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')
         for (let index = 0; index < currentSlideAnchorStore.length; index++) {
-            currentSlideAnchorStore[index].style.background = ''
             currentSlideAnchorStore[index].style.borderBottom = ''
             currentSlideAnchorStore[index].style.color = ''
 
         }
-        currentSlideAnchorStore[currentSlideNumber].style.background = '#e8f5fe'
         currentSlideAnchorStore[currentSlideNumber].style.borderBottom = '1px solid #1da1f2'
         currentSlideAnchorStore[currentSlideNumber].style.color = '#1da1f2'
     }

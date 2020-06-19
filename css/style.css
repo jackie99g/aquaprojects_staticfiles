@@ -1115,6 +1115,7 @@ a:hover {
 }
 
 .box_anchor {
+    color: #657786;
     padding: 12px 12px 8px;
     flex: 0 0 auto;
     width: calc(100% / 3);
@@ -1130,6 +1131,7 @@ a:hover {
 
 .box_anchor:hover {
     background: #e8f5fe;
+    border-bottom: 1px solid #1da1f2;
 }
 
 .box_container {
