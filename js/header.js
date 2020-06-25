@@ -20,22 +20,14 @@ $(function() {
     $('input[name="check"]').change(function() {
         var prop = $('.load_pictures').prop('checked');
         if (prop) {
-            twitterViewPictures()
+            localStorage.setItem('twitter-view_pictures', true)
         } else {
+            localStorage.removeItem('twitter-view_pictures')
             twitterHiddenPictures()
         }
     });
 
-    function twitterViewPictures() {
-        localStorage.setItem('twitter-view_pictures', true)
-        var tweetTwitterPicture = document.querySelectorAll('.tweet-twitter_picture')
-        for (let index = 0; index < tweetTwitterPicture.length; index++) {
-            tweetTwitterPicture[index].src = tweetTwitterPicture[index].dataset.src
-        }
-    }
-
     function twitterHiddenPictures() {
-        localStorage.removeItem('twitter-view_pictures')
         var tweetTwitterPicture = document.querySelectorAll('.tweet-twitter_picture')
         for (let index = 0; index < tweetTwitterPicture.length; index++) {
             tweetTwitterPicture[index].src = 'https://jackie99g.github.io/aquaprojects_staticfiles/images/icon.svg'
