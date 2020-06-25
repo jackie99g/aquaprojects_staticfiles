@@ -3,12 +3,12 @@ $(function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
             console.log('twitter!')
             initTweetIntersectionObserver()
+            initTweetPictureInsersectionObserver()
+            initTweetTwitterUserIconInsersectionObserver()
             changeFontSize()
             setTweetCreated_at()
-            twitterViewAllPictures()
             twitterProfile()
             twitterTrends()
-            setClearIcon()
             changeTwitterTimelineBackgroundSize()
             console.log('twitter! popstate event finished.')
         }
@@ -36,6 +36,76 @@ $(function() {
     //         loadMoreTweet(tweet_id, 'old');
     //     }
     // })
+
+    var tweetPictureInsersectionObserver = null
+
+    function initTweetPictureInsersectionObserver() {
+        if (tweetPictureInsersectionObserver) {
+            try {
+                tweetPictureInsersectionObserver.disconnect()
+                tweetPictureInsersectionObserver = null
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        tweetPictureInsersectionObserver = new IntersectionObserver(processTweetPictureInsersectionObserver)
+        var ttps = document.querySelectorAll('.tweet-twitter_picture')
+        for (let index = 0; index < ttps.length; index++) {
+            const element = ttps[index];
+            tweetPictureInsersectionObserver.observe(element)
+        }
+
+        function processTweetPictureInsersectionObserver(entries, observer) {
+            entries.forEach(element => {
+                if (!element.isIntersecting) {
+                    return false
+                }
+                if (!localStorage.getItem('twitter-view_pictures')) {
+                    return false
+                }
+                var ttp = element.target
+                console.log(ttp.dataset.src)
+                ttp.src = ttp.dataset.src
+            })
+        }
+    }
+
+    var tweetTwitterUserIconInsersectionObserver = null
+
+    function initTweetTwitterUserIconInsersectionObserver() {
+        if (tweetTwitterUserIconInsersectionObserver) {
+            try {
+                tweetTwitterUserIconInsersectionObserver.disconnect()
+                tweetTwitterUserIconInsersectionObserver = null
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        tweetTwitterUserIconInsersectionObserver = new IntersectionObserver(
+            processTweetTwitterUserIconInsersectionObserver
+        )
+        var ttui = document.querySelectorAll('.tweet-twitter_icon img')
+        for (let index = 0; index < ttui.length; index++) {
+            const element = ttui[index];
+            tweetTwitterUserIconInsersectionObserver.observe(element)
+
+        }
+
+        function processTweetTwitterUserIconInsersectionObserver(entries, observer) {
+            entries.forEach(element => {
+                if (!element.isIntersecting) {
+                    return false
+                }
+                if (!localStorage.getItem('twitter-view_clear_icon')) {
+                    return false
+                }
+                var ttui = element.target
+                var ttuiSrc = ttui.src
+                ttui.src = ttuiSrc.replace('_normal', '_400x400')
+                console.log(ttui.src)
+            })
+        }
+    }
 
     var target_tweet_id = ''
     var twitter_each_tweets_height = []
@@ -1014,33 +1084,6 @@ $(function() {
         }
     }
 
-    function twitterViewAllPictures() {
-        var prop = document.querySelector('.load_pictures').checked
-        var twitterViewPictures = localStorage.getItem('twitter-view_pictures')
-        if (twitterViewPictures === null) {
-            return false
-        }
-        if (prop) {
-            showTwitterAllPictures()
-        } else {
-            hideTwitterAllPictures()
-        }
-    }
-
-    function showTwitterAllPictures() {
-        var tweetTwitterPicture = document.querySelectorAll('.tweet-twitter_picture')
-        for (let index = 0; index < tweetTwitterPicture.length; index++) {
-            tweetTwitterPicture[index].src = tweetTwitterPicture[index].dataset.src
-        }
-    }
-
-    function hideTwitterAllPictures() {
-        var tweetTwitterPicture = document.querySelectorAll('.tweet-twitter_picture')
-        for (let index = 0; index < tweetTwitterPicture.length; index++) {
-            tweetTwitterPicture[index].src = 'https://jackie99g.github.io/aquaprojects_staticfiles/images/icon.svg'
-        }
-    }
-
     $(document).on('click', '.tweet-load_more_new_tweet', function() {
         var tweet_id = $('.format_timeline > div:first').data('tweet_id');
         loadMoreTweet(tweet_id, 'new');
@@ -1100,11 +1143,9 @@ $(function() {
 
             setTweetCreated_at()
 
-            twitterViewAllPictures()
             alreadyBottom = false;
 
             changeFontSize()
-            setClearIcon()
 
             if (load_type === 'new') {
                 var diff = document.body.scrollHeight - current_scrollHeight
@@ -1326,50 +1367,6 @@ $(function() {
     $(document).on('mouseleave', '.tweet-twitter_user_name', function() {
         $(this).find('.tweet-twitter_user_tooltip').css('display', 'none');
     });
-
-    function setClearIcon() {
-        var prop = document.querySelector('.load_clear_icon').checked
-        var twitterViewClearIcon = localStorage.getItem('twitter-view_clear_icon')
-        if (twitterViewClearIcon === null) {
-            return false
-        }
-
-        if (prop) {
-            setClearTwitterIcon()
-        } else {
-            setLowTwitterIcon()
-        }
-    }
-
-    function setClearTwitterIcon() {
-        var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
-        for (let index = 0; index < tweetTwitterIconImg.length; index++) {
-            const element = tweetTwitterIconImg[index];
-            var imgSrc = element.src
-            element.src = imgSrc.replace('_normal', '_400x400')
-        }
-        var twitterUserTwitterIconImg = document.querySelector('.twitter_user-twitter_icon img')
-        if (!twitterUserTwitterIconImg) {
-            return false
-        }
-        var iconImgSrc = twitterUserTwitterIconImg.src
-        twitterUserTwitterIconImg.src = iconImgSrc.replace('_normal', '_400x400')
-    }
-
-    function setLowTwitterIcon() {
-        var tweetTwitterIconImg = document.querySelectorAll('.tweet-twitter_icon img')
-        for (let index = 0; index < tweetTwitterIconImg.length; index++) {
-            const element = tweetTwitterIconImg[index];
-            var imgSrc = element.src
-            element.src = imgSrc.replace('_400x400', '_normal')
-        }
-        var twitterUserTwitterIconImg = document.querySelector('.twitter_user-twitter_icon img')
-        if (!twitterUserTwitterIconImg) {
-            return false
-        }
-        var iconImgSrc = twitterUserTwitterIconImg.src
-        twitterUserTwitterIconImg.src = iconImgSrc.replace('_400x400', '_normal')
-    }
 
     $(document).on('click', '.twitter_user-lists_button', function() {
         var lists_status = $(this).data('twitter_user-lists_status')
