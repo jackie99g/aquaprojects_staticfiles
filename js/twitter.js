@@ -5,6 +5,7 @@ $(function() {
             initTweetIntersectionObserver()
             initTweetPictureInsersectionObserver()
             initTweetTwitterUserIconInsersectionObserver()
+            makeTwitterUserTwitterIconClear()
             changeFontSize()
             setTweetCreated_at()
             twitterProfile()
@@ -64,7 +65,6 @@ $(function() {
                     return false
                 }
                 var ttp = element.target
-                console.log(ttp.dataset.src)
                 ttp.src = ttp.dataset.src
             })
         }
@@ -102,9 +102,17 @@ $(function() {
                 var ttui = element.target
                 var ttuiSrc = ttui.src
                 ttui.src = ttuiSrc.replace('_normal', '_400x400')
-                console.log(ttui.src)
             })
         }
+    }
+
+    function makeTwitterUserTwitterIconClear() {
+        var twitterUserTwitterIcon = document.querySelector('.twitter_user-twitter_icon img')
+        if (!twitterUserTwitterIcon) {
+            return false
+        }
+        var twitterUserTwitterIconSrc = twitterUserTwitterIcon.src
+        twitterUserTwitterIcon.src = twitterUserTwitterIconSrc.replace('_normal', '_400x400')
     }
 
     var target_tweet_id = ''
@@ -117,7 +125,11 @@ $(function() {
             tweetsIntersectionObserver.disconnect()
             tweetsIntersectionObserver = null
         }
-        tweetsIntersectionObserver = new IntersectionObserver(processTweetsIntersectionObserve)
+        tweetsIntersectionObserver = new IntersectionObserver(
+            processTweetsIntersectionObserve, {
+                threshold: [1.0]
+            }
+        )
         const tweets = document.querySelectorAll('.tweet')
         for (let index = 0; index < tweets.length; index++) {
             const element = tweets[index];
@@ -132,44 +144,49 @@ $(function() {
             twitter_each_tweets_height = []
         }
 
+        const ftftid = document.querySelector('.format_timeline').firstElementChild.dataset['tweet_id']
+        const currentPage = location.href.replace(location.origin, '')
+
         function processTweetsIntersectionObserve(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
                     return false
                 }
-                if (!element.target.dataset.tweet_id) {
-                    return false
-                }
-                if (element.target.parentNode.classList.length === 0) {
-                    return false
-                }
-                if (!element.target.parentNode.classList.contains('format_timeline')) {
-                    return false
-                }
-                // Whether load tweets object?
-                if (history.state && history.state['twitter_target_tweet_id'] && document.querySelector('.twitter_new_tweets_of_no_content')) {
-                    loadTheOthersTweet()
-                    window.dispatchEvent(new Event('aquaproject_popstate'))
-                }
-                // Set each tweet object height.
+
                 var currentTweet = element.target
-                if (currentTweet.parentNode.classList.contains('format_timeline')) {
-                    target_tweet_id = currentTweet.dataset.tweet_id
-                    console.log(target_tweet_id)
+
+                if (!currentTweet.dataset.tweet_id) {
+                    return false
                 }
+
+                var ctp = currentTweet.parentNode
+                if (ctp.classList.length === 0 || !ctp.classList.contains('format_timeline')) {
+                    return false
+                }
+
+                // Whether load tweets object?
+                if (history.state && history.state['twitter_target_tweet_id']) {
+                    if (document.querySelector('.twitter_new_tweets_of_no_content')) {
+                        loadTheOthersTweet()
+                        window.dispatchEvent(new Event('aquaproject_popstate'))
+                    }
+                }
+
+                // Set each tweet object height.
+                target_tweet_id = currentTweet.dataset.tweet_id
+
                 if (twitter_each_tweets_height.filter(item => item['tweet_id'] === target_tweet_id).length !== 0) {
                     if (twitter_each_tweets_height.length !== 0) {
                         return false
                     }
                 }
-                if (currentTweet.parentNode.classList.contains('format_timeline')) {
-                    twitter_each_tweets_height.push({
-                        tweet_id: target_tweet_id,
-                        tweet_height: currentTweet.offsetHeight,
-                    })
-                }
 
-                if (twitter_each_tweets_height.map(item => item['tweet_id']).findIndex(item => item === document.querySelector('.format_timeline .tweet').dataset['tweet_id']) === -1) {
+                twitter_each_tweets_height.push({
+                    tweet_id: target_tweet_id,
+                    tweet_height: currentTweet.offsetHeight,
+                })
+
+                if (twitter_each_tweets_height.map(item => item['tweet_id']).findIndex(item => item === ftftid) === -1) {
                     var formatTimelineTweets = document.querySelectorAll('.format_timeline .tweet')
                     var correctTweets = []
                     for (let index = 0; index < formatTimelineTweets.length; index++) {
@@ -191,7 +208,8 @@ $(function() {
                     }
                     twitter_each_tweets_height = insertTweets.concat(twitter_each_tweets_height)
                 }
-                if (history.state && target_tweet_id && twitter_each_tweets_height) {
+
+                if (target_tweet_id && twitter_each_tweets_height) {
                     var replaceState = Object.assign({}, history.state)
                     replaceState['scrollTop'] = window.scrollY
                     replaceState['twitter_target_tweet_id'] = target_tweet_id
@@ -200,10 +218,8 @@ $(function() {
                         replaceState['format_timeline_height'] =
                             document.querySelector('.format_timeline').scrollHeight
                     }
-                    var currentPage = location.href.replace(location.origin, '')
                     history.replaceState(replaceState, null, currentPage)
                 }
-                console.log(twitter_each_tweets_height)
             });
         }
     }
@@ -1002,11 +1018,11 @@ $(function() {
                 if ($(element).data('twitter_user-screen_name') === screen_name) {
                     $('.timeline').html($(element).prop('outerHTML'))
 
-                    var twitterUserContent = document.querySelector('.twitter_user')
+                    var twitterUserContent = document.querySelector('.timeline .twitter_user')
                     twitterUserContent.id = 'twitter_user'
 
                     document.querySelector('.timeline').insertAdjacentHTML('afterbegin', twitterTitle)
-                    var twitterUserName = document.querySelector('.twitter_user-name > span').innerHTML
+                    var twitterUserName = document.querySelector('.timeline .twitter_user-name > span').innerHTML
                     document.querySelector('.twitter_title-home-text').innerHTML = twitterUserName
 
                     var TwitterUserBackgroundImage = $('.timeline').find('.twitter_user-background_image').data('img-src')
@@ -1015,6 +1031,7 @@ $(function() {
 
                     $('.timeline').find('.twitter_user-profile_image').css('height', '50px')
                     var twitterUserProfile = $('.timeline').find('.twitter_user-profile_image')
+                    twitterUserProfile.addClass('twitter_user-twitter_icon')
                     twitterUserProfile.find('img').insertBefore(twitterUserProfile.find('a'))
                     twitterUserProfile.find('a').remove()
                     $('.timeline').find('.twitter_user-profile_image').find('img').css({
@@ -1031,6 +1048,7 @@ $(function() {
 
                     var twitterUserLocation = $('.timeline').find('.twitter_user-local')
                     twitterUserLocation.css('display', 'flex')
+                    twitterUserLocation.css('flex-wrap', 'wrap')
 
                     $('.timeline').find('.twitter_user-main').css('padding', '0 10px')
 
@@ -1046,6 +1064,7 @@ $(function() {
                     )
 
                     setTweetCreated_at()
+                    makeTwitterUserTwitterIconClear()
                 }
             })
         }
@@ -1314,19 +1333,19 @@ $(function() {
             $(element).text(displayTime)
         })
 
-        var twitterUserPageCreatedAt = document.querySelector('#twitter_user .twitter_user-created_at')
+        var twitterUserPageCreatedAt = document.querySelector('.timeline #twitter_user .twitter_user-created_at')
         if (!twitterUserPageCreatedAt) {
             return false
         }
 
         (() => {
             var createdat_title = twitterUserPageCreatedAt.title
-            var calendarIcon = '<i class="far fa-calendar-alt" style="padding-top: 4px;"></i> '
+            var calendarIcon = '<i class="far fa-calendar-alt" style="padding-top: 4px;"></i>'
             var created_at_time = new Date(createdat_title).getTime()
             var currentTime = new Date().getTime()
             var diffTime = currentTime - created_at_time
             var displayTime = calculateJoinTime(diffTime, createdat_title)
-            displayTime = `<div style="padding-left: 4px;">${displayTime}</div>`
+            displayTime = `<span style="padding-left: 4px;">${displayTime}</span>`
             twitterUserPageCreatedAt.innerHTML = `${calendarIcon}${displayTime}`
         })()
 
