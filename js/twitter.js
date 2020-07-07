@@ -1983,6 +1983,7 @@ $(function() {
                         default:
                             console.error(e)
                     }
+                    worker.terminate()
                 })
                 worker.postMessage({
                     'cmd': 'averageColor',
