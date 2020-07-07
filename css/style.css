@@ -982,7 +982,7 @@ a:hover {
     justify-content: center;
     align-items: center;
     z-index: 2;
-    transition: all 0.1s;
+    /* transition: all 0.1s; */
 }
 
 .tweet-twitter_picture_zoom-container {
