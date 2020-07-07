@@ -911,6 +911,7 @@ $(function() {
     })
 
     function changeContent(href, doneFunc, anchorMode, anchorContext) {
+        document.title = 'Aqua Projects - ' + href
         if (anchorMode === 'twitter_user') changeContentTwitterUser(anchorContext)
         else if (anchorMode === 'tweet') changeContentTweet(anchorContext)
         else {
