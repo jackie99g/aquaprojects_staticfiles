@@ -443,7 +443,7 @@ $(function() {
             if (ttpz.style.display === 'none') {
                 ttpz.style.display = 'flex'
             }
-            
+
             var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
             ttpz.style.background = ''
             for (let index = 0; index < ttpzn.length; index++) {
@@ -644,13 +644,18 @@ $(function() {
 
     function tweetTwitterPictureZoomClose() {
         startFadeOutUP($('.tweet-twitter_picture_zoom-element'))
-        setTimeout(() => {
-            var tweet_twitter_picture_zoom = $('.tweet-twitter_picture_zoom')
-            if (tweet_twitter_picture_zoom.css('display') === 'flex') {
-                tweet_twitter_picture_zoom.css('display', 'none')
-            }
-        }, 200);
     }
+
+    document.addEventListener('animationend', e => {
+        if (findParents(e.target, 'tweet-twitter_picture_zoom-element')) {
+            if (e.animationName === 'fadeOutUp') {
+                var tweet_twitter_picture_zoom = $('.tweet-twitter_picture_zoom')
+                if (tweet_twitter_picture_zoom.css('display') === 'flex') {
+                    tweet_twitter_picture_zoom.css('display', 'none')
+                }
+            }
+        }
+    })
 
     $(document).on('click', '.tweet-twitter_picture_zoom-close', tweetTwitterPictureZoomClose)
     $(document).on('click', '.tweet-twitter_picture_zoom-element_img', tweetTwitterPictureZoomClose)
