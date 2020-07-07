@@ -443,6 +443,13 @@ $(function() {
             if (ttpz.style.display === 'none') {
                 ttpz.style.display = 'flex'
             }
+            
+            var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
+            ttpz.style.background = ''
+            for (let index = 0; index < ttpzn.length; index++) {
+                const element = ttpzn[index];
+                element.style.background = ''
+            }
 
             jumpToSlide(currentImgNumber, 0)
             tweetTwitterPictureZoomOpen(currentImgNumber)
@@ -641,13 +648,6 @@ $(function() {
             var tweet_twitter_picture_zoom = $('.tweet-twitter_picture_zoom')
             if (tweet_twitter_picture_zoom.css('display') === 'flex') {
                 tweet_twitter_picture_zoom.css('display', 'none')
-            }
-            var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
-            var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
-            ttpz.style.background = ''
-            for (let index = 0; index < ttpzn.length; index++) {
-                const element = ttpzn[index];
-                element.style.background = ''
             }
         }, 200);
     }
@@ -1986,7 +1986,7 @@ $(function() {
                 })
                 worker.postMessage({
                     'cmd': 'averageColor',
-                    'msg': [imageData,img.height, img.width]
+                    'msg': [imageData, img.height, img.width]
                 })
             };
             img.onerror = (e) => reject(e)
