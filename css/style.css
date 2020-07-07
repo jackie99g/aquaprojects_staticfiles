@@ -1012,7 +1012,7 @@ a:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    transition: all 0.1s;
+    /* transition: all 0.1s; */
     cursor: pointer;
 }
 
