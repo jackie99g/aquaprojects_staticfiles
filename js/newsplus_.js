@@ -1,11 +1,11 @@
 $(function() {
-    $(window).on('aquaproject_popstate', function() {
+    $(window).on('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus_') {
             drawNewsplusAll('initialize')
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus_') {
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
     function drawNewsplusAll(mode) {

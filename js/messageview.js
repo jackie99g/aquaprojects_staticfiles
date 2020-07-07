@@ -1,5 +1,5 @@
 $(function() {
-    window.addEventListener('aquaproject_popstate', function() {
+    window.addEventListener('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
             convertLocalTime()
             changeViewOfConversationOrMessage()
@@ -7,7 +7,7 @@ $(function() {
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
     window.addEventListener("resize", () => {
         changeViewOfConversationOrMessage()
@@ -162,7 +162,7 @@ $(function() {
 
             AutonotifyMessageHasSended(messageItem)
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         })
     }
 
@@ -246,7 +246,7 @@ $(function() {
             var conversation_id = document.querySelector('.message-view_message-input').dataset['conversation_id']
             last_message_auto_addition(conversation_id)
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         })
     }
 
@@ -304,7 +304,7 @@ $(function() {
 
         messagePushState(href)
 
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
 
         processAjaxProgressBar()
 
@@ -338,7 +338,7 @@ $(function() {
 
             completeAjaxProgressBar()
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         })
 
         function processAjaxProgressBar() {
@@ -596,7 +596,7 @@ $(function() {
             document.querySelector('.message-conversation-list').style.display = 'block'
             document.querySelector('.message-conversation-create').style.display = 'none'
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         })
     }
 
@@ -728,7 +728,7 @@ $(function() {
 
                 last_message_auto_addition(conversation_id)
 
-                window.dispatchEvent(new Event('aquaproject_popstate'));
+                window.dispatchEvent(new Event('aquaprojects_popstate'));
             })
         })
     }

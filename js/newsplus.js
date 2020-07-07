@@ -7,7 +7,7 @@ $(function() {
     var clickingPositionPageX = 0
     var currentSlideNumber = 0
 
-    $(window).on('aquaproject_popstate', function() {
+    $(window).on('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
             var _currentSlideNumber = searchCurrentSlideNumber()
             jumpToSlide(_currentSlideNumber, 0)
@@ -16,7 +16,7 @@ $(function() {
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
     $(window).resize(() => {
@@ -82,7 +82,7 @@ $(function() {
                 return false
             }
             $('#main').html($(data).find('#main').html());
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
             completeAjaxProgressBar()
         }).catch(err => {
             console.error(err)

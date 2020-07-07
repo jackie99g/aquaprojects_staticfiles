@@ -1,5 +1,5 @@
 $(function() {
-    $(window).on('aquaproject_popstate', function() {
+    $(window).on('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
             console.log('twitter!')
             initTweetIntersectionObserver()
@@ -15,7 +15,7 @@ $(function() {
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
     // setInterval(() => {
@@ -168,7 +168,7 @@ $(function() {
                 if (history.state && history.state['twitter_target_tweet_id']) {
                     if (document.querySelector('.twitter_new_tweets_of_no_content')) {
                         loadTheOthersTweet()
-                        window.dispatchEvent(new Event('aquaproject_popstate'))
+                        window.dispatchEvent(new Event('aquaprojects_popstate'))
                     }
                 }
 
@@ -950,7 +950,7 @@ $(function() {
                 'width': '100%'
             });
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         }
 
         fetch(
@@ -983,7 +983,7 @@ $(function() {
                 doneFunc()
             }
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%',
@@ -1818,7 +1818,7 @@ $(function() {
             }
             $('#ajax-progress-bar').css('width', '100%');
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
 
             if (useCache === true) {
                 $('#ajax-progress-bar').css({
@@ -1865,7 +1865,7 @@ $(function() {
                 $(history.state['changeLocation']).html($(data).find(history.state['changeLocation']).html());
             }
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%',

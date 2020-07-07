@@ -1,5 +1,5 @@
 $(function() {
-    $(window).on('aquaproject_popstate', function() {
+    $(window).on('aquaprojects_popstate', function() {
         if (location.pathname.replace(location.origin, '') === '/weather') {
             drawWeather()
             $('.hourly-weather-chart-block').scroll(function() {
@@ -12,7 +12,7 @@ $(function() {
         }
     })
     if (location.pathname.replace(location.origin, '') === '/weather') {
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
     $(document).on('click', '.daily-weather-left-btn', function() {

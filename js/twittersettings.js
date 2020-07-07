@@ -1,5 +1,5 @@
 $(function() {
-    $(window).on('aquaproject_popstate', function() {
+    $(window).on('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/settings') {
             $('.twitter-slider-item').each(function(index, element) {
                 var persentage = 50
@@ -25,7 +25,7 @@ $(function() {
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/settings') {
-        window.dispatchEvent(new Event('aquaproject_popstate'));
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
     $(document).on('click', '.twitter-slider-item', function() {

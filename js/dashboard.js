@@ -208,7 +208,7 @@ $(function() {
             }
             if (history.state['scrollTop'] !== undefined) {
                 window.scroll(0, history.state['scrollTop'])
-                window.dispatchEvent(new Event('aquaproject_popstate'));
+                window.dispatchEvent(new Event('aquaprojects_popstate'));
             }
         } else {
             var changeContentArea = document.querySelector(history.state['changeLocation'])
@@ -327,7 +327,7 @@ $(function() {
             if (history.state['scrollTop']) {
                 $(window).scrollTop(history.state['scrollTop'])
             }
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%'
@@ -395,7 +395,7 @@ $(function() {
             $('#ajax-progress-bar').css({
                 'width': '100%'
             });
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         }
         fetch(
             href, {
@@ -428,7 +428,7 @@ $(function() {
                 doneFunc()
             }
 
-            window.dispatchEvent(new Event('aquaproject_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
 
             $('#ajax-progress-bar').css({
                 'width': '100%',
