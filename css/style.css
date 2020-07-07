@@ -957,8 +957,8 @@ a:hover {
 }
 
 .twitter-client {
-    margin: 0 auto;
-    display: block;
+    display: flex;
+    justify-content: center;
 }
 
 .twitter_title-home-text {
