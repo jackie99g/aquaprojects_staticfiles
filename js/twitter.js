@@ -1974,15 +1974,17 @@ $(function() {
             img.onload = () => {
                 canvas.height = img.height;
                 canvas.width = img.width;
-                ctx.drawImage(img, 0, 0);
-                const imageData = ctx.getImageData(0, 0, img.width, img.height)
+                const scale = '0.05'
+                const dWidth = img.width * scale
+                const dHeight = img.height * scale
+                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, dWidth, dHeight);
+                const imageData = ctx.getImageData(0, 0, dWidth, dHeight)
 
-                var rgb = []
                 var worker = new Worker('/webworker.js')
                 worker.addEventListener('message', e => {
                     switch (e.data['name']) {
                         case 'averageColor':
-                            rgb = e.data['msg']
+                            const rgb = e.data['msg']
                             resolve(rgb)
                             break;
                         default:
@@ -1992,7 +1994,7 @@ $(function() {
                 })
                 worker.postMessage({
                     'cmd': 'averageColor',
-                    'msg': [imageData, img.height, img.width]
+                    'msg': [imageData, dWidth, dHeight]
                 })
             };
             img.onerror = (e) => reject(e)
