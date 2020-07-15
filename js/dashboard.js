@@ -2,7 +2,8 @@
     $(document).ready(function() {
         AquaProjectsCache[location.href.replace(location.origin, '')] = document.cloneNode(true)
         var currentPage = location.href.replace(location.origin, '')
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        if (location.pathname !== '/') document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        else document.title = 'Aqua Projects'
         var state = {
             'targetPage': currentPage,
             'currentPage': currentPage,
