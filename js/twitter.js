@@ -226,7 +226,7 @@
 
     function loadTheOthersTweet() {
         var currentLocation = location.pathname
-        var dataNode = AquaProjectCache[currentLocation].cloneNode(true)
+        var dataNode = AquaProjectsCache[currentLocation].cloneNode(true)
         var tweets = dataNode.querySelectorAll('.tweet')
         var correctTweets = []
         var newTweets = []
@@ -930,21 +930,21 @@
             });
         }
         // Cache exsists.
-        if (AquaProjectCache[href]) {
+        if (AquaProjectsCache[href]) {
             if (history.state['drawLocationChanged'] == true) {
                 var mainArea = document.querySelector('#main')
                 while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
-                while (AquaProjectCache[href].querySelector('#main').firstChild) {
+                while (AquaProjectsCache[href].querySelector('#main').firstChild) {
                     mainArea.appendChild(
-                        AquaProjectCache[href].querySelector('#main').firstChild
+                        AquaProjectsCache[href].querySelector('#main').firstChild
                     )
                 }
             } else {
                 var changeLocation = document.querySelector(history.state['changeLocation'])
                 while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-                while (AquaProjectCache[href].querySelector(history.state['changeLocation']).firstChild) {
+                while (AquaProjectsCache[href].querySelector(history.state['changeLocation']).firstChild) {
                     changeLocation.appendChild(
-                        AquaProjectCache[href].querySelector(history.state['changeLocation']).firstChild
+                        AquaProjectsCache[href].querySelector(history.state['changeLocation']).firstChild
                     )
                 }
             }
@@ -974,7 +974,7 @@
             }
         }).then(data => {
             // Save Cache.
-            AquaProjectCache[href] = document.createRange().createContextualFragment(data)
+            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -1177,7 +1177,7 @@
                 window.scrollTo(window.scrollX, window.scrollY + diff)
             }
 
-            AquaProjectCache[location.href.replace(location.origin, '')] = document
+            AquaProjectsCache[location.href.replace(location.origin, '')] = document
 
             $('#ajax-progress-bar').css({
                 'width': '100%',
@@ -1253,11 +1253,11 @@
         var windowWidth = window.innerWidth
         if (windowWidth < 768) return false
         var href = '/twitter/profile'
-        if (AquaProjectCache[href]) {
+        if (AquaProjectsCache[href]) {
             var twitterProfileArea = document.querySelector('.twitter-profile')
             while (twitterProfileArea.firstChild) twitterProfileArea.removeChild(twitterProfileArea.firstChild)
             twitterProfileArea.insertAdjacentElement(
-                'afterbegin', AquaProjectCache[href].querySelector('.twitter-profile').cloneNode(true)
+                'afterbegin', AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
             )
             changeFontSize()
         } else {
@@ -1279,7 +1279,7 @@
                 }
             }).then(data => {
                 // Save Cache.
-                AquaProjectCache[href] = document.createRange().createContextualFragment(data)
+                AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
                 $('.twitter-profile').html($(data).find('.twitter-profile').html());
                 changeFontSize()
             }).catch(err => {
@@ -1292,11 +1292,11 @@
         var windowWidth = window.innerWidth
         if (windowWidth < 768) return false
         var href = '/twitter/trends'
-        if (AquaProjectCache[href]) {
+        if (AquaProjectsCache[href]) {
             var twitterTrendsArea = document.querySelector('.twitter-trends')
             while (twitterTrendsArea.firstChild) twitterTrendsArea.removeChild(twitterTrendsArea.firstChild)
             twitterTrendsArea.insertAdjacentElement(
-                'afterbegin', AquaProjectCache[href].querySelector('.twitter-trends').cloneNode(true)
+                'afterbegin', AquaProjectsCache[href].querySelector('.twitter-trends').cloneNode(true)
             )
             changeFontSize()
         } else {
@@ -1318,7 +1318,7 @@
                 }
             }).then(data => {
                 // Save Cache.
-                AquaProjectCache[href] = document.createRange().createContextualFragment(data)
+                AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
                 $('.twitter-trends').html($(data).find('.twitter-trends').html());
                 changeFontSize()
                 hideSideContentLoader()
@@ -1816,16 +1816,16 @@
         $('#ajax-progress-bar').css('visibility', 'visible');
 
         // Cache exsists.
-        if (AquaProjectCache[href]) {
+        if (AquaProjectsCache[href]) {
             if (history.state['drawLocationChanged'] == true) {
                 var mainArea = document.querySelector('#main')
                 while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
-                mainArea.insertAdjacentElement('afterbegin', AquaProjectCache[href].querySelector('#main'))
+                mainArea.insertAdjacentElement('afterbegin', AquaProjectsCache[href].querySelector('#main'))
             } else {
                 var changeLocation = document.querySelector(history.state['changeLocation'])
                 while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
                 changeLocation.insertAdjacentElement(
-                    'afterbegin', AquaProjectCache[href].querySelector(history.state['changeLocation'])
+                    'afterbegin', AquaProjectsCache[href].querySelector(history.state['changeLocation'])
                 )
             }
             $('#ajax-progress-bar').css('width', '100%');
@@ -1866,7 +1866,7 @@
             }
         }).then(data => {
             // Save Cache.
-            AquaProjectCache[href] = document.createRange().createContextualFragment(data)
+            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false

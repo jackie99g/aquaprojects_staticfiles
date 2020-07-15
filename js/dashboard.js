@@ -1,6 +1,6 @@
 (() => {
     $(document).ready(function() {
-        AquaProjectCache[location.href.replace(location.origin, '')] = document.cloneNode(true)
+        AquaProjectsCache[location.href.replace(location.origin, '')] = document.cloneNode(true)
         var currentPage = location.href.replace(location.origin, '')
         document.title = 'Aqua Projects - ' + currentPage
         var state = {
@@ -162,7 +162,7 @@
         closeAccountInformation()
 
         var ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-        if (!AquaProjectCache[href]) {
+        if (!AquaProjectsCache[href]) {
             var changeContentArea = document.querySelector(history.state['changeLocation'])
             ajaxProgressBar.classList.add('bg-danger')
             ajaxProgressBar.style.width = '100%'
@@ -173,14 +173,14 @@
             return false
         }
 
-        var cacheNode = AquaProjectCache[href]
+        var cacheNode = AquaProjectsCache[href]
         if (cacheNode) {
             if (history.state['twitter_target_tweet_id'] !== undefined) {
                 calculateTweetsToDisplay(cacheNode)
             } else {
                 var changeLocation = document.querySelector(history.state['changeLocation'])
                 while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-                Array.from(AquaProjectCache[href].cloneNode(true).querySelector(history.state['changeLocation']).children).forEach(element => {
+                Array.from(AquaProjectsCache[href].cloneNode(true).querySelector(history.state['changeLocation']).children).forEach(element => {
                     changeLocation.appendChild(element)
                 });
             }
@@ -292,8 +292,8 @@
         closeAccountInformation()
 
         // Cache exsists.
-        if (AquaProjectCache[href]) {
-            $(history.state['changeLocation']).html($(AquaProjectCache[href]).find(history.state['changeLocation']).html());
+        if (AquaProjectsCache[href]) {
+            $(history.state['changeLocation']).html($(AquaProjectsCache[href]).find(history.state['changeLocation']).html());
             $('#ajax-progress-bar').css({
                 'width': '100%'
             });
@@ -301,7 +301,7 @@
                 console.log('It seems that you moved to a different page first.')
                 return false
             }
-            $('#main').html($(AquaProjectCache[href]).find('#main').html());
+            $('#main').html($(AquaProjectsCache[href]).find('#main').html());
             if (history.state['scrollTop']) {
                 $(window).scrollTop(history.state['scrollTop'])
             }
@@ -358,11 +358,11 @@
         closeAccountInformation()
 
         // Cache exsists.
-        if (AquaProjectCache[href]) {
+        if (AquaProjectsCache[href]) {
             if (history.state['drawLocationChanged'] == true) {
-                $('#main').html($(AquaProjectCache[href]).find('#main').html());
+                $('#main').html($(AquaProjectsCache[href]).find('#main').html());
             } else {
-                $(history.state['changeLocation']).html($(AquaProjectCache[href]).find(history.state['changeLocation']).html());
+                $(history.state['changeLocation']).html($(AquaProjectsCache[href]).find(history.state['changeLocation']).html());
             }
             // Weather controller
             ContentActive()
@@ -389,7 +389,7 @@
             }
         }).then(data => {
             // Save Cache.
-            AquaProjectCache[href] = document.createRange().createContextualFragment(data)
+            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false

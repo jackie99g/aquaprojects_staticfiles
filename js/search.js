@@ -32,8 +32,8 @@
             'width': '80%'
         });
         // Cache exsists.
-        if (AquaProjectCache[uri]) {
-            $(changeLocation).html($(AquaProjectCache[uri]).find(history.state['changeLocation']).html());
+        if (AquaProjectsCache[uri]) {
+            $(changeLocation).html($(AquaProjectsCache[uri]).find(history.state['changeLocation']).html());
         }
         fetch(
             uri, {
@@ -54,7 +54,7 @@
             }
         }).then(data => {
             // Save Cache.
-            AquaProjectCache[uri] = data
+            AquaProjectsCache[uri] = data
             var mc = $(data).find(contentsLocation).html();
             $(changeLocation).html(mc);
             $('#ajax-progress-bar').css({

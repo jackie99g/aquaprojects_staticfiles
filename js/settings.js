@@ -1,7 +1,7 @@
 (() => {
     // seamless configuration component
     $(document).on('click', '.seamless_configuration-view', function() {
-        AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
+        AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
         var targetPage = $(this).attr('href').replace(location.origin, '');
         var currentPage = location.href.replace(location.origin, '');
         easyPushState(targetPage, currentPage)
@@ -9,7 +9,7 @@
         $(this).css('display', 'none')
         $(this).siblings().css('display', 'block')
         $(this).parents('.seamless_configuration').siblings().css('display', 'none')
-        AquaProjectCache[targetPage] = $('html').html()
+        AquaProjectsCache[targetPage] = $('html').html()
 
         document.title = 'Aqua Projects - ' + history.state['targetPage']
 
@@ -17,7 +17,7 @@
     })
 
     $(document).on('click', '.seamless_configuration-back_button', function() {
-        AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
+        AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
         var targetPage = '/settings'
         var currentPage = location.href.replace(location.origin, '');
         if (history.state['currentPage'] === targetPage) history.back()
@@ -157,7 +157,7 @@
             }
         }).then(data => {
             $('.status').text('Success!: ' + data)
-            AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
+            AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
         }).catch(err => {
             console.log(err)
             $('.status').text('Fail...: ' + data)

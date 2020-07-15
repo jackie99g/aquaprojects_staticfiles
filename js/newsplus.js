@@ -49,7 +49,7 @@
         }
         history.pushState(state, null, targetPage)
         document.title = 'Aqua Projects - ' + targetPage
-        AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
+        AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
     }
 
     function assistEasyPushState(assistSlideNumber) {
@@ -76,7 +76,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[href] = data
+            AquaProjectsCache[href] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false

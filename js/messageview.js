@@ -135,7 +135,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[request] = data
+            AquaProjectsCache[request] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -231,7 +231,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[request] = data
+            AquaProjectsCache[request] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -324,7 +324,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[href] = data
+            AquaProjectsCache[href] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -567,7 +567,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[request] = data
+            AquaProjectsCache[request] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -784,7 +784,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[request] = data
+            AquaProjectsCache[request] = data
             var sids_list = chooseMessageConversationSids(data)
             notifyMessageHasSended(sids_list, messageItem)
         })
@@ -812,7 +812,7 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectCache[request] = data
+            AquaProjectsCache[request] = data
         })
     }
 
