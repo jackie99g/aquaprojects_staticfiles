@@ -48,7 +48,7 @@
             'changeLocation': changeLocation
         }
         history.pushState(state, null, targetPage)
-        document.title = 'Aqua Projects - ' + targetPage
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
     }
 

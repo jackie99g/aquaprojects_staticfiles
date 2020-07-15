@@ -10,7 +10,7 @@
                 'changeLocation': '#category_contents'
             };
             history.pushState(state, null, targetPage);
-            document.title = 'Aqua Projects - ' + targetPage
+            document.title = 'Aqua Projects - ' + location.pathname.substring(1)
             $('.contents_anchor_group a').removeClass('select_active')
             $(this).addClass('select_active')
             if ($(this).attr('id').indexOf('sm') >= 0) {

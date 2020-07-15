@@ -2,7 +2,7 @@
     $(document).ready(function() {
         AquaProjectsCache[location.href.replace(location.origin, '')] = document.cloneNode(true)
         var currentPage = location.href.replace(location.origin, '')
-        document.title = 'Aqua Projects - ' + currentPage
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         var state = {
             'targetPage': currentPage,
             'currentPage': currentPage,
@@ -65,7 +65,7 @@
             history.replaceState(replaceStateData, null, history['targetPage'])
         }
         history.pushState(state, null, targetPage);
-        document.title = 'Aqua Projects - ' + targetPage
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         $('.dashboard_anchor').removeClass('select_active_dashboard')
         $(this).addClass('select_active_dashboard')
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
@@ -154,7 +154,7 @@
         } else {
             changeContent(e.originalEvent.state['targetPage']);
         }
-        document.title = 'Aqua Projects - ' + e.originalEvent.state['targetPage']
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         return false;
     })
 

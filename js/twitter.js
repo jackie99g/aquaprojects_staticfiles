@@ -916,7 +916,7 @@
     })
 
     function changeContent(href, doneFunc, anchorMode, anchorContext) {
-        document.title = 'Aqua Projects - ' + href
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         if (anchorMode === 'twitter_user') changeContentTwitterUser(anchorContext)
         else if (anchorMode === 'tweet') changeContentTweet(anchorContext)
         else {
