@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(window).on('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/settings') {
             $('.twitter-slider-item').each(function(index, element) {
@@ -105,4 +105,4 @@ $(function() {
             localStorage.setItem('twitter-image_size', '285')
         }
     }
-})
+})()

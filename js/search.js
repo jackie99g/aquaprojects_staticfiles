@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(document).on('click', '.contents_anchor', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/search') {
             var targetPage = $(this).attr('href').split('/')[1]
@@ -85,4 +85,4 @@ $(function() {
             $(changeLocation).html('<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>')
         })
     }
-})
+})()

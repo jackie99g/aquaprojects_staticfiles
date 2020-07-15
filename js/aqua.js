@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(document).ready(function() {
         var windowWidth = window.innerWidth;
         console.log(windowWidth);
@@ -227,4 +227,4 @@ $(function() {
             $('#index_box').addClass('box_bg_animation');
         }
     });
-})
+})()

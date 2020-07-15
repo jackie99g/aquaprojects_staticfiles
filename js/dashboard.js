@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(document).ready(function() {
         AquaProjectCache[location.href.replace(location.origin, '')] = document.cloneNode(true)
         var currentPage = location.href.replace(location.origin, '')
@@ -508,4 +508,4 @@ $(function() {
                 }, 10)
         }
     }
-})
+})()

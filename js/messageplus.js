@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('start_video')) {
             startVideo()
@@ -150,4 +150,4 @@ $(function() {
         console.log(event)
         document.querySelector('#remote_video').srcObject = event.stream
     })
-})
+})()

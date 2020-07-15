@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     var mymodal = document.getElementById('myModal')
     var microphoneshader = document.getElementById('microphoneShader');
     var audioContext = null;
@@ -226,4 +226,4 @@ $(function() {
                 }, 10)
         }
     }
-})
+})()

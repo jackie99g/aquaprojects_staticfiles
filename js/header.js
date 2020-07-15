@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     var win = $(window),
         header = $('.header_contents'),
         hedaerHeight = header.outerHeight() + 10,
@@ -154,4 +154,4 @@ $(function() {
             localStorage.setItem('show_left_sidebar', true)
         }
     }
-})
+})()

@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     window.addEventListener('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
             convertLocalTime()
@@ -894,4 +894,4 @@ $(function() {
         }
         return cookieValue;
     }
-})
+})()

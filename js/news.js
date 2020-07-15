@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(document).on('click', '.contents_anchor', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/news') {
             var targetPage = $(this).attr('href').split('/')[1]
@@ -83,4 +83,4 @@ $(function() {
             console.error(err)
         })
     }
-})
+})()

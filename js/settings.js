@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     // seamless configuration component
     $(document).on('click', '.seamless_configuration-view', function() {
         AquaProjectCache[location.href.replace(location.origin, '')] = $('html').html()
@@ -227,4 +227,4 @@ $(function() {
         }
         return cookieValue;
     }
-})
+})()

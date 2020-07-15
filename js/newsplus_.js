@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(window).on('aquaprojects_popstate', function() {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus_') {
             drawNewsplusAll('initialize')
@@ -276,4 +276,4 @@ $(function() {
                 }, 10)
         }
     }
-})
+})()

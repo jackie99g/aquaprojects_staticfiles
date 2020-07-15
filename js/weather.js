@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     $(window).on('aquaprojects_popstate', function() {
         if (location.pathname.replace(location.origin, '') === '/weather') {
             drawWeather()
@@ -150,4 +150,4 @@ $(function() {
                 n.scrollLeft = u + t * (e / i)
             }, 10)
     }
-})
+})()

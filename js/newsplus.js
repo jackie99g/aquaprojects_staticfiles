@@ -1,4 +1,4 @@
-$(function() {
+(() => {
     var touchingPositionPageX = 0
     var touchStartScrollLeft = 0
 
@@ -304,4 +304,4 @@ $(function() {
         }
         currentSlideNumber = jumpToSlideNumber
     }
-});
+})()
