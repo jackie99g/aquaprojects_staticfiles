@@ -9,6 +9,7 @@
             $('.hourly-weather').scroll(function() {
                 $('.hourly-weather-chart-block').scrollLeft($(this).scrollLeft())
             })
+            adjustWeatherContentSize()
         }
     })
     if (location.pathname.replace(location.origin, '') === '/weather') {
@@ -138,6 +139,31 @@
                     }
                 }
             })
+        }
+    }
+
+    window.addEventListener('resize', () => {
+        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/weather') {
+            adjustWeatherContentSize()
+        }
+    })
+
+    function adjustWeatherContentSize() {
+        var windowWidth = window.innerWidth;
+        var mainContent = document.querySelector('.main_content')
+        var dailyWeather = document.querySelector('.daily-weather')
+        var hourlyWeather = document.querySelector('.hourly-weather')
+        var hourlyWeatherChartBlock = document.querySelector('.hourly-weather-chart-block')
+        if (windowWidth < 768) {
+            mainContent.style.paddingBottom = '59px'
+            dailyWeather.style.overflowX = 'auto'
+            hourlyWeather.style.overflowX = 'auto'
+            hourlyWeatherChartBlock.overflowX = 'auto'
+        } else {
+            mainContent.style.paddingBottom = '0px'
+            dailyWeather.style.overflowX = 'hidden'
+            hourlyWeather.style.overflowX = 'hidden'
+            hourlyWeatherChartBlock.overflowX = 'hidden'
         }
     }
 
