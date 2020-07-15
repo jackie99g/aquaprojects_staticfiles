@@ -1244,10 +1244,14 @@ $(function() {
     window.addEventListener('resize', () => {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
             changeTwitterTimelineBackgroundSize()
+            twitterProfile()
+            twitterTrends()
         }
     })
 
     function twitterProfile() {
+        var windowWidth = window.innerWidth
+        if (windowWidth < 768) return false
         var href = '/twitter/profile'
         if (AquaProjectCache[href]) {
             var twitterProfileArea = document.querySelector('.twitter-profile')
@@ -1285,6 +1289,8 @@ $(function() {
     }
 
     function twitterTrends() {
+        var windowWidth = window.innerWidth
+        if (windowWidth < 768) return false
         var href = '/twitter/trends'
         if (AquaProjectCache[href]) {
             var twitterTrendsArea = document.querySelector('.twitter-trends')
