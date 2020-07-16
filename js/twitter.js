@@ -875,7 +875,12 @@
             };
             var replaceState = $.extend(true, {}, history.state)
             replaceState['scrollTop'] = window.scrollY
-            replaceState['twitter_target_tweet_id'] = twitterAnchorContent.dataset['tweet_id']
+            var targetTweetId = 0
+            if (twitterAnchorContent.parentNode.classList.contains('quoted_status')) {
+                var targetTweet = findParents(twitterAnchorContent.parentNode, 'twitter_anchor')
+                targetTweetId = targetTweet.dataset['tweet_id']
+            } else targetTweetId = twitterAnchorContent.dataset['tweet_id']
+            replaceState['twitter_target_tweet_id'] = targetTweetId
             replaceState['twitter_each_tweets_height'] = scanTweetHeight()
             replaceState['format_timeline_height'] = document.querySelector('.format_timeline').scrollHeight
             history.replaceState(replaceState, null, currentPage)
