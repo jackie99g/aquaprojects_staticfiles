@@ -115,9 +115,6 @@
         twitterUserTwitterIcon.src = twitterUserTwitterIconSrc.replace('_normal', '_400x400')
     }
 
-    var target_tweet_id = ''
-    var twitter_each_tweets_height = []
-
     var tweetsIntersectionObserver = null
 
     function initTweetIntersectionObserver() {
@@ -135,16 +132,9 @@
             const element = tweets[index];
             tweetsIntersectionObserver.observe(element)
         }
-        if (history.state && history.state['twitter_target_tweet_id']) {
-            target_tweet_id = history.state['twitter_target_tweet_id']
-        }
-        if (history.state && history.state['twitter_each_tweets_height']) {
-            twitter_each_tweets_height = history.state['twitter_each_tweets_height']
-        } else {
-            twitter_each_tweets_height = []
-        }
 
-        const ftftid = document.querySelector('.format_timeline').firstElementChild.dataset['tweet_id']
+        const formatTimeline = document.querySelector('.format_timeline')
+        const ftftid = formatTimeline.firstElementChild.dataset['tweet_id']
         const currentPage = location.href.replace(location.origin, '')
 
         function processTweetsIntersectionObserve(entries, observer) {
@@ -172,54 +162,16 @@
                     }
                 }
 
-                // Set each tweet object height.
-                target_tweet_id = currentTweet.dataset.tweet_id
-
-                if (twitter_each_tweets_height.filter(item => item['tweet_id'] === target_tweet_id).length !== 0) {
-                    if (twitter_each_tweets_height.length !== 0) {
-                        return false
-                    }
+                const teth = history.state['twitter_each_tweets_height']
+                if (teth === undefined || teth.length === 0) scanTweetHeight()
+                var replaceState = Object.assign({}, history.state)
+                replaceState['scrollTop'] = window.scrollY
+                replaceState['twitter_target_tweet_id'] = currentTweet.dataset['tweet_id']
+                if (ftftid !== replaceState['twitter_each_tweets_height'][0]['tweet_id']) {
+                    replaceState['twitter_each_tweets_height'] = scanTweetHeight()
+                    replaceState['format_timeline_height'] = formatTimeline.scrollHeight
                 }
-
-                twitter_each_tweets_height.push({
-                    tweet_id: target_tweet_id,
-                    tweet_height: currentTweet.offsetHeight,
-                })
-
-                if (twitter_each_tweets_height.map(item => item['tweet_id']).findIndex(item => item === ftftid) === -1) {
-                    var formatTimelineTweets = document.querySelectorAll('.format_timeline .tweet')
-                    var correctTweets = []
-                    for (let index = 0; index < formatTimelineTweets.length; index++) {
-                        const element = formatTimelineTweets[index];
-                        if (element.parentNode.classList.contains('format_timeline')) {
-                            correctTweets.push(element)
-                        }
-                    }
-                    var insertTweets = []
-                    for (let index = 0; index < correctTweets.length; index++) {
-                        const element = correctTweets[index];
-                        if (element.dataset['tweet_id'] === target_tweet_id) {
-                            break
-                        }
-                        insertTweets.push({
-                            tweet_id: element.dataset['tweet_id'],
-                            tweet_height: element.offsetHeight,
-                        })
-                    }
-                    twitter_each_tweets_height = insertTweets.concat(twitter_each_tweets_height)
-                }
-
-                if (target_tweet_id && twitter_each_tweets_height) {
-                    var replaceState = Object.assign({}, history.state)
-                    replaceState['scrollTop'] = window.scrollY
-                    replaceState['twitter_target_tweet_id'] = target_tweet_id
-                    replaceState['twitter_each_tweets_height'] = twitter_each_tweets_height
-                    if (replaceState['format_timeline_height'] === undefined) {
-                        replaceState['format_timeline_height'] =
-                            document.querySelector('.format_timeline').scrollHeight
-                    }
-                    history.replaceState(replaceState, null, currentPage)
-                }
+                history.replaceState(replaceState, null, currentPage)
             });
         }
     }
@@ -325,6 +277,29 @@
         formatTimeline.insertBefore(formatTimelineNewTweets, formatTimeline.firstChild)
         formatTimeline.appendChild(formatTimelineOldTweets)
         formatTimeline.insertAdjacentHTML('beforeend', tweetLoadMoreOldTweet)
+    }
+
+    function scanTweetHeight() {
+        const tweets = document.querySelectorAll('.tweet')
+        const formatTimeline = document.querySelector('.format_timeline')
+        const currentPage = location.href.replace(location.origin, '')
+        var twitter_each_tweets_height = []
+        for (let index = 0; index < tweets.length; index++) {
+            const element = tweets[index];
+            if (!element.parentNode.classList.contains('format_timeline')) continue
+            twitter_each_tweets_height.push({
+                'tweet_id': element.dataset['tweet_id'],
+                'tweet_height': element.offsetHeight,
+            })
+        }
+        (() => {
+            var replaceState = Object.assign({}, history.state)
+            replaceState['twitter_each_tweets_height'] = twitter_each_tweets_height
+            replaceState['format_timeline_height'] = formatTimeline.scrollHeight
+            history.replaceState(replaceState, null, currentPage)
+        })()
+        console.log(twitter_each_tweets_height)
+        return twitter_each_tweets_height
     }
 
     var tweetTwitterPictureClick = null
@@ -900,8 +875,8 @@
             };
             var replaceState = $.extend(true, {}, history.state)
             replaceState['scrollTop'] = window.scrollY
-            replaceState['twitter_target_tweet_id'] = target_tweet_id
-            replaceState['twitter_each_tweets_height'] = twitter_each_tweets_height
+            replaceState['twitter_target_tweet_id'] = twitterAnchorContent.dataset['tweet_id']
+            replaceState['twitter_each_tweets_height'] = scanTweetHeight()
             replaceState['format_timeline_height'] = document.querySelector('.format_timeline').scrollHeight
             history.replaceState(replaceState, null, currentPage)
             history.pushState(state, null, targetPage);
