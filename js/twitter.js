@@ -1778,6 +1778,7 @@
         replaceState['scrollTop'] = $(window).scrollTop()
         history.replaceState(replaceState, null, currentPage)
         history.pushState(state, null, targetPage);
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
     }
 
     function twitterUserProfileTimelineNavigationLoader() {
@@ -1799,14 +1800,18 @@
         if (AquaProjectsCache[href]) {
             if (history.state['drawLocationChanged'] == true) {
                 var mainArea = document.querySelector('#main')
+                var mainCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector('#main')
                 while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
-                mainArea.insertAdjacentElement('afterbegin', AquaProjectsCache[href].querySelector('#main'))
+                Array.from(mainCloneNode.children).forEach(element => {
+                    mainArea.appendChild(element)
+                });
             } else {
                 var changeLocation = document.querySelector(history.state['changeLocation'])
+                var changeLocationCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector(history.state['changeLocation'])
                 while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-                changeLocation.insertAdjacentElement(
-                    'afterbegin', AquaProjectsCache[href].querySelector(history.state['changeLocation'])
-                )
+                Array.from(changeLocationCloneNode.children).forEach(element => {
+                    changeLocation.appendChild(element)
+                });
             }
             $('#ajax-progress-bar').css('width', '100%');
 
