@@ -170,10 +170,12 @@
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'user_picture')) {
+            const userPicture = findParents(e.target, 'user_picture')
             const account = document.querySelector('.account')
-            const visibleState = account.style.visibility
+            const visibleState = account.style.visibility ? account.style.visibility : 'hidden'
             if (visibleState === 'hidden') {
                 account.classList.add('animated', 'fadeInUpSmall', 'faster')
+                userPicture.style.background = 'rgba(95,99,104,0.24)'
             } else {
                 const removeClasses = ['animated', 'fadeInUpSmall', 'faster']
                 for (let index = 0; index < removeClasses.length; index++) {
@@ -182,6 +184,7 @@
                         account.classList.remove(element)
                     }
                 }
+                userPicture.style.background = ''
             }
             const windowWidth = window.innerWidth
             if (windowWidth < 768) {
@@ -228,7 +231,6 @@
 
             const isShowRightSidebar = localStorage.getItem('show_right_sidebar')
             const isTwitterViewPictures = localStorage.getItem('twitter-view_pictures')
-            const isTwitterLoadVideos = localStorage.getItem('twitter-view_videos')
             const isTwitterViewClearIcon = localStorage.getItem('twitter-view_clear_icon')
             const isShowLeftSidebar = localStorage.getItem('show_left_sidebar')
             if (isShowRightSidebar == 'true') {
@@ -240,11 +242,6 @@
                 document.querySelector('.load_pictures').checked = true
             } else {
                 document.querySelector('.load_pictures').checked = false
-            }
-            if (isTwitterLoadVideos == 'true') {
-                document.querySelector('.load_videos').checked = true
-            } else {
-                document.querySelector('.load_videos').checked = false
             }
             if (isTwitterViewClearIcon == 'true') {
                 document.querySelector('.load_clear_icon').checked = true
@@ -271,7 +268,9 @@
                 }
             }
             const main = document.querySelector('#main')
+            const userPicture = document.querySelector('.user_picture')
             main.style.display = ''
+            userPicture.style.background = ''
         }
     })
 

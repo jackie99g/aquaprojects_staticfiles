@@ -75,7 +75,9 @@
     })
 
     document.addEventListener('keydown', e => {
-        if (e.target.classList.contains('message-view_message-input') && e.keyCode == 13 && e.target.value !== '') {
+        const keyCode = e.keyCode
+        if (keyCode !== 13) return false
+        if (e.target.classList.contains('message-view_message-input') && e.target.value !== '') {
             var query = document.querySelector('.message-view_message-input').value
             var conversation_id = document.querySelector('.message-view_message-input').dataset.conversation_id
             createMessage(query, conversation_id)
@@ -370,8 +372,8 @@
             'currentPage': currentPage,
             'changeLocation': '#main'
         };
-        var replaceState = $.extend(true, {}, history.state)
-        replaceState['scrollTop'] = $(window).scrollTop()
+        var replaceState = Object.assign({}, history.state)
+        replaceState['scrollTop'] = window.scrollY
         history.replaceState(replaceState, null, currentPage)
         history.pushState(state, null, targetPage);
     }
@@ -432,7 +434,9 @@
     })
 
     document.addEventListener('keydown', e => {
-        if (e.target.classList.contains('message-conversation-create-name-input') && e.keyCode == 13 && e.target.value !== '') {
+        const keyCode = e.keyCode
+        if (keyCode !== 13) return false
+        if (e.target.classList.contains('message-conversation-create-name-input') && e.target.value !== '') {
             // var query = document.querySelector('.message-conversation-create-name-input').value
             // var conversation_id = document.querySelector('.message-conversation-create-name-input').dataset.conversation_id
             // createMessage(query, conversation_id)
@@ -498,7 +502,9 @@
     })
 
     document.addEventListener('keydown', e => {
-        if (e.target.classList.contains('message-conversation-create-participant-input') && e.keyCode == 13 && e.target.value !== '') {
+        const keyCode = e.keyCode
+        if (keyCode !== 13) return false
+        if (e.target.classList.contains('message-conversation-create-participant-input') && e.target.value !== '') {
             // var query = document.querySelector('.message-conversation-create-participant-input').value
             // var conversation_id = document.querySelector('.message-conversation-create-participant-input').dataset.conversation_id
             // createMessage(query, conversation_id)

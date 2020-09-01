@@ -109,30 +109,6 @@ a:hover {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 200 200'%3E%3Cpolygon fill='%23ffffff' points='100 0 0 100 100 100 100 200 200 100 200 0'/%3E%3C/svg%3E");
 }
 
-.box_bg_animation {
-    background: linear-gradient(-45deg,
-            rgb(236, 148, 121),
-            rgb(235, 133, 184),
-            rgb(169, 235, 220),
-            rgb(40, 140, 233));
-    background-size: 400% 400%;
-    animation: Gradient 15s ease infinite;
-}
-
-@keyframes Gradient {
-    0% {
-        background-position: 0 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0 50%;
-    }
-}
-
 .header_contents {
     display: flex;
     height: 57px;
@@ -206,12 +182,24 @@ a:hover {
 }
 
 .user_picture {
-    display: inline-block;
-    border-radius: 100%;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    padding: 3.5px;
     margin-right: 5px;
+    border-radius: 50%;
+    transition: all 0.2s;
     cursor: pointer;
+}
+
+.user_picture:hover {
+    background: rgba(60, 64, 67, 0.08);
+}
+
+.user_picture_img {
+    display: inline-block;
+    border-radius: 50%;
+    width: 33px;
+    height: 33px;
 }
 
 .dashboard_pannel {
@@ -1000,14 +988,16 @@ a:hover {
 
 .twitter_user-background_image>img {
     width: calc(100% - 2px);
-    height: 140px;
+    height: 33.3333%;
+    min-height: 140px;
+    ;
     object-fit: cover;
 }
 
 @media (min-width: 600px) {
     .twitter_user-background_image>img {
-        width: 598px;
-        height: 199.406px;
+        width: 100%;
+        min-height: 199.406px;
     }
 }
 

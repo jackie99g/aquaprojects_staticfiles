@@ -1,75 +1,73 @@
 (() => {
-    $(window).on('aquaprojects_popstate', function() {
-        if (location.pathname.replace(location.origin, '') === '/weather') {
+    window.addEventListener('aquaprojects_popstate', () => {
+        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/weather') {
             drawWeather()
-            $('.hourly-weather-chart-block').scroll(function() {
-                $('.hourly-weather').scrollLeft($(this).scrollLeft())
-            })
-
-            $('.hourly-weather').scroll(function() {
-                $('.hourly-weather-chart-block').scrollLeft($(this).scrollLeft())
-            })
             adjustWeatherContentSize()
         }
     })
-    if (location.pathname.replace(location.origin, '') === '/weather') {
+
+    if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/weather') {
         window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
-    $(document).on('click', '.daily-weather-left-btn', function() {
-        wdwidth = $('.weather-day').width()
-        wdoutwidth = $('.weather-day').outerWidth()
-        dwwidth = $('.daily-weather').scrollLeft()
-        scrollContentLeft(
-            document.getElementsByClassName('daily-weather')[0],
-            -wdoutwidth - wdwidth,
-            200
-        )
+    // daily-weather-left-btn
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'daily-weather-left-btn')) {
+            const weatherDay = document.querySelector('.weather-day')
+            scrollContentLeft(
+                document.querySelectorAll('.daily-weather')[0],
+                -weatherDay.clientWidth - weatherDay.offsetWidth,
+                200
+            )
+        }
     })
 
-    $(document).on('click', '.daily-weather-right-btn', function() {
-        wdwidth = $('.weather-day').width()
-        wdoutwidth = $('.weather-day').outerWidth()
-        dwwidth = $('.daily-weather').scrollLeft()
-        scrollContentLeft(
-            document.getElementsByClassName('daily-weather')[0],
-            wdwidth + wdoutwidth,
-            200
-        )
+    // daily-weather-right-btn
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'daily-weather-right-btn')) {
+            const weatherDay = document.querySelector('.weather-day')
+            scrollContentLeft(
+                document.querySelectorAll('.daily-weather')[0],
+                weatherDay.clientWidth + weatherDay.offsetWidth,
+                200
+            )
+        }
     })
 
-    $(document).on('click', '.hourly-weather-left-btn', function() {
-        whwidth = $('.weather-hourly').width()
-        whoutwidth = $('.weather-hourly').outerWidth()
-        hwwidth = $('.hourly-weather').scrollLeft()
-        scrollContentLeft(
-            document.getElementsByClassName('weather-hourly')[0],
-            -whoutwidth - whwidth,
-            200
-        )
-        scrollContentLeft(
-            document.getElementsByClassName('hourly-weather-chart-block')[0],
-            -whoutwidth - whwidth,
-            200
-        )
+    // hourly-weather-left-btn
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'hourly-weather-left-btn')) {
+            const weatherHourly = document.querySelector('.weather-hourly')
+            scrollContentLeft(
+                document.querySelectorAll('.hourly-weather')[0],
+                -weatherHourly.clientWidth - weatherHourly.offsetWidth,
+                200
+            )
+            scrollContentLeft(
+                document.querySelectorAll('.hourly-weather-chart-block')[0],
+                -weatherHourly.clientWidth - weatherHourly.offsetWidth,
+                200
+            )
+        }
     })
 
-    $(document).on('click', '.hourly-weather-right-btn', function() {
-        whwidth = $('.weather-hourly').width()
-        whoutwidth = $('.weather-hourly').outerWidth()
-        hwwidth = $('.hourly-weather').scrollLeft()
-
-        scrollContentLeft(
-            document.getElementsByClassName('weather-hourly')[0],
-            whoutwidth + whwidth,
-            200
-        )
-        scrollContentLeft(
-            document.getElementsByClassName('hourly-weather-chart-block')[0],
-            whoutwidth + whwidth,
-            200
-        )
+    // hourly-weather-right-btn
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'hourly-weather-right-btn')) {
+            const weatherHourly = document.querySelector('.weather-hourly')
+            scrollContentLeft(
+                document.querySelectorAll('.hourly-weather')[0],
+                weatherHourly.clientWidth + weatherHourly.offsetWidth,
+                200
+            )
+            scrollContentLeft(
+                document.querySelectorAll('.hourly-weather-chart-block')[0],
+                weatherHourly.clientWidth + weatherHourly.offsetWidth,
+                200
+            )
+        }
     })
+
 
     function drawWeather() {
         var hourlyWeather = document.getElementsByClassName('weather-temp-hourly')
@@ -77,11 +75,11 @@
         var hourlyWeatherlist = []
         var hourlyWeatherDatelist = []
         var hourlyWeatherWidth = 100
-        Array.prototype.forEach.call(hourlyWeather, function(element) {
+        Array.prototype.forEach.call(hourlyWeather, function (element) {
             var weatherTemp = parseFloat(element.innerText.replace('℃', ''))
             hourlyWeatherlist.push(weatherTemp)
         })
-        Array.prototype.forEach.call(hourlyWeatherDate, function(element) {
+        Array.prototype.forEach.call(hourlyWeatherDate, function (element) {
             var weatherDate = element.innerText.split(' ')[1] + ' ' + element.innerText.split(' ')[2]
             hourlyWeatherDatelist.push(weatherDate)
         })
@@ -175,5 +173,20 @@
                 e > i && (clearInterval(f), e = i);
                 n.scrollLeft = u + t * (e / i)
             }, 10)
+    }
+
+    function findParents(target, className) {
+        if (target === document) return false
+        if (target.className.length !== 0 && target.classList.contains(className)) {
+            return target
+        }
+        var currentNode = target.parentNode
+        if (currentNode === document || currentNode === null) {
+            return false
+        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
+            return currentNode
+        } else {
+            return findParents(currentNode, className)
+        }
     }
 })()

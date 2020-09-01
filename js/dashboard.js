@@ -13,7 +13,7 @@
         }
         history.replaceState(state, null, currentPage)
         const da = document.querySelector(`.dashboard_anchor_${location.pathname.split('/')[1]}`)
-        da.classList.add('select_active_dashboard')
+        if (da) da.classList.add('select_active_dashboard')
     })
 
     document.addEventListener('click', e => {
@@ -43,6 +43,9 @@
         resetDashboardAnchorGroup()
         const da = document.querySelector(`.dashboard_anchor_${location.pathname.split('/')[1]}`)
         da.classList.add('select_active_dashboard')
+        const body = document.querySelector('body')
+        body.style.marginRight = ''
+        body.style.overflowY = ''
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
             changeTwitterContentOptimized(history.state['targetPage'])
         } else if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
@@ -83,7 +86,7 @@
                     changeLocation.appendChild(element)
                 });
             }
-            if (history.state['scrollTop']) {
+            if (history.state['scrollTop'] !== undefined) {
                 window.scroll(0, history.state['scrollTop'])
                 window.dispatchEvent(new Event('aquaprojects_popstate'));
             }
@@ -303,6 +306,8 @@
                 element.classList.remove(removeClass)
             }
         }
+        const userPicture = document.querySelector('.user_picture')
+        userPicture.style.background = ''
     }
 
     function closeAccountInformation() {
