@@ -604,14 +604,14 @@
         const allTargetNode = document.querySelectorAll(`.${e.target.className}`)
         const targetIndex = Array.from(allTargetNode).findIndex(item => item === e.target)
 
-        if (touchingPositionPageX - e.changedTouches[0].pageX > target.offsetWidth / 4) {
+        if (touchingPositionPageX - e.changedTouches[0].pageX > target.offsetWidth / 6) {
             scrollContentLeft(
                 target,
                 (targetIndex + 1) * e.target.offsetWidth - target.scrollLeft,
                 200
             )
             currentSlideNumberProxy.number += 1
-        } else if (touchingPositionPageX - e.changedTouches[0].pageX < -(target.offsetWidth / 4)) {
+        } else if (touchingPositionPageX - e.changedTouches[0].pageX < -(target.offsetWidth / 6)) {
             scrollContentLeft(
                 target,
                 (targetIndex - 1) * e.target.offsetWidth - target.scrollLeft,
@@ -650,14 +650,14 @@
         const allTargetNode = document.querySelectorAll(`.${e.target.className}`)
         const targetIndex = Array.from(allTargetNode).findIndex(item => item === e.target)
 
-        if (clickingPositionPageX - e.pageX > target.offsetWidth / 4) {
+        if (clickingPositionPageX - e.pageX > target.offsetWidth / 6) {
             scrollContentLeft(
                 target,
                 (targetIndex + 1) * e.target.offsetWidth - target.scrollLeft,
                 200
             )
             currentSlideNumberProxy.number += 1
-        } else if (clickingPositionPageX - e.pageX < -(target.offsetWidth / 4)) {
+        } else if (clickingPositionPageX - e.pageX < -(target.offsetWidth / 6)) {
             scrollContentLeft(
                 target,
                 (targetIndex - 1) * e.target.offsetWidth - target.scrollLeft,
@@ -680,14 +680,14 @@
         const allTargetNode = document.querySelectorAll(`.${e.target.className}`)
         const targetIndex = Array.from(allTargetNode).findIndex(item => item === e.target)
 
-        if (clickingPositionPageX - e.pageX > target.offsetWidth / 4) {
+        if (clickingPositionPageX - e.pageX > target.offsetWidth / 6) {
             scrollContentLeft(
                 target,
                 (targetIndex + 1) * e.target.offsetWidth - target.scrollLeft,
                 200
             )
             currentSlideNumberProxy.number += 1
-        } else if (clickingPositionPageX - e.pageX < -(target.offsetWidth / 4)) {
+        } else if (clickingPositionPageX - e.pageX < -(target.offsetWidth / 6)) {
             scrollContentLeft(
                 target,
                 (targetIndex - 1) * e.target.offsetWidth - target.scrollLeft,
