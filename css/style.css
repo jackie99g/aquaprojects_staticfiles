@@ -907,12 +907,6 @@ a:hover {
     font-weight: 700;
 }
 
-.twitter-search_box,
-.twitter-trends,
-.twitter-profile {
-    display: none;
-}
-
 .tweet-twitter_picture_zoom {
     position: fixed;
     top: 0;
@@ -990,7 +984,6 @@ a:hover {
     width: calc(100% - 2px);
     height: 33.3333%;
     min-height: 140px;
-    ;
     object-fit: cover;
 }
 

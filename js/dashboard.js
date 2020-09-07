@@ -76,20 +76,18 @@
 
         var cacheNode = AquaProjectsCache[href]
         if (cacheNode) {
-            if (history.state['twitter_target_tweet_id'] !== undefined) {
-                calculateTweetsToDisplay(cacheNode)
-            } else {
+            try {
+                calculateSpaceToDisplay(cacheNode)
+            } catch (error) {
                 var changeLocation = document.querySelector('#main')
                 while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
                 var changeLocationCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector('#main')
                 Array.from(changeLocationCloneNode.children).forEach(element => {
                     changeLocation.appendChild(element)
                 });
+                console.error(error)
             }
-            if (history.state['scrollTop'] !== undefined) {
-                window.scroll(0, history.state['scrollTop'])
-                window.dispatchEvent(new Event('aquaprojects_popstate'));
-            }
+            window.dispatchEvent(new Event('aquaprojects_popstate'));
         } else {
             var changeContentArea = document.querySelector('#main')
             changeContentArea.innerHTML = '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
@@ -104,80 +102,19 @@
             ajaxProgressBar.style.transition = ''
         }, 200)
 
-        function calculateTweetsToDisplay(cacheNodeNoCopy) {
-            var twitter_target_tweet_id = history.state['twitter_target_tweet_id']
-            var twitter_each_tweets_height = history.state['twitter_each_tweets_height']
-            var format_timeline_height = history.state['format_timeline_height']
-
-            var cacheNode = cacheNodeNoCopy.cloneNode(true)
-            var cacheTweets = cacheNode.querySelectorAll('.tweet')
-            var correctCacheTweets = []
-            var newTweetOfNoContentHeight = 0
-            var slicedTweets = []
-
-            // Collect tweet object not contain quoted tweet
-            for (let index = 0; index < cacheTweets.length; index++) {
-                const element = cacheTweets[index];
-                if (!element.parentNode.classList.length === 0) {
-                    continue
-                }
-                if (!element.parentNode.classList.contains('format_timeline')) {
-                    continue
-                }
-                correctCacheTweets.push(element)
-            }
-
-            // Collect tweets to display
-            var tweetIndex = correctCacheTweets
-                .map(item => item.dataset['tweet_id'])
-                .findIndex(item => item === twitter_target_tweet_id)
-            var slicedTweetsBeginIntex = tweetIndex - 10
-            var slicedTweetsEndIndex = tweetIndex + 10 + 1
-            if (slicedTweetsBeginIntex < 0) {
-                slicedTweetsBeginIntex = 0
-            }
-            if (slicedTweetsEndIndex > correctCacheTweets.length) {
-                slicedTweetsEndIndex = correctCacheTweets.length
-            }
-            slicedTweets = correctCacheTweets.slice(slicedTweetsBeginIntex, slicedTweetsEndIndex)
-
-            // Calculate twitter_new_tweets_of_no_content height
-            var newTweetOfNoContentIndedx = twitter_each_tweets_height
-                .map(item => item['tweet_id'])
-                .findIndex(item => item === slicedTweets[0].dataset['tweet_id'])
-            var newTweetOfNoContentHeightList = twitter_each_tweets_height.slice(0, newTweetOfNoContentIndedx)
-            for (let index = 0; index < newTweetOfNoContentHeightList.length; index++) {
-                const element = newTweetOfNoContentHeightList[index];
-                newTweetOfNoContentHeight += element['tweet_height']
-            }
-
-            // Set cacheNode that removed format_timeline
-            var documentClone = cacheNode
-            documentClone.querySelector('.format_timeline').innerHTML = ''
-            document.querySelector('#main').innerHTML = documentClone.querySelector('#main').innerHTML
-
-            var formatTimeline = document.querySelector('.format_timeline')
-
+        function calculateSpaceToDisplay(cacheNodeNoCopy) {
+            const formatTimelineHeight = history.state['format_timeline_height']
+            const mainCacheNode = cacheNodeNoCopy.querySelector('#main').cloneNode(true)
+            const mainArea = document.querySelector('#main')
+            while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
+            while (mainCacheNode.firstChild) mainArea.appendChild(mainCacheNode.firstChild)
+            const ft = document.querySelector('.format_timeline')
+            while (ft.firstChild) ft.removeChild(ft.firstChild)
             // Add twitter_new_tweets_of_no_content
             var newTweetOfNoContent = document.createElement('div')
             newTweetOfNoContent.className = 'twitter_new_tweets_of_no_content'
-            newTweetOfNoContent.style.height = `${newTweetOfNoContentHeight}px`
-
-            // Add displaying tweets
-            var displayingTweets = document.createDocumentFragment()
-            for (let index = 0; index < slicedTweets.length; index++) {
-                const element = slicedTweets[index];
-                displayingTweets.appendChild(element)
-            }
-
-            // Add twitter_old_tweets_of_no_content
-            var oldTweetOfNocontent = document.createElement('div')
-            oldTweetOfNocontent.className = 'twitter_old_tweets_of_no_content'
-
-            formatTimeline.style.height = `${format_timeline_height}px`
-            formatTimeline.appendChild(newTweetOfNoContent)
-            formatTimeline.appendChild(displayingTweets)
-            formatTimeline.appendChild(oldTweetOfNocontent)
+            newTweetOfNoContent.style.height = `${formatTimelineHeight}px`
+            ft.appendChild(newTweetOfNoContent)
         }
     }
 

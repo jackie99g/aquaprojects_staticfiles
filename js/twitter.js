@@ -48,7 +48,9 @@
                 console.error(e)
             }
         }
-        tweetPictureInsersectionObserver = new IntersectionObserver(processTweetPictureInsersectionObserver)
+        tweetPictureInsersectionObserver = new IntersectionObserver(
+            processTweetPictureInsersectionObserver
+        )
         var ttps = document.querySelectorAll('.tweet-twitter_picture')
         for (let index = 0; index < ttps.length; index++) {
             const element = ttps[index];
@@ -65,6 +67,7 @@
                 }
                 var ttp = element.target
                 ttp.src = ttp.dataset['src']
+                observer.unobserve(ttp)
             })
         }
     }
@@ -101,6 +104,7 @@
                 var ttui = element.target
                 var ttuiSrc = ttui.src
                 ttui.src = ttuiSrc.replace('_normal', '_400x400')
+                observer.unobserve(ttui)
             })
         }
     }
@@ -114,67 +118,160 @@
         twitterUserTwitterIcon.src = twitterUserTwitterIconSrc.replace('_normal', '_400x400')
     }
 
-    var tweetsIntersectionObserver = null
-
     function initTweetIntersectionObserver() {
-        if (tweetsIntersectionObserver) {
-            tweetsIntersectionObserver.disconnect()
-            tweetsIntersectionObserver = null
-        }
-        tweetsIntersectionObserver = new IntersectionObserver(
-            processTweetsIntersectionObserve, {
-                threshold: [1.0]
-            }
-        )
-        const tweets = document.querySelectorAll('.tweet')
-        for (let index = 0; index < tweets.length; index++) {
-            const element = tweets[index];
-            tweetsIntersectionObserver.observe(element)
-        }
-
         setTimeout(() => {
             // Whether load tweets object?
-            if (history.state && history.state['twitter_target_tweet_id']) {
-                if (document.querySelector('.twitter_new_tweets_of_no_content')) {
-                    loadTheOthersTweet()
+            if (document.querySelector('.twitter_new_tweets_of_no_content')) {
+                calculateTweetsToDisplayFirst()
+
+                setTimeout(() => {
+                    const teth = history.state['twitter_each_tweets_height']
+                    const is_tweetId = teth[0]['tweet_id']
+                    is_tweetId ? loadTheOthersTweet() : loadCacheOfMainArea()
                     window.dispatchEvent(new Event('aquaprojects_popstate'))
-                }
+
+                    setTimeout(() => {
+                        scanTweetHeight()
+                        const currentPage = location.href.replace(location.origin, '')
+                        let replaceState = Object.assign({}, history.state)
+                        replaceState['scrollTop'] = window.scrollY
+                        history.replaceState(replaceState, null, currentPage)
+                    }, 0);
+
+                    function loadCacheOfMainArea() {
+                        const href = location.href.replace(location.origin, '')
+                        var changeLocation = document.querySelector('#main')
+                        while (changeLocation.firstChild) {
+                            changeLocation.removeChild(changeLocation.firstChild)
+                        }
+                        var changeLocationCloneNode =
+                            AquaProjectsCache[href].cloneNode(true).querySelector('#main')
+                        Array.from(changeLocationCloneNode.children).forEach(element => {
+                            changeLocation.appendChild(element)
+                        });
+                    }
+                }, 0);
+            } else {
+                scanTweetHeight()
             }
         }, 0);
+    }
 
-        const formatTimeline = document.querySelector('.format_timeline')
-        let ftftid = 0
-        if (formatTimeline) ftftid = formatTimeline.firstElementChild.dataset['tweet_id']
-        const currentPage = location.href.replace(location.origin, '')
+    function calculateTweetsToDisplayFirst() {
+        let twitter_target_tweet_id = 0
+        const twitter_each_tweets_height = history.state['twitter_each_tweets_height']
+        const format_timeline_height = history.state['format_timeline_height']
 
-        function processTweetsIntersectionObserve(entries, observer) {
-            entries.forEach(element => {
-                if (!element.isIntersecting) {
-                    return false
-                }
+        const cacheNodeNoCopy = AquaProjectsCache[location.pathname]
+        const cacheNode = cacheNodeNoCopy.querySelector('.format_timeline').cloneNode(true)
+        const cacheTweets = cacheNode.querySelectorAll('.tweet')
+        let correctCacheTweets = []
+        let newTweetOfNoContentHeight = 0
+        let slicedTweets = []
 
-                var currentTweet = element.target
-
-                if (!currentTweet.dataset['tweet_id']) {
-                    return false
-                }
-
-                var ctp = currentTweet.parentNode
-                if (ctp.classList.length === 0 || !ctp.classList.contains('format_timeline')) {
-                    return false
-                }
-
-                var replaceState = Object.assign({}, history.state)
-                replaceState['scrollTop'] = window.scrollY
-                replaceState['twitter_target_tweet_id'] = currentTweet.dataset['tweet_id']
-                const teth = replaceState['twitter_each_tweets_height']
-                if (teth === undefined || ftftid !== teth[0]['tweet_id']) {
-                    replaceState['twitter_each_tweets_height'] = scanTweetHeight()
-                    replaceState['format_timeline_height'] = formatTimeline.scrollHeight
-                }
-                history.replaceState(replaceState, null, currentPage)
-            });
+        // Collect tweet object not contain quoted tweet
+        for (let index = 0; index < cacheTweets.length; index++) {
+            const element = cacheTweets[index];
+            if (!element.parentNode.classList.length === 0) {
+                continue
+            }
+            if (!element.parentNode.classList.contains('format_timeline')) {
+                continue
+            }
+            correctCacheTweets.push(element)
         }
+
+        // Search twitter_target_tweet_id
+        (() => {
+            const targetScrollY = window.scrollY
+
+            let totalEachHeight = []
+            for (let index = 0; index < twitter_each_tweets_height.length; index++) {
+                const element = twitter_each_tweets_height[index];
+                let elementTopY = index === 0 ?
+                    element['tweet_height'] :
+                    totalEachHeight[index - 1]['tweet_height'] + element['tweet_height']
+                totalEachHeight[index] = {
+                    'tweet_id': element['tweet_id'],
+                    'tweet_height': elementTopY
+                }
+            }
+
+            let diffEachHeight = []
+            for (let index = 0; index < totalEachHeight.length; index++) {
+                const element = totalEachHeight[index];
+                let diff = targetScrollY - element['tweet_height']
+                diffEachHeight[index] = {
+                    'tweet_id': element['tweet_id'],
+                    'diff': diff
+                }
+            }
+
+            let minDiff = 0
+            let targetTweetData = {}
+            for (let index = 0; index < diffEachHeight.length; index++) {
+                const element = diffEachHeight[index];
+                if (index === 0) {
+                    minDiff = Math.abs(element['diff'])
+                    targetTweetData = element
+                } else {
+                    minDiff = Math.abs(Math.min(element['diff'], minDiff))
+                    targetTweetData = minDiff === element['diff'] ?
+                        element : targetTweetData
+                }
+            }
+
+            twitter_target_tweet_id = targetTweetData['tweet_id']
+        })()
+
+        // Collect tweets to display
+        var tweetIndex = correctCacheTweets
+            .map(item => item.dataset['tweet_id'])
+            .findIndex(item => item === twitter_target_tweet_id)
+        var slicedTweetsBeginIntex = tweetIndex - 10
+        var slicedTweetsEndIndex = tweetIndex + 10 + 1
+        if (slicedTweetsBeginIntex < 0) {
+            slicedTweetsBeginIntex = 0
+        }
+        if (slicedTweetsEndIndex > correctCacheTweets.length) {
+            slicedTweetsEndIndex = correctCacheTweets.length
+        }
+        slicedTweets = correctCacheTweets.slice(slicedTweetsBeginIntex, slicedTweetsEndIndex)
+
+        // Calculate twitter_new_tweets_of_no_content height
+        var newTweetOfNoContentIndedx = twitter_each_tweets_height
+            .map(item => item['tweet_id'])
+            .findIndex(item => item === slicedTweets[0].dataset['tweet_id'])
+        var newTweetOfNoContentHeightList = twitter_each_tweets_height.slice(0, newTweetOfNoContentIndedx)
+        for (let index = 0; index < newTweetOfNoContentHeightList.length; index++) {
+            const element = newTweetOfNoContentHeightList[index];
+            newTweetOfNoContentHeight += element['tweet_height']
+        }
+
+        // Set cacheNode that removed format_timeline
+        const ft = document.querySelector('.format_timeline')
+        while (ft.firstChild) ft.removeChild(ft.firstChild)
+
+        // Add twitter_new_tweets_of_no_content
+        var newTweetOfNoContent = document.createElement('div')
+        newTweetOfNoContent.className = 'twitter_new_tweets_of_no_content'
+        newTweetOfNoContent.style.height = `${newTweetOfNoContentHeight}px`
+
+        // Add displaying tweets
+        var displayingTweets = document.createDocumentFragment()
+        for (let index = 0; index < slicedTweets.length; index++) {
+            const element = slicedTweets[index];
+            displayingTweets.appendChild(element)
+        }
+
+        // Add twitter_old_tweets_of_no_content
+        var oldTweetOfNocontent = document.createElement('div')
+        oldTweetOfNocontent.className = 'twitter_old_tweets_of_no_content'
+
+        ft.style.height = `${format_timeline_height}px`
+        ft.appendChild(newTweetOfNoContent)
+        ft.appendChild(displayingTweets)
+        ft.appendChild(oldTweetOfNocontent)
     }
 
     function loadTheOthersTweet() {
@@ -994,17 +1091,10 @@
                 'currentPage': currentPage,
                 'changeLocation': '#main'
             };
-            var replaceState = Object.assign({}, history.state)
+            let replaceState = Object.assign({}, history.state)
             replaceState['scrollTop'] = window.scrollY
-            var targetTweetId = 0
-            if (twitterAnchorContent.parentNode.classList.contains('quoted_status')) {
-                var targetTweet = findParents(twitterAnchorContent.parentNode, 'twitter_anchor')
-                targetTweetId = targetTweet.dataset['tweet_id']
-            } else targetTweetId = twitterAnchorContent.dataset['tweet_id']
-            replaceState['twitter_target_tweet_id'] = targetTweetId
-            replaceState['twitter_each_tweets_height'] = scanTweetHeight()
-            replaceState['format_timeline_height'] = document.querySelector('.format_timeline').scrollHeight
             history.replaceState(replaceState, null, currentPage)
+            scanTweetHeight()
             history.pushState(state, null, targetPage);
 
             var twitterUserScreenName = twitterAnchorContent.dataset['twitter_userScreen_name']
@@ -1342,10 +1432,12 @@
                 'afterbegin', AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
             )
         } else {
-            refreshtwitterProfile()
+            refreshtwitterProfile(href)
         }
+    }
 
-        function refreshtwitterProfile() {
+    function refreshtwitterProfile(href) {
+        return new Promise((resolve, reject) => {
             fetch(
                 href, {
                     method: 'GET',
@@ -1366,10 +1458,12 @@
                 twitterProfileArea.insertAdjacentElement(
                     'afterbegin', AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
                 )
+                resolve(data)
             }).catch(err => {
                 alert(err)
+                reject(err)
             })
-        }
+        })
     }
 
     function twitterTrends() {
@@ -2043,40 +2137,61 @@
 
     document.addEventListener('focus', e => {
         if (e.target.classList.contains('twitter-search_box-input')) {
-            document.querySelector('.twitter-search_box-border').style.border = '2px solid #1da1f2'
-            document.querySelector('.twitter-search_box-icon').style.color = '#1da1f2'
-            if (document.querySelector('.twitter-search_box-input').value !== '') {
-                document.querySelector('.twitter-search_box-close').style.display = 'flex'
+            const tsb = findParents(e.target, 'twitter-search_box')
+            const twitterSearchBoxBorder = tsb.querySelector('.twitter-search_box-border')
+            const twitterSearchBoxIcon = tsb.querySelector('.twitter-search_box-icon')
+            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
+            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
+
+            twitterSearchBoxBorder.style.border = '2px solid #1da1f2'
+            twitterSearchBoxIcon.style.color = '#1da1f2'
+            if (twitterSearchBoxInput.value !== '') {
+                twitterSearchBoxClose.style.display = 'flex'
             }
         }
     }, true)
 
     document.addEventListener('blur', e => {
         if (e.target.classList.contains('twitter-search_box-input')) {
-            document.querySelector('.twitter-search_box-border').style.border = '2px solid #e6ecf0'
-            document.querySelector('.twitter-search_box-icon').style.color = '#657786'
-            document.querySelector('.twitter-search_box-close').style.display = 'none'
-            if (document.querySelector('.twitter-search_box-input').dataset['cleared'] === 'true') {
-                document.querySelector('.twitter-search_box-input').focus()
-                document.querySelector('.twitter-search_box-input').dataset['cleared'] = false
+            const tsb = findParents(e.target, 'twitter-search_box')
+            const twitterSearchBoxBorder = tsb.querySelector('.twitter-search_box-border')
+            const twitterSearchBoxIcon = tsb.querySelector('.twitter-search_box-icon')
+            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
+            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
+
+            twitterSearchBoxBorder.style.border = '2px solid #e6ecf0'
+            twitterSearchBoxIcon.style.color = '#657786'
+            twitterSearchBoxClose.style.display = 'none'
+
+            if (twitterSearchBoxInput.dataset['cleared'] === 'true') {
+                twitterSearchBoxInput.focus()
+                twitterSearchBoxInput.dataset['cleared'] = false
             }
         }
     }, true)
 
     document.addEventListener('mousedown', e => {
         if (findParents(e.target, 'twitter-search_box-close')) {
-            document.querySelector('.twitter-search_box-input').value = ''
-            document.querySelector('.twitter-search_box-close').style.display = 'none'
-            document.querySelector('.twitter-search_box-input').dataset['cleared'] = true
+            const tsb = findParents(e.target, 'twitter-search_box')
+            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
+            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
+
+            twitterSearchBoxInput.value = ''
+            twitterSearchBoxInput.dataset['cleared'] = true
+            twitterSearchBoxClose.style.display = 'none'
         }
     })
 
     document.addEventListener('input', e => {
         if (e.target.classList.contains('twitter-search_box-input')) {
-            if (document.querySelector('.twitter-search_box-input').value !== '') {
-                document.querySelector('.twitter-search_box-close').style.display = 'flex'
+            const tsb = findParents(e.target, 'twitter-search_box')
+            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
+            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
+
+            if (twitterSearchBoxInput.value !== '') {
+                twitterSearchBoxClose.style.display = 'flex'
             } else {
-                document.querySelector('.twitter-search_box-close').style.display = 'none'
+                twitterSearchBoxClose.style.display = 'none'
             }
         }
     })
@@ -2086,7 +2201,7 @@
         if (keyCode !== 13) return false
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
             if (e.target.classList.contains('twitter-search_box-input') && e.target.value !== '') {
-                var query = document.querySelector('.twitter-search_box-input').value
+                var query = e.target.value
                 var href = `/twitter/search?q=${query}`
                 twitterUserProfileTimelineNavigationPushState(href)
                 twitterSearchLoader()
@@ -2119,6 +2234,74 @@
             'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
         )
     }
+
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter_title-home-search')) {
+            const tthb = findParents(e.target, 'twitter_title-home-block')
+            const titleText = tthb.querySelector('.twitter_title-home-text')
+            const titleSearch = tthb.querySelector('.twitter_title-home-search')
+            const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
+            const titleSearchBox = tthb.querySelector('.twitter-search_box')
+            const titleSearchBoxInput = tthb.querySelector('.twitter-search_box-input')
+
+            titleText.style.display = 'none'
+            titleSearch.style.display = 'none'
+            titleTwitterProfile.style.display = 'none'
+            titleSearchBox.style.display = ''
+            titleSearchBoxInput.value = ''
+            titleSearchBoxInput.focus()
+        }
+    })
+
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter-search_box-back')) {
+            const tthb = findParents(e.target, 'twitter_title-home-block')
+            const titleText = tthb.querySelector('.twitter_title-home-text')
+            const titleSearch = tthb.querySelector('.twitter_title-home-search')
+            const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
+            const titleSearchBox = tthb.querySelector('.twitter-search_box')
+
+            titleText.style.display = ''
+            titleSearch.style.display = ''
+            titleTwitterProfile.style.display = ''
+            titleSearchBox.style.display = 'none'
+            titleSearchBox.blur()
+        }
+    })
+
+    document.addEventListener('blur', e => {
+        if (e.target.classList.contains('twitter-search_box-input')) {
+            if (findParents(e.target, 'twitter_title-home-block')) {
+                const twitterTitleHome = findParents(e.target, 'twitter_title-home-block')
+                twitterTitleHome.querySelector('.twitter-search_box-back').click()
+            }
+        }
+    }, true)
+
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter_title-home-twitter-profile')) {
+            const href = '/twitter/profile'
+            const twitterProfileArea = document.querySelector('.twitter-profile')
+            if (AquaProjectsCache[href]) {
+                if (!twitterProfileArea.firstElementChild) {
+                    while (twitterProfileArea.firstChild) {
+                        twitterProfileArea.removeChild(twitterProfileArea.firstChild)
+                    }
+                    twitterProfileArea.insertAdjacentElement(
+                        'afterbegin',
+                        AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
+                    )
+                }
+                twitterProfileArea.querySelector('a').click()
+            } else {
+                refreshtwitterProfile(href).then(() => {
+                    twitterProfileArea.querySelector('a').click()
+                })
+            }
+            const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+            ajaxProgressBar.style.width = '80%'
+        }
+    })
 
     function averageColorByImage(src) {
         const canvas = document.createElement("canvas")
