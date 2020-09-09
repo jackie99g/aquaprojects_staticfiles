@@ -125,6 +125,10 @@
                 calculateTweetsToDisplayFirst()
 
                 setTimeout(() => {
+                    const tntonc =
+                        document.querySelector('.twitter_new_tweets_of_no_content')
+                    const tweet = document.querySelector('.tweet')
+                    if (!tntonc || !tweet) return false
                     const teth = history.state['twitter_each_tweets_height']
                     const is_tweetId = teth[0]['tweet_id']
                     is_tweetId ? loadTheOthersTweet() : loadCacheOfMainArea()
