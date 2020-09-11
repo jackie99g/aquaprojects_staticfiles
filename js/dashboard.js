@@ -19,16 +19,16 @@
     document.addEventListener('click', e => {
         if (findParents(e.target, 'dashboard_anchor')) {
             const da = findParents(e.target, 'dashboard_anchor')
-            scrollPageTop()
-            var targetPage = da.getAttribute('href')
+            let targetPage = da.getAttribute('href')
             targetPage = targetPage.replace(location.origin, '')
-            var currentPage = location.href.replace(location.origin, '')
+            const currentPage = location.href.replace(location.origin, '')
             state = {
                 'targetPage': targetPage,
                 'currentPage': currentPage,
             }
             history.pushState(state, null, targetPage)
             document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+            currentPage === targetPage ? scrollPageTop() : window.scrollTo(0, 0)
 
             resetDashboardAnchorGroup()
             changeContent(targetPage)
@@ -170,30 +170,6 @@
     function changeContent(href) {
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
 
-        var changeContentArea = document.querySelector('#main')
-        changeContentArea.innerHTML = '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
-
-        const removeClass = 'bg-danger'
-        if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains(removeClass)) {
-            ajaxProgressBar.classList.remove(removeClass)
-        }
-        ajaxProgressBar.style.visibility = 'visible'
-        ajaxProgressBar.style.width = '80%'
-
-        closeAccountInformation()
-
-        // Cache exsists.
-        if (AquaProjectsCache[href]) {
-            var changeLocation = document.querySelector('#main')
-            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-            var changeLocationCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector('#main')
-            Array.from(changeLocationCloneNode.children).forEach(element => {
-                changeLocation.appendChild(element)
-            });
-
-            ajaxProgressBar.style.width = '100%'
-            window.dispatchEvent(new Event('aquaprojects_popstate'));
-        }
         fetch(
             href, {
                 method: 'GET',
@@ -209,7 +185,7 @@
         }).then(data => {
             // Save Cache.
             AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
-            if (href != location.href.replace(location.origin, '')) {
+            if (href !== location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
             }
@@ -232,6 +208,40 @@
                 ajaxProgressBar.style.transition = ''
             }, 200)
         })
+
+        const removeClass = 'bg-danger'
+        if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains(removeClass)) {
+            ajaxProgressBar.classList.remove(removeClass)
+        }
+
+        ajaxProgressBar.style.visibility = 'visible'
+        ajaxProgressBar.style.width = '80%'
+
+        closeAccountInformation()
+
+        if (history.state['currentPage'] === history.state['targetPage']) return false
+
+        const cca = document.querySelector('#main')
+        while (cca.firstChild) cca.removeChild(cca.firstChild)
+        cca.innerHTML = '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+
+        // Cache exsists.
+        if (AquaProjectsCache[href]) {
+            setTimeout(() => {
+                const changeLocation = document.querySelector('#main')
+                while (changeLocation.firstChild) {
+                    changeLocation.removeChild(changeLocation.firstChild)
+                }
+                const changeLocationCloneNode =
+                    AquaProjectsCache[href].cloneNode(true).querySelector('#main')
+                Array.from(changeLocationCloneNode.children).forEach(element => {
+                    changeLocation.appendChild(element)
+                });
+
+                ajaxProgressBar.style.width = '100%'
+                window.dispatchEvent(new Event('aquaprojects_popstate'));
+            }, 0);
+        }
     }
 
     function resetDashboardAnchorGroup() {
