@@ -183,17 +183,22 @@
         }
 
         function sidebarPosition(sidebarPositionNumber) {
-            var customSidePannelSm = document.querySelector('.dashboard_pannel .custom_side_pannel_sm')
+            const dashboardPannel = document.querySelector('.dashboard_pannel')
+            var customSidePannelSm = dashboardPannel.querySelector('.custom_side_pannel_sm')
             var customSidePannelSmParent = customSidePannelSm.parentNode
             var dashboardAnchorGroup = customSidePannelSmParent.querySelector('.dashboard_anchor_group')
             if (sidebarPositionNumber === 0) {
                 customSidePannelSmParent.style.width = '100%'
                 dashboardAnchorGroup.classList.remove('flex_box_sm')
                 dashboardAnchorGroup.classList.add('flex_box_sm_0')
+                dashboardPannel.classList.remove('dashboard_pannel_0')
+                dashboardPannel.classList.add('dashboard_pannel')
             } else {
                 customSidePannelSmParent.style.width = ''
                 dashboardAnchorGroup.classList.remove('flex_box_sm_0')
                 dashboardAnchorGroup.classList.add('flex_box_sm')
+                dashboardPannel.classList.remove('dashboard_pannel')
+                dashboardPannel.classList.add('dashboard_pannel_0')
             }
         }
     })
