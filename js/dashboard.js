@@ -104,17 +104,92 @@
 
         function calculateSpaceToDisplay(cacheNodeNoCopy) {
             const formatTimelineHeight = history.state['format_timeline_height']
-            const mainCacheNode = cacheNodeNoCopy.querySelector('#main').cloneNode(true)
+
+            const df = document.createDocumentFragment()
+
+            let saveElement = null
+            const mainAreaWithoutFormatTimeline = createDocWithoutById(
+                cacheNodeNoCopy.querySelector('.format_timeline'),
+                'main'
+            )
+            Array.from(mainAreaWithoutFormatTimeline.children).forEach(element => {
+                df.appendChild(element)
+            })
+
             const mainArea = document.querySelector('#main')
             while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
-            while (mainCacheNode.firstChild) mainArea.appendChild(mainCacheNode.firstChild)
-            const ft = document.querySelector('.format_timeline')
-            while (ft.firstChild) ft.removeChild(ft.firstChild)
+            while (df.firstChild) mainArea.appendChild(df.firstChild)
+
             // Add twitter_new_tweets_of_no_content
-            var newTweetOfNoContent = document.createElement('div')
+            const newTweetOfNoContent = document.createElement('div')
             newTweetOfNoContent.className = 'twitter_new_tweets_of_no_content'
             newTweetOfNoContent.style.height = `${formatTimelineHeight}px`
+            const ft = document.querySelector('.format_timeline')
             ft.appendChild(newTweetOfNoContent)
+
+            function absolutePath(element, elementPath) {
+                const currentTagName = element.tagName
+                const elementParent = element.parentNode
+                const elementParentChildren = Array.from(elementParent.children)
+                let elementPanretIndex = 0
+                for (let index = 0; index < elementParentChildren.length; index++) {
+                    const epc = elementParentChildren[index];
+                    if (epc === element) {
+                        elementPanretIndex = index + 1
+                    }
+                }
+                if (elementPath === '') {
+                    elementPath =
+                        `${currentTagName}:nth-child(${elementPanretIndex})`
+                } else {
+                    elementPath =
+                        `${currentTagName}:nth-child(${elementPanretIndex}) > ` +
+                        elementPath
+                }
+                if (elementParent.id !== '') {
+                    const resultPath = `#${elementParent.id} > ${elementPath}`
+                    elementPath = ''
+                    return resultPath
+                }
+                return absolutePath(elementParent, elementPath)
+            }
+
+            function createDocWithoutById(removeElement, targetElementId, currentElement) {
+                const _parentElement = removeElement ?
+                    removeElement.parentNode : currentElement.parentNode
+                const parentElementClone = document.createElement(_parentElement.tagName)
+                parentElementClone.id = _parentElement.id
+                parentElementClone.className = _parentElement.className
+                parentElementClone.style = _parentElement.style.cssText
+                const currentCloseElements = Array.from(_parentElement.children)
+                for (let index = 0; index < currentCloseElements.length; index++) {
+                    const element = currentCloseElements[index];
+                    // Not duplicate the method specified element.
+                    if (element === removeElement) {
+                        const _removeElement = document.createElement(removeElement.tagName)
+                        _removeElement.id = removeElement.id
+                        _removeElement.className = removeElement.className
+                        _removeElement.style = removeElement.style.cssText
+                        parentElementClone.appendChild(_removeElement)
+                        continue
+                    }
+
+                    // Not duplicate elements specified recursively.
+                    if (currentElement) {
+                        if (absolutePath(element) === absolutePath(currentElement)) {
+                            continue
+                        }
+                    }
+
+                    parentElementClone.appendChild(element.cloneNode(true))
+                }
+                if (saveElement) parentElementClone.appendChild(saveElement)
+                saveElement = parentElementClone
+                if (saveElement.id === targetElementId) {
+                    return parentElementClone
+                }
+                return createDocWithoutById(undefined, targetElementId, _parentElement)
+            }
         }
     }
 
@@ -122,7 +197,7 @@
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
 
         var changeContentArea = document.querySelector('#main')
-        changeContentArea.innerHTML = '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+        changeContentArea.innerHTML = '<div class="loader"></div>'
 
         const removeClass = 'bg-danger'
         if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains(removeClass)) {
@@ -223,7 +298,7 @@
 
         const cca = document.querySelector('#main')
         while (cca.firstChild) cca.removeChild(cca.firstChild)
-        cca.innerHTML = '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+        cca.innerHTML = '<div class="loader"></div>'
 
         // Cache exsists.
         if (AquaProjectsCache[href]) {
