@@ -166,7 +166,8 @@
         const twitter_each_tweets_height = history.state['twitter_each_tweets_height']
         const format_timeline_height = history.state['format_timeline_height']
 
-        const cacheNodeNoCopy = AquaProjectsCache[location.pathname]
+        const href = location.href.replace(location.origin, '')
+        const cacheNodeNoCopy = AquaProjectsCache[href]
         const cacheNode = cacheNodeNoCopy.querySelector('.format_timeline').cloneNode(true)
         const cacheTweets = cacheNode.querySelectorAll('.tweet')
         let correctCacheTweets = []
@@ -276,11 +277,20 @@
         ft.appendChild(newTweetOfNoContent)
         ft.appendChild(displayingTweets)
         ft.appendChild(oldTweetOfNocontent)
+
+        // Show tweet-twitter_picture when they were downloaded.
+        const ttp = document.querySelectorAll('.tweet-twitter_picture')
+        for (let index = 0; index < ttp.length; index++) {
+            const element = ttp[index];
+            if (element.complete) {
+                element.src = element.dataset['src']
+            }
+        }
     }
 
     function loadTheOthersTweet() {
-        var currentLocation = location.pathname
-        var dataNode = AquaProjectsCache[currentLocation].cloneNode(true)
+        const href = location.href.replace(location.origin, '')
+        var dataNode = AquaProjectsCache[href].cloneNode(true)
         var tweets = dataNode.querySelectorAll('.tweet')
         var correctTweets = []
         var newTweets = []
@@ -366,7 +376,7 @@
         var tweetLoadMoreOldTweet = `
         <div class="tweet-load_more_old_tweet" style="border-bottom: solid 1px #e6ecf0; cursor: pointer; height: 49px; display: flex; flex-direction: column; justify-content: center;">
                 <div class="tweet-load_more_old_tweet_loader" style="text-align: center; display: none;">
-                    <div class="loader" style="font-size: 2px; margin: 0 auto"></div>
+                    <div class="loader"></div>
                 </div>
                 <div class="tweet-load_more_old_tweet_message" style="text-align: center;"><i class="fab fa-twitter"></i></div>
                 <div class="tweet-load_more_old_tweet_message" style="text-align: center;">Load more old tweet</div>
@@ -578,34 +588,33 @@
                 }
             }
 
-            var ttpzc = document.querySelector('.tweet-twitter_picture_zoom-container')
-            while (ttpzc.lastChild) {
-                ttpzc.removeChild(ttpzc.lastChild)
-            }
+            const ttpzc = document.querySelector('.tweet-twitter_picture_zoom-container')
+            while (ttpzc.lastChild) ttpzc.removeChild(ttpzc.lastChild)
 
             for (let index = 0; index < ImgTable.length; index++) {
-                var insertImg = `
-                <div class="tweet-twitter_picture_zoom-element">
-                <img class="tweet-twitter_picture_zoom-element_img" src="${ImgTable[index]}">
-                </div>
-                `
-                ttpzc.insertAdjacentHTML('beforeend', insertImg)
+                const ttpze = document.createElement('div')
+                ttpze.className = 'tweet-twitter_picture_zoom-element'
+
+                const ttpzei = document.createElement('img')
+                ttpzei.className = 'tweet-twitter_picture_zoom-element_img'
+                ttpzei.src = ImgTable[index]
+
+                ttpze.appendChild(ttpzei)
+                ttpzc.appendChild(ttpze)
             }
 
-            var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
+            const ttpz = document.querySelector('.tweet-twitter_picture_zoom')
+            const ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
 
-            if (ttpz.style.display === 'none') {
-                ttpz.style.display = 'flex'
-            }
+            ttpz.style.display = 'flex'
 
-            var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
-            ttpz.style.background = ''
+            ttpz.style.background = 'rgba(255, 255, 255, 0.8)'
             for (let index = 0; index < ttpzn.length; index++) {
                 const element = ttpzn[index];
-                element.style.background = ''
+                element.style.background = '#e6ecf0'
             }
 
-            jumpToSlide(currentImgNumber, 0)
+            jumpToSlide(currentImgNumber)
             tweetTwitterPictureZoomOpen(currentImgNumber)
         }
     })
@@ -613,55 +622,56 @@
     // tweet-twitter_picture_zoom-container
     document.addEventListener('touchstart', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const target = findParents(e.target, 'tweet-twitter_picture_zoom-container')
-            boxContainerTouchStart(e, target)
+            const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+            boxContainerTouchStart(e, container)
         }
     })
 
     // tweet-twitter_picture_zoom-container
     document.addEventListener('touchmove', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const target = findParents(e.target, 'tweet-twitter_picture_zoom-container')
-            boxContainerTouchMove(e, target)
+            const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+            boxContainerTouchMove(e, container)
         }
     })
 
     // tweet-twitter_picture_zoom-container
     document.addEventListener('touchend', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const target = findParents(e.target, 'tweet-twitter_picture_zoom-container')
-            boxContainerTouchEnd(e, target)
+            const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+            boxContainerTouchEnd(e, container)
         }
     })
 
-    // tweet-twitter_picture_zoom-container
+    // // tweet-twitter_picture_zoom-container
     // document.addEventListener('mousedown', e => {
     //     if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-    //         boxContainerMouseDown(e)
+    //         const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+    //         boxContainerMouseDown(e, container)
     //     }
     // })
 
-    // tweet-twitter_picture_zoom-container
+    // // tweet-twitter_picture_zoom-container
     // document.addEventListener('mousemove', e => {
     //     if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-    //         const target = findParents(e.target, 'tweet-twitter_picture_zoom-container')
-    //         boxContainerMouseMove(e, target)
+    //         const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+    //         boxContainerMouseMove(e, container)
     //     }
     // })
 
-    // tweet-twitter_picture_zoom-container
+    // // tweet-twitter_picture_zoom-container
     // document.addEventListener('mouseup', e => {
     //     if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-    //         const target = findParents(e.target, 'tweet-twitter_picture_zoom-container')
-    //         boxContainerMouseUp(e, target)
+    //         const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+    //         boxContainerMouseUp(e, container)
     //     }
     // })
 
-    // tweet-twitter_picture_zoom-container
+    // // tweet-twitter_picture_zoom-container
     // document.addEventListener('mouseleave', e => {
     //     if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-    //         const target = findParents(e.target, 'tweet-twitter_picture_zoom-container')
-    //         boxContainerMouseLeave(e, target)
+    //         const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+    //         boxContainerMouseLeave(e, container)
     //     }
     // })
 
@@ -692,203 +702,249 @@
         }
     })
 
-    function boxContainerTouchStart(e, target) {
+    function analyzeTransform(transform) {
+        return transform
+            .replace('translate3d', '')
+            .replace('(', '')
+            .replace(')', '')
+            .replace(' ', '')
+            .replaceAll('px', '')
+            .split(',')
+    }
+
+    function boxContainerTouchStart(e, container) {
         touchingPositionPageX = e.changedTouches[0].pageX
-        touchStartScrollLeft = target.scrollLeft
+        touchStartScrollLeft = container.style.transform ?
+            analyzeTransform(container.style.transform) : [0, 0, 0]
     }
 
-    function boxContainerTouchMove(e, target) {
-        target.scrollLeft = touchStartScrollLeft + touchingPositionPageX - e.changedTouches[0].pageX
+    function boxContainerTouchMove(e, container) {
+        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
+        const translate3dX = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
+        container.style.transform = `translate3d(${translate3dX}px, 0px, 0px)`
+
     }
 
-    function boxContainerTouchEnd(e, target) {
-        const allTargetNode = document.querySelectorAll(`.${e.target.className}`)
-        const targetIndex = Array.from(allTargetNode).findIndex(item => item === e.target)
+    function boxContainerTouchEnd(e, container) {
+        const elements = document.querySelectorAll(`.${e.target.className}`)
+        const elementIndex = Array.from(elements).findIndex(item => item === e.target)
+        const elementWidth = elements[0].offsetWidth
+        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
 
-        if (touchingPositionPageX - e.changedTouches[0].pageX > target.offsetWidth / 6) {
-            scrollContentLeft(
-                target,
-                (targetIndex + 1) * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
-            currentSlideNumberProxy.number += 1
-        } else if (touchingPositionPageX - e.changedTouches[0].pageX < -(target.offsetWidth / 6)) {
-            scrollContentLeft(
-                target,
-                (targetIndex - 1) * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
-            currentSlideNumberProxy.number -= 1
-        } else {
-            scrollContentLeft(
-                target,
-                targetIndex * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
-        }
+        container.addEventListener('transitionend', () =>
+            container.style.transition = 'all 0ms ease 0s')
+        container.style.transition = 'all 300ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
-        AverageColorByImageOnTweetTwitterPictureZoom()
+
+        if (amountOfMovement > container.offsetWidth / 6) {
+            if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
+            container.style.transform =
+                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+            currentSlideNumberProxy.number += 1
+        } else if (amountOfMovement < -(container.offsetWidth / 6)) {
+            if (currentSlideNumberProxy.number - 1 < 0) return false
+            container.style.transform =
+                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+            currentSlideNumberProxy.number -= 1
+        }
+
+        setTimeout(() => {
+            AverageColorByImageOnTweetTwitterPictureZoom()
+        }, 0);
     }
 
     var clickingNow = false
     var clickingPositionOffsetX = 0
     var clickingPositionPageX = 0
 
-    function boxContainerMouseDown(e) {
+    function boxContainerMouseDown(e, container) {
         clickingNow = true
         clickingPositionOffsetX = e.offsetX
         clickingPositionPageX = e.pageX
+        touchStartScrollLeft = container.style.transform ?
+            analyzeTransform(container.style.transform) : [0, 0, 0]
     }
 
-    function boxContainerMouseMove(e, target) {
+    function boxContainerMouseMove(e, container) {
         if (clickingNow) {
-            target.scrollLeft = target.scrollLeft + clickingPositionOffsetX - e.offsetX
+            const amountOfMovement = clickingPositionOffsetX - e.offsetX
+            const translate3dX = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
+            container.style.transform = `translate3d(${translate3dX}px, 0px, 0px)`
         }
     }
 
-    function boxContainerMouseUp(e, target) {
-        const allTargetNode = document.querySelectorAll(`.${e.target.className}`)
-        const targetIndex = Array.from(allTargetNode).findIndex(item => item === e.target)
+    function boxContainerMouseUp(e, container) {
+        const elements = document.querySelectorAll(`.${e.target.className}`)
+        const elementIndex = Array.from(elements).findIndex(item => item === e.target)
+        const elementWidth = elements[0].offsetWidth
+        const amountOfMovement = clickingPositionPageX - e.pageX
 
-        if (clickingPositionPageX - e.pageX > target.offsetWidth / 6) {
-            scrollContentLeft(
-                target,
-                (targetIndex + 1) * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
+        container.addEventListener('transitionend', () =>
+            container.style.transition = 'all 0ms ease 0s')
+        container.style.transition = 'all 300ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        touchingPositionPageX = 0
+        touchStartScrollLeft = 0
+
+        if (amountOfMovement > container.offsetWidth / 6) {
+            if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
+            container.style.transform =
+                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
             currentSlideNumberProxy.number += 1
-        } else if (clickingPositionPageX - e.pageX < -(target.offsetWidth / 6)) {
-            scrollContentLeft(
-                target,
-                (targetIndex - 1) * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
+        } else if (amountOfMovement < -(container.offsetWidth / 6)) {
+            if (currentSlideNumberProxy.number - 1 < 0) return false
+            container.style.transform =
+                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
             currentSlideNumberProxy.number -= 1
-        } else {
-            scrollContentLeft(
-                target,
-                targetIndex * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
         }
+
         clickingNow = false
     }
 
-    function boxContainerMouseLeave(e, target) {
+    function boxContainerMouseLeave(e, container) {
         if (!clickingNow) return false
 
-        const allTargetNode = document.querySelectorAll(`.${e.target.className}`)
-        const targetIndex = Array.from(allTargetNode).findIndex(item => item === e.target)
+        const elements = document.querySelectorAll(`.${e.target.className}`)
+        const elementIndex = Array.from(elements).findIndex(item => item === e.target)
+        const elementWidth = elements[0].offsetWidth
+        const amountOfMovement = clickingPositionPageX - e.pageX
 
-        if (clickingPositionPageX - e.pageX > target.offsetWidth / 6) {
-            scrollContentLeft(
-                target,
-                (targetIndex + 1) * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
+        container.addEventListener('transitionend', () =>
+            container.style.transition = 'all 0ms ease 0s')
+        container.style.transition = 'all 300ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        touchingPositionPageX = 0
+        touchStartScrollLeft = 0
+
+        if (amountOfMovement > container.offsetWidth / 6) {
+            if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
+            container.style.transform =
+                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
             currentSlideNumberProxy.number += 1
-        } else if (clickingPositionPageX - e.pageX < -(target.offsetWidth / 6)) {
-            scrollContentLeft(
-                target,
-                (targetIndex - 1) * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
+        } else if (amountOfMovement < -(container.offsetWidth / 6)) {
+            if (currentSlideNumberProxy.number - 1 < 0) return false
+            container.style.transform =
+                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
             currentSlideNumberProxy.number -= 1
-        } else {
-            scrollContentLeft(
-                target,
-                targetIndex * e.target.offsetWidth - target.scrollLeft,
-                200
-            )
         }
+
         clickingNow = false
     }
 
     function prevSlideBtn() {
-        scrollContentLeft(
-            document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0],
-            (currentSlideNumberProxy.number - 1) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
-            200
-        )
-        if (currentSlideNumberProxy.number > 0) {
-            currentSlideNumberProxy.number -= 1
-        }
-        AverageColorByImageOnTweetTwitterPictureZoom()
+        const container = document.querySelector('.tweet-twitter_picture_zoom-container')
+        const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
+        const elementWidth = elements[0].offsetWidth
+        const elementIndex = currentSlideNumberProxy.number
+
+        container.addEventListener('transitionend', () =>
+            container.style.transition = 'all 0ms ease 0s')
+        container.style.transition = 'all 300ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        if (currentSlideNumberProxy.number - 1 < 0) return false
+        container.style.transform =
+            `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+        currentSlideNumberProxy.number -= 1
+
+        setTimeout(() => {
+            AverageColorByImageOnTweetTwitterPictureZoom()
+        }, 0);
     }
 
     function nextSlideBtn() {
-        scrollContentLeft(
-            document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0],
-            (currentSlideNumberProxy.number + 1) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
-            200
-        )
-        if (currentSlideNumberProxy.number < document.getElementsByClassName('tweet-twitter_picture_zoom-element').length - 1) {
-            currentSlideNumberProxy.number += 1
-        }
-        AverageColorByImageOnTweetTwitterPictureZoom()
+        const container = document.querySelector('.tweet-twitter_picture_zoom-container')
+        const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
+        const elementWidth = elements[0].offsetWidth
+        const elementIndex = currentSlideNumberProxy.number
+
+        container.addEventListener('transitionend', () =>
+            container.style.transition = 'all 0ms ease 0s')
+        container.style.transition = 'all 300ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
+        container.style.transform =
+            `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+        currentSlideNumberProxy.number += 1
+
+        setTimeout(() => {
+            AverageColorByImageOnTweetTwitterPictureZoom()
+        }, 0);
     }
 
-    function jumpToSlide(jumpToSlideNumber, duration = 200) {
-        if (duration < 100) {
-            changeContentLeft(
-                document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0],
-                (jumpToSlideNumber) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
-            )
-        } else {
-            scrollContentLeft(
-                document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0],
-                (jumpToSlideNumber) * document.getElementsByClassName('tweet-twitter_picture_zoom-element')[0].offsetWidth - document.getElementsByClassName('tweet-twitter_picture_zoom-container')[0].scrollLeft,
-                duration
-            )
-        }
+    function jumpToSlide(jumpToSlideNumber) {
+        const container = document.querySelector('.tweet-twitter_picture_zoom-container')
+        const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
+        const elementWidth = elements[0].offsetWidth
+        const elementIndex = jumpToSlideNumber
+
+        container.style.transition = 'all 0ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+
         currentSlideNumberProxy.number = jumpToSlideNumber
-        AverageColorByImageOnTweetTwitterPictureZoom()
-    }
 
-    function scrollContentLeft(n, t, i) {
-        var r = new Date,
-            u = n.scrollLeft,
-            f = setInterval(() => {
-                var e = new Date - r;
-                e > i && (clearInterval(f), e = i);
-                n.scrollLeft = u + t * (e / i)
-            }, 10)
-    }
-
-    function changeContentLeft(n, t) {
-        var u = n.scrollLeft
-        n.scrollLeft = u + t
+        setTimeout(() => {
+            AverageColorByImageOnTweetTwitterPictureZoom()
+        }, 0);
     }
 
     function tweetTwitterPictureZoomOpen(currentImgNumber) {
-        startFadeInUP(document.querySelectorAll('.tweet-twitter_picture_zoom-element')[currentImgNumber])
+        if (localStorage.getItem('twitter-reduce_animation') === null) {
+            const ttpze = document.querySelectorAll('.tweet-twitter_picture_zoom-element')
+            const targetTtpze = ttpze[currentImgNumber]
+            if (targetTtpze.classList && targetTtpze.classList.contains('fadeInUp')) {
+                targetTtpze.classList.remove('fadeOutUp')
+            }
+            targetTtpze.classList.add('animated', 'fadeInUp')
+        }
         const body = document.querySelector('body')
         body.style.marginRight = `${window.innerWidth - body.offsetWidth}px`
         body.style.overflowY = 'hidden'
     }
 
     function tweetTwitterPictureZoomClose() {
-        const ttpze = document.querySelectorAll('.tweet-twitter_picture_zoom-element')
-        for (let index = 0; index < ttpze.length; index++) {
-            const element = ttpze[index];
-            startFadeOutUP(element)
+        if (localStorage.getItem('twitter-reduce_animation') === null) {
+            const ttpze = document.querySelectorAll('.tweet-twitter_picture_zoom-element')
+            for (let index = 0; index < ttpze.length; index++) {
+                const element = ttpze[index];
+                if (element.classList && element.classList.contains('fadeOutUp')) {
+                    element.classList.remove('fadeOutUp')
+                }
+                element.classList.add('animated', 'fadeOutUp')
+                element.addEventListener('animationend', e => {
+                    if (e.animationName === 'fadeOutUp') {
+                        const tweet_twitter_picture_zoom =
+                            document.querySelector('.tweet-twitter_picture_zoom')
+                        if (tweet_twitter_picture_zoom.style.display === 'flex') {
+                            tweet_twitter_picture_zoom.style.display = 'none'
+                        }
+                    }
+                })
+            }
         }
         const body = document.querySelector('body')
         body.style.marginRight = ''
         body.style.overflowY = ''
-    }
-
-    document.addEventListener('animationend', e => {
-        if (findParents(e.target, 'tweet-twitter_picture_zoom-element')) {
-            if (e.animationName === 'fadeOutUp') {
-                var tweet_twitter_picture_zoom = document.querySelector('.tweet-twitter_picture_zoom')
-                if (tweet_twitter_picture_zoom.style.display === 'flex') {
-                    tweet_twitter_picture_zoom.style.display = 'none'
-                }
-            }
+        if (localStorage.getItem('twitter-reduce_animation') === null) return false
+        const tweet_twitter_picture_zoom =
+            document.querySelector('.tweet-twitter_picture_zoom')
+        if (tweet_twitter_picture_zoom.style.display === 'flex') {
+            tweet_twitter_picture_zoom.style.display = 'none'
         }
-    })
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-close')) {
@@ -935,20 +991,6 @@
         }
     })
 
-    function startFadeInUP(component) {
-        if (component.classList && component.classList.contains('fadeInUp')) {
-            component.classList.remove('fadeOutUp')
-        }
-        component.classList.add('animated', 'fadeInUp')
-    }
-
-    function startFadeOutUP(component) {
-        if (component.classList && component.classList.contains('fadeOutUp')) {
-            component.classList.remove('fadeOutUp')
-        }
-        component.classList.add('animated', 'fadeOutUp')
-    }
-
     function AverageColorByImageOnTweetTwitterPictureZoom() {
         var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
         var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
@@ -970,16 +1012,6 @@
                 element.style.background = `${rgb_color})`
             }
         })
-
-        setTimeout(() => {
-            if (ttpz.style.display !== 'none' && ttpz.style.background === '') {
-                ttpz.style.background = 'white'
-                for (let index = 0; index < ttpzn.length; index++) {
-                    const element = ttpzn[index];
-                    element.style.background = 'black'
-                }
-            }
-        }, 1000);
     }
 
     let selectExistOwnListResutId = ''
@@ -1118,7 +1150,7 @@
         else if (anchorMode === 'tweet') changeContentTweet(anchorContext)
         else {
             const changeContentArea = document.querySelector('#main')
-            changeContentArea.innerHTML = '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+            changeContentArea.innerHTML = '<div class="loader"></div>'
         }
         (() => {
             const removeClass = 'bg-danger'
@@ -1254,9 +1286,7 @@
                         timeline.querySelector('.twitter_user-profile_timeline_navigation-tweets')
                     )
 
-                    timeline.insertAdjacentHTML(
-                        'beforeend', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
-                    )
+                    timeline.insertAdjacentHTML('beforeend', '<div class="loader"></div>')
 
                     setTweetCreated_at()
                     makeTwitterUserTwitterIconClear()
@@ -1279,9 +1309,7 @@
                     document.querySelector('.twitter_title-home-text').innerHTML = 'Tweets'
 
                     var timelineArea = document.querySelector('.timeline')
-                    timelineArea.insertAdjacentHTML(
-                        'beforeend', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
-                    )
+                    timelineArea.insertAdjacentHTML('beforeend', '<div class="loader"></div>')
                     return false
                 }
             }
@@ -1569,7 +1597,7 @@
         }
     }
 
-    document.addEventListener('mouseenter', e => {
+    document.addEventListener('mouseover', e => {
         if (findParents(e.target, 'tweet-twitter_user_name')) {
             const target = findParents(e.target, 'tweet-twitter_user_name')
             const y = target.offsetTop + target.clientHeight
@@ -2058,7 +2086,7 @@
         }
         document.querySelector('.tweet-load_more_old_tweet').remove()
         document.querySelector('.format_timeline').insertAdjacentHTML(
-            'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+            'afterbegin', '<div class="loader"></div>'
         )
     }
 
@@ -2235,7 +2263,7 @@
         removeElement('.tweet-load_more_old_tweet')
 
         document.querySelector('.format_timeline').insertAdjacentHTML(
-            'afterbegin', '<div class="loader" style="font-size: 2px; margin: 8px auto auto;"></div>'
+            'afterbegin', '<div class="loader"></div>'
         )
     }
 

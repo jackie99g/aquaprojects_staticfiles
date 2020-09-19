@@ -542,8 +542,8 @@ a:hover {
 }
 
 .loader {
-    margin-top: 12px;
-    font-size: 4px;
+    font-size: 2px;
+    margin: 12px auto;
     position: relative;
     border-top: 1.1em solid rgba(29, 161, 242, 0.2);
     border-right: 1.1em solid rgba(29, 161, 242, 0.2);
@@ -933,8 +933,6 @@ a:hover {
 
 .tweet-twitter_picture_zoom-container {
     display: flex;
-    overflow-x: hidden;
-    overflow-y: hidden;
     cursor: pointer;
 }
 
