@@ -1,4 +1,13 @@
 (() => {
+    window.addEventListener('aquaprojects_popstate', () => {
+        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
+            initReduceAnimation()
+        }
+    })
+    if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
+        window.dispatchEvent(new Event('aquaprojects_popstate'));
+    }
+
     // seamless configuration component
     $(document).on('click', '.seamless_configuration-view', function() {
         AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
@@ -202,6 +211,22 @@
             }
         }
     })
+
+    document.addEventListener('change', e => {
+        if (findParents(e.target, 'reduce_animation')) {
+            findParents(e.target, 'reduce_animation').querySelector('input').checked ?
+                localStorage.setItem('twitter-reduce_animation', true) :
+                localStorage.removeItem('twitter-reduce_animation')
+        }
+    })
+
+    function initReduceAnimation() {
+        const reduceAnimationElement = document.querySelector('.reduce_animation')
+        reduceAnimationElement.style.display = ''
+        localStorage.getItem('twitter-reduce_animation') ?
+            reduceAnimationElement.querySelector('input').checked = 'chekced' :
+            reduceAnimationElement.querySelector('input').checked = ''
+    }
 
     function findParents(target, className) {
         if (target.className.length !== 0 && target.classList.contains(className)) {
