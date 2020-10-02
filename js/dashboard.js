@@ -42,14 +42,12 @@
         // dashboard anchor settings.
         resetDashboardAnchorGroup()
         const da = document.querySelector(`.dashboard_anchor_${location.pathname.split('/')[1]}`)
-        da.classList.add('select_active_dashboard')
+        if (da) da.classList.add('select_active_dashboard')
         const body = document.querySelector('body')
         body.style.marginRight = ''
         body.style.overflowY = ''
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
             changeTwitterContentOptimized(history.state['targetPage'])
-        } else if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
-            changeTwitterContent(history.state['targetPage'])
         } else if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/newsplus') {
             changeTwitterContent(history.state['targetPage'])
         } else {
