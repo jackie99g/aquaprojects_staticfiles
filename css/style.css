@@ -1,5 +1,4 @@
 :root {
-    --mainColor: #fff;
     --buttonColor: #1da1f2;
     --buttonDisableColor: #f2f2f2;
     --theme-color-blue: #1b95e0;
@@ -64,7 +63,7 @@ video {
 
 .tgl-flat+.tgl-btn {
     padding: 2px;
-    background: var(--mainColor);
+    background: transparent;
     border: 4px solid var(--buttonDisableColor);
     border-radius: 2em;
 }
@@ -97,6 +96,47 @@ a:hover {
     color: #1da1f2;
 }
 
+/* ap_theme */
+.ap_theme-white-border {
+    border-color: #e6ecf0;
+}
+
+.ap_theme-dark-border {
+    border-color: #38444d;
+}
+
+.ap_theme-white-background {
+    background-color: rgb(255, 255, 255);
+}
+
+.ap_theme-white-background:hover {
+    background-color: rgb(245, 248, 250);
+}
+
+.ap_theme-white-background-skelton:hover {
+    background-color: rgb(245, 248, 250, 0.5);
+}
+
+.ap_theme-dark-background {
+    background-color: rgb(21, 32, 43);
+}
+
+.ap_theme-dark-background:hover {
+    background-color: rgb(25, 39, 52);
+}
+
+.ap_theme-dark-background-skelton:hover {
+    background-color: rgb(25, 39, 52, 0.5);
+}
+
+.ap_theme-white-color-sub {
+    color: #657786;
+}
+
+.ap_theme-dark-color-sub {
+    color: #8899A6;
+}
+
 .box {
     width: 100%;
     height: 150vh;
@@ -112,10 +152,11 @@ a:hover {
 .header_contents {
     display: flex;
     height: 57px;
-    background-color: #ffffff;
+    background-color: inherit;
     width: 100%;
     position: fixed;
-    border-bottom: solid 1px #e6ecf0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
     z-index: 2;
     transition: top 0.2s ease;
 }
@@ -135,9 +176,8 @@ a:hover {
     right: 5px;
     width: 300px;
     height: auto;
-    border: 1px solid white;
     border-radius: 10px;
-    background: white;
+    background: inherit;
     padding: 15px;
     visibility: hidden;
 }
@@ -269,7 +309,8 @@ a:hover {
 }
 
 .aside_border {
-    border-left: 1px solid #e6ecf0;
+    border-left-style: solid;
+    border-left-width: 1px;
     padding: 15px;
 }
 
@@ -279,8 +320,8 @@ a:hover {
     width: 100%;
     bottom: 0;
     z-index: 2;
-    border-top: solid 1px #e6ecf0;
-    background-color: white;
+    border-top-style: solid;
+    border-top-width: 1px;
     box-shadow: 0 0 8px #00000066;
 }
 
@@ -288,7 +329,8 @@ a:hover {
     display: flex;
     position: relative;
     z-index: 1;
-    border-bottom: solid 1px #e6ecf0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
 }
 
 .side_content_sm {
@@ -297,8 +339,9 @@ a:hover {
     text-align: center;
 }
 
-.side_boder {
-    border-right: 1px solid #e6ecf0;
+.side_border {
+    border-right-style: solid;
+    border-bottom-width: 1px;
     padding: 15px;
 }
 
@@ -338,22 +381,17 @@ a:hover {
 }
 
 .news_desktop {
-    border: 0;
-    border-bottom: 1px solid #e6ecf0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
     padding: 15px;
     border-radius: unset;
 }
 
 .news_sm {
-    border: 0;
-    border-bottom: 1px solid #e6ecf0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
     padding: 10px;
     border-radius: unset;
-}
-
-.news_desktop:hover,
-.news_sm:hover {
-    background: #F5F8FA;
 }
 
 .news_noimage {
@@ -414,8 +452,6 @@ a:hover {
     text-align: center;
     width: 100%;
     height: 100%;
-    color: black;
-    background: white;
     position: relative;
 }
 
@@ -699,7 +735,6 @@ a:hover {
 .ripple {
     border: none;
     cursor: pointer;
-    background-color: #fff;
     outline: none;
     background-position: center;
     transition: background 0.4s;
@@ -727,8 +762,9 @@ a:hover {
 .timeline {
     width: 100%;
     max-width: 600px;
-    border-left: solid 1px #e6ecf0;
-    border-right: solid 1px #e6ecf0;
+    border-left-style: solid;
+    border-right-style: solid;
+    border-width: 1px;
     position: relative;
 }
 
@@ -736,7 +772,8 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     padding: 12px 16px;
-    border-bottom: solid 1px #e6ecf0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
 }
 
 .tweet-twitter_retweet_header {
@@ -772,18 +809,17 @@ a:hover {
 .tweet-twitter_screen_name,
 .twitter_user-screen_name,
 .twitter_user-local {
-    color: #657786;
     font-weight: normal;
 }
 
-.twitter_user-favorites_count-unit,
+/* .twitter_user-favorites_count-unit,
 .twitter_user-statuses_count-unit,
 .twitter_user-following_count-unit,
 .twitter_user-followers_count-unit,
-.twitter_user-count_status-camma,
-.twitter_user-status-cammma {
+.twitter_user-count_status-comma,
+.twitter_user-status-comma {
     color: #657786;
-}
+} */
 
 .twitter_user-following_count-unit:hover,
 .twitter_user-followers_count-unit:hover {
@@ -791,7 +827,6 @@ a:hover {
 }
 
 .tweet-twitter_createdat {
-    color: #657786;
     text-overflow: ellipsis;
 }
 
@@ -814,7 +849,6 @@ a:hover {
 
 .tweet:hover {
     cursor: pointer;
-    background: rgba(245, 248, 250, 0.5);
 }
 
 .tweet-twitter_name:hover {
@@ -827,14 +861,16 @@ a:hover {
 
 .tweet-twitter_pictures_border {
     margin: 12px 0 0;
-    border: 1px solid #CCD6DD;
+    border-style: solid;
+    border-width: 1px;
     border-radius: 12px;
 }
 
 .twitter_trends_block {
     padding: 8px 0;
     margin: 0 8px;
-    border-top: 1px solid #e6ecf0;
+    border-top-style: solid;
+    border-top-width: 1px;
 }
 
 .tweet-twitter_full_text_hashtags:hover,
@@ -972,14 +1008,12 @@ a:hover {
     flex: auto;
     text-align: center;
     padding: 12px;
-    color: #657786;
 }
 
 .twitter_user-profile_timeline_navigation-tweets:hover,
 .twitter_user-profile_timeline_navigation-with_replies:hover,
 .twitter_user-profile_timeline_navigation-media:hover,
 .twitter_user-profile_timeline_navigation-likes:hover {
-    background: rgb(232, 245, 254);
     border-bottom: 1px solid rgb(29, 161, 242);
     color: rgb(29, 161, 242);
     cursor: pointer;
@@ -1022,6 +1056,33 @@ a:hover {
     }
 }
 
+.twitter_title-block {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    height: 54px;
+}
+
+.tweet-load_more_old_tweet {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    cursor: pointer;
+    height: 49px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tweet-twitter_user_tooltip {
+    width: 300px;
+    display: none;
+    position: absolute;
+    border-radius: 1rem;
+    box-shadow: 8px 8px 8px 8px rgba(6, 134, 255, 0.15);
+    padding: 1rem;
+    white-space: normal;
+    z-index: 1;
+}
+
 .seamless_configuration-view {
     margin: 0 0 0 12px;
     padding: 12px 12px 12px 0;
@@ -1054,14 +1115,13 @@ a:hover {
 
 .box_anchor_container {
     display: flex;
-    border-bottom: solid 1px #e6ecf0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
     text-align: center;
     cursor: pointer;
-    overflow-x: auto;
 }
 
 .box_anchor {
-    color: #657786;
     padding: 12px 12px 8px;
     flex: 0 0 auto;
     width: calc(100% / 3);
@@ -1076,13 +1136,11 @@ a:hover {
 }
 
 .box_anchor:hover {
-    background: #e8f5fe;
-    border-bottom: 1px solid #1da1f2;
+    border-bottom: 1px solid rgb(29, 161, 242);
 }
 
 .box_container {
     display: flex;
-    overflow-x: hidden;
     cursor: pointer;
 }
 
