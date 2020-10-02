@@ -1,68 +1,85 @@
 (() => {
-    var touchingPositionPageX = 0
-    var touchStartScrollLeft = 0
+    let currentSlideNumber = 0
 
-    var clickingNow = false
-    var clickingPositionOffsetX = 0
-    var clickingPositionPageX = 0
-    var currentSlideNumber = 0
-
-    $(window).on('aquaprojects_popstate', function() {
-        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-            var _currentSlideNumber = searchCurrentSlideNumber()
-            jumpToSlide(_currentSlideNumber, 0)
-            activateNewsplusAnchor()
-            scrollNewsplusAnchorLeft(_currentSlideNumber)
+    window.addEventListener('aquaprojects_popstate', () => {
+        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/newsplus') {
+            const _currentSlideNumber =
+                location.href.replace(location.origin, '') === '/newsplus' ?
+                0 : Array.from(document.querySelectorAll('.box_anchor')).findIndex(
+                    item =>
+                    item.href.replace(location.origin, '') ===
+                    location.href.replace(location.origin, '')
+                )
+            jumpToSlide(_currentSlideNumber)
+            activateAnchor(_currentSlideNumber)
+            translateAnchors(_currentSlideNumber)
+            changeTheme()
         }
     })
     if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
         window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
 
-    $(window).resize(() => {
+    window.addEventListener('resize', () => {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-            var _currentSlideNumber = searchCurrentSlideNumber()
-            jumpToSlide(_currentSlideNumber, 0)
-            scrollNewsplusAnchorLeft(_currentSlideNumber)
+            const _currentSlideNumber =
+                location.href.replace(location.origin, '') === '/newsplus' ?
+                0 : Array.from(document.querySelectorAll('.box_anchor')).findIndex(
+                    item =>
+                    item.href.replace(location.origin, '') ===
+                    location.href.replace(location.origin, '')
+                )
+            jumpToSlide(_currentSlideNumber)
+            translateAnchors(_currentSlideNumber)
         }
     })
 
-    $(document).on('click', '.box_anchor', boxAnchor)
+    // box_anchor
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'box_anchor')) {
+            const target = findParents(e.target, 'box_anchor')
+            const boxAnchorContainer = document.querySelector('.box_anchor_container')
+            const boxAnchorSibling = boxAnchorContainer.querySelectorAll('.box_anchor')
 
-    function boxAnchor(e) {
-        var clickSlideNumber = $(`.${e.target.className}`).index(e.target)
-        jumpToSlide(clickSlideNumber, 200)
-        scrollNewsplusAnchorLeft(clickSlideNumber)
+            const container = document.querySelector('.box_container')
+            const elementIndex = Array.from(boxAnchorSibling).findIndex(item => item === target)
+            const elementWidth = document.querySelector('.box_element').offsetWidth
 
-        var targetPage = e.target.href.replace(location.origin, '')
-        var currentPage = location.href.replace(location.origin, '')
-        easyPushState(targetPage, currentPage)
-        changeContent(targetPage)
-        return false
-    }
+            container.addEventListener('transitionend', () =>
+                container.style.transition = 'all 0ms ease 0s')
+            container.style.transition = 'all 300ms ease 0s'
 
-    function easyPushState(targetPage, currentPage, changeLocation = "#main") {
-        var state = {
-            'targetPage': targetPage,
-            'currentPage': currentPage,
-            'changeLocation': changeLocation
+            container.style.transform =
+                `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+
+            const targetPage = target.href.replace(location.origin, '')
+            const currentPage = location.href.replace(location.origin, '')
+            easyPushState(targetPage, currentPage)
+            changeContent(targetPage)
+            e.preventDefault()
         }
-        history.pushState(state, null, targetPage)
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
-        AquaProjectsCache[location.href.replace(location.origin, '')] = $('html').html()
-    }
-
-    function assistEasyPushState(assistSlideNumber) {
-        var targetPageAnchor = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')[assistSlideNumber]
-        var targetPage = targetPageAnchor.href.replace(location.origin, '')
-        var currentPage = location.href.replace(location.origin, '')
-        easyPushState(targetPage, currentPage)
-        return targetPage
-    }
+    })
 
     function changeContent(href) {
-        activateNewsplusAnchor()
-        processAjaxProgressBar()
+        const ajaxProgressBar = document.querySelector('#ajax-progress-bar');
+
+        activateAnchor(
+            Array.from(document.querySelectorAll('.box_anchor')).findIndex(
+                item =>
+                item.href.replace(location.origin, '') === href.replace(location.origin, '')
+            )
+        )
+        translateAnchors(
+            Array.from(document.querySelectorAll('.box_anchor')).findIndex(
+                item =>
+                item.href.replace(location.origin, '') === href.replace(location.origin, '')
+            )
+        )
+
+        ajaxProgressBar.classList ? ajaxProgressBar.classList.remove('bg-danger') : false
+        ajaxProgressBar.style.visibility = 'visible';
+        ajaxProgressBar.style.width = '80%'
+
         fetch(
             href, {
                 method: 'GET',
@@ -76,232 +93,233 @@
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[href] = data
-            if (href != location.href.replace(location.origin, '')) {
+            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
+            if (href !== location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
             }
-            $('#main').html($(data).find('#main').html());
+            const changeLocation = document.querySelector('#main')
+            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
+            const changeLocationCloneNode =
+                AquaProjectsCache[href].cloneNode(true).querySelector('#main')
+            Array.from(changeLocationCloneNode.children).forEach(element => {
+                changeLocation.appendChild(element)
+            })
+
             window.dispatchEvent(new Event('aquaprojects_popstate'));
-            completeAjaxProgressBar()
+
+            ajaxProgressBar.style.width = '100%';
+            ajaxProgressBar.style.transition = 'width 0.1s ease';
+            setTimeout(() => {
+                ajaxProgressBar.style.visibility = 'hidden';
+                ajaxProgressBar.style.width = '0%';
+                ajaxProgressBar.style.transition = '';
+            }, 200);
         }).catch(err => {
             console.error(err)
         })
     }
 
-    function searchCurrentSlideNumber() {
-        var currentSlideNumber = 0
-        var currentPage = location.href.replace(location.origin, '')
-        var boxAnchorContainer = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')
-        for (let index = 0; index < boxAnchorContainer.length; index++) {
-            if (currentPage === boxAnchorContainer[index].href.replace(location.origin, '')) {
-                currentSlideNumber = index
+    function activateAnchor(slideNumber) {
+        const boxAnchorSibling = document.querySelectorAll(
+            '.box_anchor_container .box_anchor'
+        )
+        for (let index = 0; index < boxAnchorSibling.length; index++) {
+            const element = boxAnchorSibling[index];
+            element.style.borderBottom = ''
+            element.style.color = ''
+            if (index === slideNumber) {
+                element.style.borderBottom = '1px solid rgb(29, 161, 242)'
+                element.style.color = '#1da1f2'
             }
         }
-        return currentSlideNumber
     }
 
-    function activateNewsplusAnchor() {
-        var currentSlideAnchorStore = document.getElementsByClassName('box_anchor_container')[0].getElementsByClassName('box_anchor')
-        for (let index = 0; index < currentSlideAnchorStore.length; index++) {
-            currentSlideAnchorStore[index].style.borderBottom = ''
-            currentSlideAnchorStore[index].style.color = ''
-
+    function translateAnchors(newsplusAnchorSlideNumber) {
+        const container = document.querySelector('.box_anchor_container')
+        const windowWidth = window.innerWidth
+        if (windowWidth > 768) {
+            container.style.transform = 'translate3d(0px, 0px, 0px)'
+            return false
         }
-        currentSlideAnchorStore[currentSlideNumber].style.borderBottom = '1px solid #1da1f2'
-        currentSlideAnchorStore[currentSlideNumber].style.color = '#1da1f2'
+        let elementIndex = 0
+        const elementWidth = document.querySelector('.box_anchor').offsetWidth
+
+        newsplusAnchorSlideNumber === 0 ||
+            newsplusAnchorSlideNumber === document.querySelectorAll('.box_anchor').length ?
+            elementIndex = newsplusAnchorSlideNumber :
+            elementIndex = newsplusAnchorSlideNumber - 1
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
     }
 
-    function processAjaxProgressBar() {
-        var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
-        ajaxProgressBar.classList ? ajaxProgressBar.classList.remove('bg-danger') : false
-        ajaxProgressBar.style.visibility = 'visible';
-        ajaxProgressBar.style.width = '80%'
+    // box_container touchstart
+    document.addEventListener('touchstart', e => {
+        if (findParents(e.target, 'box_container')) {
+            const container = findParents(e.target, 'box_container')
+            boxContainerTouchStart(e, container)
+        }
+    })
+
+    // box_container touchmove
+    document.addEventListener('touchmove', e => {
+        if (findParents(e.target, 'box_container')) {
+            const container = findParents(e.target, 'box_container')
+            boxContainerTouchMove(e, container)
+        }
+    })
+
+    // box_container touchend
+    document.addEventListener('touchend', e => {
+        if (findParents(e.target, 'box_container')) {
+            const container = findParents(e.target, 'box_container')
+            boxContainerTouchEnd(e, container)
+        }
+    })
+
+    let touchingPositionPageX = 0
+    let touchStartScrollLeft = 0
+
+    function analyzeTransform(transform) {
+        return transform
+            .replace('translate3d', '')
+            .replace('(', '')
+            .replace(')', '')
+            .replace(' ', '')
+            .replaceAll('px', '')
+            .split(',')
     }
 
-    function completeAjaxProgressBar() {
-        var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
-        ajaxProgressBar.style.width = '100%';
-        ajaxProgressBar.style.transition = 'width 0.1s ease';
-        setTimeout(() => {
-            ajaxProgressBar.style.visibility = 'hidden';
-            ajaxProgressBar.style.width = '0%';
-            ajaxProgressBar.style.transition = '';
-        }, 200);
-    }
-
-    function scrollNewsplusAnchorLeft(newsplusAnchorSlideNumber) {
-        var boxAnchorWidth = document.querySelector('.box_anchor').offsetWidth
-        document.querySelector('.box_anchor_container').scrollLeft = (newsplusAnchorSlideNumber - 1) * boxAnchorWidth
-    }
-
-    $(document).on('touchstart', '.box_container', boxContainerTouchStart)
-    $(document).on('touchmove', '.box_container', boxContainerTouchMove)
-    $(document).on('touchend', '.box_container', boxContainerTouchEnd)
-    // $(document).on('mousedown', '.box_container', boxContainerMouseDown)
-    // $(document).on('mousemove', '.box_container', boxContainerMouseMove)
-    // $(document).on('mouseup', '.box_container', boxContainerMouseUp)
-    // $(document).on('mouseleave', '.box_container', boxContainerMouseLeave)
-    // $(document).on('click', '.prevSlideBtn', prevSlideBtn)
-    // $(document).on('click', '.nextSlideBtn', nextSlideBtn)
-
-    function boxContainerTouchStart(e) {
+    function boxContainerTouchStart(e, container) {
         touchingPositionPageX = e.changedTouches[0].pageX
-        touchStartScrollLeft = this.scrollLeft
+        touchStartScrollLeft = container.style.transform ?
+            analyzeTransform(container.style.transform) : [0, 0, 0]
     }
 
-    function boxContainerTouchMove(e) {
-        this.scrollLeft = touchStartScrollLeft + touchingPositionPageX - e.changedTouches[0].pageX
+    function boxContainerTouchMove(e, container) {
+        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
+        const translate3dX = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
+        container.style.transform = `translate3d(${translate3dX}px, 0px, 0px)`
+
     }
 
-    function boxContainerTouchEnd(e) {
-        if (touchingPositionPageX - e.changedTouches[0].pageX > this.offsetWidth / 4) {
-            scrollContentLeft(
-                this,
-                ($('.box_element').index(e.target.closest('.box_element')) + 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
-            currentSlideNumber += 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        } else if (touchingPositionPageX - e.changedTouches[0].pageX < -(this.offsetWidth / 4)) {
-            scrollContentLeft(
-                this,
-                ($('.box_element').index(e.target.closest('.box_element')) - 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft,
-                200
-            )
-            currentSlideNumber -= 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        } else {
-            scrollContentLeft(
-                this,
-                $('.box_element').index(e.target.closest('.box_element')) * e.target.closest('.box_element').offsetWidth - this.scrollLeft,
-                200
-            )
-        }
+    function boxContainerTouchEnd(e, container) {
+        const elements = document.querySelectorAll('.box_element')
+        const elementIndex = Array.from(elements).findIndex(
+            item => item === findParents(e.target, 'box_element')
+        )
+        const elementWidth = elements[0].offsetWidth
+        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
+
+        container.addEventListener('transitionend', () =>
+            container.style.transition = 'all 0ms ease 0s')
+        container.style.transition = 'all 300ms ease 0s'
+
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
-    }
 
-    function boxContainerMouseDown(e) {
-        clickingNow = true
-        clickingPositionOffsetX = e.offsetX
-        clickingPositionPageX = e.pageX
-    }
+        let havetoChange = true
 
-    function boxContainerMouseMove(e) {
-        if (clickingNow) {
-            this.scrollLeft = this.scrollLeft + clickingPositionOffsetX - e.offsetX
-        }
-    }
-
-    function boxContainerMouseUp(e) {
-        if (clickingPositionPageX - e.pageX > this.offsetWidth / 4) {
-            scrollContentLeft(
-                this,
-                ($('.box_element').index(e.target.closest('.box_element')) + 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
+        if (amountOfMovement > container.offsetWidth / 6) {
+            if (elements.length - 1 < currentSlideNumber + 1) return false
+            container.style.transform =
+                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
             currentSlideNumber += 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        } else if (clickingPositionPageX - e.pageX < -(this.offsetWidth / 4)) {
-            scrollContentLeft(
-                this,
-                ($('.box_element').index(e.target.closest('.box_element')) - 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
+        } else if (amountOfMovement < -(container.offsetWidth / 6)) {
+            if (currentSlideNumber - 1 < 0) return false
+            container.style.transform =
+                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
             currentSlideNumber -= 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
         } else {
-            scrollContentLeft(
-                this,
-                $('.box_element').index(e.target.closest('.box_element')) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
+            havetoChange = false
         }
-        clickingNow = false
+
+        havetoChange === true ? (() => {
+            const targetPage =
+                document.querySelectorAll('.box_anchor')[currentSlideNumber].href
+                .replace(location.origin, '')
+            const currentPage = location.href.replace(location.origin, '')
+            easyPushState(targetPage, currentPage)
+            changeContent(targetPage)
+        })() : false
     }
 
-    function boxContainerMouseLeave(e) {
-        if (!clickingNow) return false
-        if (clickingPositionPageX - e.pageX > this.offsetWidth / 4) {
-            scrollContentLeft(
-                this,
-                ($('.box_element').index(e.target.closest('.box_element')) + 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
-            currentSlideNumber += 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        } else if (clickingPositionPageX - e.pageX < -(this.offsetWidth / 4)) {
-            scrollContentLeft(
-                this,
-                ($('.box_element').index(e.target.closest('.box_element')) - 1) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
-            currentSlideNumber -= 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        } else {
-            scrollContentLeft(
-                this,
-                $('.box_element').index(e.target.closest('.box_element')) * e.target.closest('.box_element').offsetWidth - this.scrollLeft, 200
-            )
-        }
-        clickingNow = false
-    }
+    function jumpToSlide(jumpToSlideNumber) {
+        const container = document.querySelector('.box_container')
+        const elements = document.querySelectorAll(`.box_element`)
+        const elementWidth = elements[0].offsetWidth
+        const elementIndex = jumpToSlideNumber
 
-    function scrollContentLeft(n, t, i) {
-        var r = new Date,
-            u = n.scrollLeft,
-            f = setInterval(() => {
-                var e = new Date - r;
-                e > i && (clearInterval(f), e = i);
-                n.scrollLeft = u + t * (e / i)
-            }, 10)
-    }
+        container.style.transition = 'all 0ms ease 0s'
 
-    function changeContentLeft(n, t) {
-        var u = n.scrollLeft
-        n.scrollLeft = u + t
-    }
+        container.style.transform =
+            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
 
-    function prevSlideBtn() {
-        scrollContentLeft(
-            document.getElementsByClassName('box_container')[0],
-            (currentSlideNumber - 1) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
-            200
-        )
-        if (currentSlideNumber > 0) {
-            currentSlideNumber -= 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        }
-    }
-
-    function nextSlideBtn() {
-        scrollContentLeft(
-            document.getElementsByClassName('box_container')[0],
-            (currentSlideNumber + 1) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
-            200
-        )
-        if (currentSlideNumber < document.getElementsByClassName('box_element').length - 1) {
-            currentSlideNumber += 1
-            var href = assistEasyPushState(currentSlideNumber)
-            changeContent(href)
-        }
-    }
-
-    function jumpToSlide(jumpToSlideNumber, duration = 200) {
-        if (duration < 100) {
-            changeContentLeft(
-                document.getElementsByClassName('box_container')[0],
-                (jumpToSlideNumber) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
-            )
-        } else {
-            scrollContentLeft(
-                document.getElementsByClassName('box_container')[0],
-                (jumpToSlideNumber) * document.getElementsByClassName('box_element')[0].offsetWidth - document.getElementsByClassName('box_container')[0].scrollLeft,
-                duration
-            )
-        }
         currentSlideNumber = jumpToSlideNumber
+    }
+
+    function easyPushState(targetPage, currentPage) {
+        const state = {
+            'targetPage': targetPage,
+            'currentPage': currentPage
+        }
+        history.pushState(state, null, targetPage)
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+    }
+
+    function changeTheme() {
+        const body = document.querySelector('body')
+        const logo = document.querySelectorAll('.header .logo img')
+        const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
+
+        if (localStorage.getItem('ap-theme-dark')) {
+            body.style.backgroundColor = 'rgb(21, 32, 43)'
+            body.style.color = 'rgb(255, 255, 255)'
+            Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
+            changeThemeNode('white', 'dark')
+        } else if (localStorage.getItem('ap-theme-dark') === null) {
+            body.style.backgroundColor = 'rgb(255, 255, 255)'
+            body.style.color = ''
+            Array.from(logo).forEach(item => item.style.filter = '')
+            changeThemeNode('dark', 'white')
+        }
+
+        function changeThemeNode(beforeTheme, afterTheme) {
+            for (let index = 0; index < changeStyles.length; index++) {
+                const element = changeStyles[index];
+                changeThemeClass(
+                    document.querySelectorAll(`.ap_theme-${beforeTheme}-${element}`),
+                    beforeTheme, afterTheme
+                )
+            }
+        }
+
+        function changeThemeClass(nodeList, beforeTheme, afterTheme) {
+            for (let index = 0; index < nodeList.length; index++) {
+                const element = nodeList[index];
+                const changedClassName = element.className.replaceAll(
+                    `ap_theme-${beforeTheme}`, `ap_theme-${afterTheme}`
+                )
+                element.className = changedClassName
+            }
+        }
+    }
+
+    function findParents(target, className) {
+        if (target === document) return false
+        if (target.className.length !== 0 && target.classList.contains(className)) {
+            return target
+        }
+        var currentNode = target.parentNode
+        if (currentNode === document || currentNode === null) {
+            return false
+        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
+            return currentNode
+        } else {
+            return findParents(currentNode, className)
+        }
     }
 })()
