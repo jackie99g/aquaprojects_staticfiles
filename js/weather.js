@@ -3,6 +3,7 @@
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/weather') {
             drawWeather()
             adjustWeatherContentSize()
+            changeTheme()
         }
     })
 
@@ -170,6 +171,44 @@
                 e > i && (clearInterval(f), e = i);
                 n.scrollLeft = u + t * (e / i)
             }, 10)
+    }
+
+    function changeTheme() {
+        const body = document.querySelector('body')
+        const logo = document.querySelectorAll('.header .logo img')
+        const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
+
+        if (localStorage.getItem('ap-theme-dark')) {
+            body.style.backgroundColor = 'rgb(21, 32, 43)'
+            body.style.color = 'rgb(255, 255, 255)'
+            Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
+            changeThemeNode('white', 'dark')
+        } else if (localStorage.getItem('ap-theme-dark') === null) {
+            body.style.backgroundColor = 'rgb(255, 255, 255)'
+            body.style.color = ''
+            Array.from(logo).forEach(item => item.style.filter = '')
+            changeThemeNode('dark', 'white')
+        }
+
+        function changeThemeNode(beforeTheme, afterTheme) {
+            for (let index = 0; index < changeStyles.length; index++) {
+                const element = changeStyles[index];
+                changeThemeClass(
+                    document.querySelectorAll(`.ap_theme-${beforeTheme}-${element}`),
+                    beforeTheme, afterTheme
+                )
+            }
+        }
+
+        function changeThemeClass(nodeList, beforeTheme, afterTheme) {
+            for (let index = 0; index < nodeList.length; index++) {
+                const element = nodeList[index];
+                const changedClassName = element.className.replaceAll(
+                    `ap_theme-${beforeTheme}`, `ap_theme-${afterTheme}`
+                )
+                element.className = changedClassName
+            }
+        }
     }
 
     function findParents(target, className) {

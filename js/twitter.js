@@ -10,6 +10,7 @@
             twitterProfile()
             twitterTrends()
             changeTwitterTimelineBackgroundSize()
+            changeTheme()
             console.log('twitter! popstate event finished.')
         }
     })
@@ -1601,7 +1602,7 @@
         if (findParents(e.target, 'tweet-twitter_user_name')) {
             const target = findParents(e.target, 'tweet-twitter_user_name')
             const y = target.offsetTop + target.clientHeight
-            target.querySelector('.tweet-twitter_user_tooltip').style.display = ''
+            target.querySelector('.tweet-twitter_user_tooltip').style.display = 'block'
             target.querySelector('.tweet-twitter_user_tooltip').style.top = y
         }
     }, true)
@@ -1609,7 +1610,7 @@
     document.addEventListener('mouseleave', e => {
         if (findParents(e.target, 'tweet-twitter_user_name')) {
             const target = findParents(e.target, 'tweet-twitter_user_name')
-            target.querySelector('.tweet-twitter_user_tooltip').style.display = 'none'
+            target.querySelector('.tweet-twitter_user_tooltip').style.display = ''
         }
     }, true)
 
@@ -2175,7 +2176,7 @@
             const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
             const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
 
-            twitterSearchBoxBorder.style.border = '2px solid #1da1f2'
+            twitterSearchBoxBorder.style.borderColor = '#1da1f2'
             twitterSearchBoxIcon.style.color = '#1da1f2'
             if (twitterSearchBoxInput.value !== '') {
                 twitterSearchBoxClose.style.display = 'flex'
@@ -2191,7 +2192,7 @@
             const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
             const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
 
-            twitterSearchBoxBorder.style.border = '2px solid #e6ecf0'
+            twitterSearchBoxBorder.style.borderColor = ''
             twitterSearchBoxIcon.style.color = '#657786'
             twitterSearchBoxClose.style.display = 'none'
 
@@ -2370,6 +2371,44 @@
             img.onerror = (e) => reject(e)
             img.src = src;
         });
+    }
+
+    function changeTheme() {
+        const body = document.querySelector('body')
+        const logo = document.querySelectorAll('.header .logo img')
+        const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
+
+        if (localStorage.getItem('ap-theme-dark')) {
+            body.style.backgroundColor = 'rgb(21, 32, 43)'
+            body.style.color = 'rgb(255, 255, 255)'
+            Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
+            changeThemeNode('white', 'dark')
+        } else if (localStorage.getItem('ap-theme-dark') === null) {
+            body.style.backgroundColor = 'rgb(255, 255, 255)'
+            body.style.color = ''
+            Array.from(logo).forEach(item => item.style.filter = '')
+            changeThemeNode('dark', 'white')
+        }
+
+        function changeThemeNode(beforeTheme, afterTheme) {
+            for (let index = 0; index < changeStyles.length; index++) {
+                const element = changeStyles[index];
+                changeThemeClass(
+                    document.querySelectorAll(`.ap_theme-${beforeTheme}-${element}`),
+                    beforeTheme, afterTheme
+                )
+            }
+        }
+
+        function changeThemeClass(nodeList, beforeTheme, afterTheme) {
+            for (let index = 0; index < nodeList.length; index++) {
+                const element = nodeList[index];
+                const changedClassName = element.className.replaceAll(
+                    `ap_theme-${beforeTheme}`, `ap_theme-${afterTheme}`
+                )
+                element.className = changedClassName
+            }
+        }
     }
 
     function findParents(target, className) {
