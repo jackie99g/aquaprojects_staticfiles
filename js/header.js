@@ -3,13 +3,10 @@
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY
         const headerContent = document.querySelector('.header_contents')
-        const progress = document.querySelector('.progress')
         if (scrollY > startPos && scrollY > headerContent.offsetHeight) {
             headerContent.style.top = `-${headerContent.offsetHeight}px`
-            progress.style.visibility = 'hidden'
         } else {
             headerContent.style.top = '0'
-            progress.style.visibility = ''
         }
         startPos = scrollY
     })
