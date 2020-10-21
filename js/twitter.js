@@ -5,6 +5,7 @@
             initTweetIntersectionObserver()
             initTweetPictureInsersectionObserver()
             initTweetTwitterUserIconInsersectionObserver()
+            initLastTweetInsersectionObserver()
             makeTwitterUserTwitterIconClear()
             setTweetCreated_at()
             twitterProfile()
@@ -28,15 +29,6 @@
     //         }
     //     }
     // }, 60 * 1000);
-
-    // var alreadyBottom = false;
-    // $(window).scroll(function() {
-    //     if ($(document).height() - $('.tweet-load_more_old_tweet').innerHeight() - $('.tweet').innerHeight() * 3 <= $(window).scrollTop() + $(window).innerHeight() && alreadyBottom === false) {
-    //         console.log('Reach bottom.')
-    //         var tweet_id = $('.format_timeline > div:last').prev().data('tweet_id');
-    //         loadMoreTweet(tweet_id, 'old');
-    //     }
-    // })
 
     var tweetPictureInsersectionObserver = null
 
@@ -124,14 +116,15 @@
             // Whether load tweets object?
             if (document.querySelector('.twitter_new_tweets_of_no_content')) {
                 calculateTweetsToDisplayFirst()
+                window.dispatchEvent(new Event('aquaprojects_popstate'))
 
                 setTimeout(() => {
                     const tntonc =
                         document.querySelector('.twitter_new_tweets_of_no_content')
                     const tweet = document.querySelector('.tweet')
                     if (!tntonc || !tweet) return false
-                    const teth = history.state['twitter_each_tweets_height']
-                    const is_tweetId = teth[0]['tweet_id']
+                    const is_tweetId =
+                        document.querySelector('.format_timeline .tweet').dataset['tweet_id']
                     is_tweetId ? loadTheOthersTweet() : loadCacheOfMainArea()
                     window.dispatchEvent(new Event('aquaprojects_popstate'))
 
@@ -169,7 +162,7 @@
 
         const href = location.href.replace(location.origin, '')
         const cacheNodeNoCopy = AquaProjectsCache[href]
-        const cacheNode = cacheNodeNoCopy.querySelector('.format_timeline').cloneNode(true)
+        const cacheNode = cacheNodeNoCopy.querySelector('.format_timeline')
         const cacheTweets = cacheNode.querySelectorAll('.tweet')
         let correctCacheTweets = []
         let newTweetOfNoContentHeight = 0
@@ -188,8 +181,13 @@
         }
 
         // Search twitter_target_tweet_id
-        (() => {
+        const searchTwitterTargetTweetId = (() => {
             const targetScrollY = window.scrollY
+
+            if (!twitter_each_tweets_height) {
+                twitter_target_tweet_id = correctCacheTweets[0].dataset['tweet_id']
+                return
+            }
 
             let totalEachHeight = []
             for (let index = 0; index < twitter_each_tweets_height.length; index++) {
@@ -228,14 +226,15 @@
             }
 
             twitter_target_tweet_id = targetTweetData['tweet_id']
-        })()
+        })
+        searchTwitterTargetTweetId()
 
         // Collect tweets to display
-        var tweetIndex = correctCacheTweets
+        const tweetIndex = correctCacheTweets
             .map(item => item.dataset['tweet_id'])
             .findIndex(item => item === twitter_target_tweet_id)
-        var slicedTweetsBeginIntex = tweetIndex - 10
-        var slicedTweetsEndIndex = tweetIndex + 10 + 1
+        let slicedTweetsBeginIntex = tweetIndex - 10
+        let slicedTweetsEndIndex = tweetIndex + 10 + 1
         if (slicedTweetsBeginIntex < 0) {
             slicedTweetsBeginIntex = 0
         }
@@ -243,55 +242,68 @@
             slicedTweetsEndIndex = correctCacheTweets.length
         }
         slicedTweets = correctCacheTweets.slice(slicedTweetsBeginIntex, slicedTweetsEndIndex)
+        // Array.from(slicedTweets).forEach(element => element.cloneNode(true))
 
         // Calculate twitter_new_tweets_of_no_content height
-        var newTweetOfNoContentIndedx = twitter_each_tweets_height
-            .map(item => item['tweet_id'])
-            .findIndex(item => item === slicedTweets[0].dataset['tweet_id'])
-        var newTweetOfNoContentHeightList = twitter_each_tweets_height.slice(0, newTweetOfNoContentIndedx)
-        for (let index = 0; index < newTweetOfNoContentHeightList.length; index++) {
-            const element = newTweetOfNoContentHeightList[index];
-            newTweetOfNoContentHeight += element['tweet_height']
-        }
+        const calculateTwitterNewTweetsOfNoContentHeight = (() => {
+
+            if (!twitter_each_tweets_height) {
+                newTweetOfNoContentHeight = 0
+                return
+            }
+
+            const newTweetOfNoContentIndedx = twitter_each_tweets_height
+                .map(item => item['tweet_id'])
+                .findIndex(item => item === slicedTweets[0].dataset['tweet_id'])
+            const newTweetOfNoContentHeightList =
+                twitter_each_tweets_height.slice(0, newTweetOfNoContentIndedx)
+            for (let index = 0; index < newTweetOfNoContentHeightList.length; index++) {
+                const element = newTweetOfNoContentHeightList[index];
+                newTweetOfNoContentHeight += element['tweet_height']
+            }
+        })
+        calculateTwitterNewTweetsOfNoContentHeight()
 
         // Set cacheNode that removed format_timeline
         const ft = document.querySelector('.format_timeline')
         while (ft.firstChild) ft.removeChild(ft.firstChild)
 
         // Add twitter_new_tweets_of_no_content
-        var newTweetOfNoContent = document.createElement('div')
+        const newTweetOfNoContent = document.createElement('div')
         newTweetOfNoContent.className = 'twitter_new_tweets_of_no_content'
         newTweetOfNoContent.style.height = `${newTweetOfNoContentHeight}px`
 
         // Add displaying tweets
-        var displayingTweets = document.createDocumentFragment()
+        const displayingTweets = document.createDocumentFragment()
         for (let index = 0; index < slicedTweets.length; index++) {
-            const element = slicedTweets[index];
+            const element = slicedTweets[index].cloneNode(true);
             displayingTweets.appendChild(element)
         }
 
         // Add twitter_old_tweets_of_no_content
-        var oldTweetOfNocontent = document.createElement('div')
+        const oldTweetOfNocontent = document.createElement('div')
         oldTweetOfNocontent.className = 'twitter_old_tweets_of_no_content'
 
-        ft.style.height = `${format_timeline_height}px`
+        ft.style.height = format_timeline_height ? `${format_timeline_height}px` : ''
         ft.appendChild(newTweetOfNoContent)
         ft.appendChild(displayingTweets)
         ft.appendChild(oldTweetOfNocontent)
 
         // Show tweet-twitter_picture when they were downloaded.
-        const ttp = document.querySelectorAll('.tweet-twitter_picture')
-        for (let index = 0; index < ttp.length; index++) {
-            const element = ttp[index];
-            if (element.complete) {
-                element.src = element.dataset['src']
+        if (localStorage.getItem('twitter-view_pictures')) {
+            const ttp = document.querySelectorAll('.tweet-twitter_picture')
+            for (let index = 0; index < ttp.length; index++) {
+                const element = ttp[index];
+                if (element.complete) {
+                    element.src = element.dataset['src']
+                }
             }
         }
     }
 
     function loadTheOthersTweet() {
         const href = location.href.replace(location.origin, '')
-        var dataNode = AquaProjectsCache[href].cloneNode(true)
+        var dataNode = AquaProjectsCache[href]
         var tweets = dataNode.querySelectorAll('.tweet')
         var correctTweets = []
         var newTweets = []
@@ -315,7 +327,7 @@
             if (element.parentNode.classList.contains('quoted_status')) {
                 continue
             }
-            correctTweets.push(element.cloneNode(true))
+            correctTweets.push(element)
         }
 
         for (let index = 0; index < correctDisplayedTweets.length; index++) {
@@ -363,33 +375,22 @@
         // Create new tweets document fragement
         var formatTimelineNewTweets = document.createDocumentFragment()
         for (let index = 0; index < newTweets.length; index++) {
-            const element = newTweets[index];
+            const element = newTweets[index].cloneNode(true);
             formatTimelineNewTweets.appendChild(element)
         }
 
         // Create old tweets document fragement
         var formatTimelineOldTweets = document.createDocumentFragment()
         for (let index = 0; index < oldTweets.length; index++) {
-            const element = oldTweets[index];
+            const element = oldTweets[index].cloneNode(true);
             formatTimelineOldTweets.appendChild(element)
         }
-
-        var tweetLoadMoreOldTweet = `
-        <div class="tweet-load_more_old_tweet" style="border-bottom: solid 1px #e6ecf0; cursor: pointer; height: 49px; display: flex; flex-direction: column; justify-content: center;">
-                <div class="tweet-load_more_old_tweet_loader" style="text-align: center; display: none;">
-                    <div class="loader"></div>
-                </div>
-                <div class="tweet-load_more_old_tweet_message" style="text-align: center;"><i class="fab fa-twitter"></i></div>
-                <div class="tweet-load_more_old_tweet_message" style="text-align: center;">Load more old tweet</div>
-            </div>
-        `
 
         formatTimeline.style.height = ''
         formatTimeline.querySelector('.twitter_new_tweets_of_no_content').remove()
         formatTimeline.querySelector('.twitter_old_tweets_of_no_content').remove()
         formatTimeline.insertBefore(formatTimelineNewTweets, formatTimeline.firstChild)
         formatTimeline.appendChild(formatTimelineOldTweets)
-        formatTimeline.insertAdjacentHTML('beforeend', tweetLoadMoreOldTweet)
     }
 
     function scanTweetHeight() {
@@ -415,6 +416,187 @@
         return twitter_each_tweets_height
     }
 
+    var lastTweetInsersectionObserver = null
+
+    function initLastTweetInsersectionObserver() {
+        if (lastTweetInsersectionObserver) {
+            try {
+                lastTweetInsersectionObserver.disconnect()
+                lastTweetInsersectionObserver = null
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        lastTweetInsersectionObserver = new IntersectionObserver(
+            processLastTweetInsersectionObserver
+        )
+        const lastTweet = document.querySelector(
+            `.format_timeline .tweet:nth-child(${
+                document.querySelectorAll('.format_timeline > .tweet').length
+            })`
+        )
+        if (document.querySelector('.format_timeline').dataset['since_id'] && lastTweet) {
+            lastTweetInsersectionObserver.observe(lastTweet)
+        }
+
+        function processLastTweetInsersectionObserver(entries, observer) {
+            entries.forEach(element => {
+                if (!element.isIntersecting) {
+                    return false
+                }
+                const maxId = document.querySelector('.format_timeline').dataset['max_id']
+                downloadMoreTweet('', maxId)
+                observer.unobserve(element.target)
+            })
+        }
+    }
+
+    function downloadMoreTweet(sinceId, maxId) {
+        const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+        const href = location.href.replace(location.origin, '')
+        const parameters = buildParameter({
+            since_id: sinceId,
+            max_id: maxId
+        })
+        const saveCacheAdress = `${href}?${parameters}`
+
+        class recalculateDownloadTweetId extends Error {
+            constructor(message, sinceId, maxId) {
+                super(message)
+                this.description = message
+                this.name = 'recalculateDownloadTweetId'
+                this.status = 500
+                this.sinceId = sinceId
+                this.maxId = maxId
+            }
+        }
+
+        ajaxProgressBar.parentNode.style.visibility = ''
+        ajaxProgressBar.style.width = '80%'
+
+        fetch(
+            saveCacheAdress, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include'
+            }
+        ).then(response => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                console.error(response)
+                throw new recalculateDownloadTweetId('Not found timeline', sinceId, maxId)
+            }
+        }).then(data => {
+            // Save Cache.
+            AquaProjectsCache[saveCacheAdress] =
+                document.createRange().createContextualFragment(data)
+            if (href !== location.href.replace(location.origin, '')) {
+                console.log('It seems that you moved to a different page first.')
+                return false
+            }
+
+            // Insert tweets to main.
+            const cache = AquaProjectsCache[saveCacheAdress].querySelector('.format_timeline')
+            const cacheTweets = Array.from(cache.children)
+            const index = cacheTweets.findIndex(
+                element => maxId === element.dataset['tweet_id']
+            )
+            const formatTimelineMain = AquaProjectsCache[href].querySelector('.format_timeline')
+            if (sinceId) {
+                cacheTweets.slice(0, index + 1).reverse().forEach(
+                    element => formatTimelineMain.insertBefore(element.cloneNode(true),
+                        formatTimelineMain.querySelector('.tweet'))
+                )
+            } else if (maxId) {
+                cacheTweets.slice(index, cacheTweets.length).forEach(
+                    element => formatTimelineMain.appendChild(element.cloneNode(true))
+                )
+            }
+
+            // Create tweets document fragement.
+            const tweets = document.createDocumentFragment()
+            if (sinceId) {
+                cacheTweets.slice(0, index + 1).forEach(
+                    element => tweets.appendChild(element.cloneNode(true))
+                )
+            } else if (maxId) {
+                cacheTweets.slice(index, cacheTweets.length).forEach(
+                    element => tweets.appendChild(element.cloneNode(true))
+                )
+            }
+
+            // Insert tweets.
+            const formatTimeline = document.querySelector('.format_timeline')
+            if (sinceId) {
+                const refChild = document.querySelector('.format_timeline > .tweet')
+                formatTimeline.insertBefore(tweets, refChild)
+            } else if (maxId) {
+                formatTimeline.appendChild(tweets)
+            }
+
+            // Rewrite since_id and max_id.
+            const cacheSinceId = cache.dataset['since_id']
+            const cacheMaxId = cache.dataset['max_id']
+            if (formatTimelineMain.dataset['since_id'] < cacheSinceId) {
+                formatTimelineMain.dataset['since_id'] = cacheSinceId
+                formatTimeline.dataset['since_id'] = cacheSinceId
+            }
+            if (formatTimelineMain.dataset['max_id'] > cacheMaxId) {
+                formatTimelineMain.dataset['max_id'] = cacheMaxId
+                formatTimeline.dataset['max_id'] = cacheMaxId
+            }
+
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
+
+            ajaxProgressBar.style.width = '100%'
+            ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
+
+            setTimeout(() => {
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
+                ajaxProgressBar.style.width = '0%'
+                ajaxProgressBar.style.transition = ''
+            }, 200)
+
+        }).catch(err => {
+            if (err instanceof recalculateDownloadTweetId) {
+                const tweets = document.querySelectorAll('.format_timeline > .tweet')
+
+                // Search orignal tweet
+                let foundOriginalTweet = null
+                const tweetsArray = err.maxId ? Array.from(tweets) : Array.from(tweets).reverse()
+                for (let index = 0; index < tweetsArray.length; index++) {
+                    const tweet = tweetsArray[index];
+                    for (let index = 0; index < Array.from(tweet.children).length; index++) {
+                        const children = Array.from(tweet.children)[index].children;
+                        for (let index = 0; index < Array.from(children).length; index++) {
+                            const classes = Array.from(children)[index].className;
+                            if (!classes.includes('tweet-twitter_retweet_header')) {
+                                foundOriginalTweet = tweet
+                            }
+                        }
+
+                    }
+                }
+
+                if (err.sinceId) {
+                    downloadMoreTweet(foundOriginalTweet.dataset['tweet_id'])
+                } else if (err.maxId) {
+                    downloadMoreTweet('', foundOriginalTweet.dataset['tweet_id'])
+                }
+            }
+        })
+
+        function buildParameter(params) {
+            let parameters = ''
+            Object.keys(params).forEach((key, index, array) => {
+                if (params[key]) parameters += `${key}=${params[key]}&`
+                if (index === array.length - 1) parameters = parameters.slice(0, -1)
+            })
+            return parameters
+        }
+    }
+
     var tweetTwitterPictureClick = null
 
     // tweet-twitter_in_reply_to_status
@@ -427,7 +609,7 @@
             const inReplyToScreenName = inReplyToStatus.dataset['in_reply_to_screen_name']
             const href = `/twitter/${inReplyToScreenName}/status/${inReplyToStatusId}`
 
-            ajaxProgressBar.style.visibility = ''
+            ajaxProgressBar.parentNode.style.visibility = ''
             ajaxProgressBar.style.width = '80%'
 
             if (AquaProjectsCache[href]) {
@@ -445,7 +627,7 @@
                 ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
                 setTimeout(() => {
-                    ajaxProgressBar.style.visibility = 'hidden'
+                    ajaxProgressBar.parentNode.style.visibility = ''
                     ajaxProgressBar.style.width = '0%'
                     ajaxProgressBar.style.transition = ''
                 }, 200)
@@ -482,7 +664,7 @@
                 ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
                 setTimeout(() => {
-                    ajaxProgressBar.style.visibility = 'hidden'
+                    ajaxProgressBar.parentNode.style.visibility = 'hidden'
                     ajaxProgressBar.style.width = '0%'
                     ajaxProgressBar.style.transition = ''
                 }, 200)
@@ -1150,15 +1332,18 @@
         if (anchorMode === 'twitter_user') changeContentTwitterUser(anchorContext)
         else if (anchorMode === 'tweet') changeContentTweet(anchorContext)
         else {
-            const changeContentArea = document.querySelector('#main')
-            changeContentArea.innerHTML = '<div class="loader"></div>'
+            const changeLocation = document.querySelector('#main')
+            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
+            const loader = document.createElement('div')
+            loader.className = 'loader'
+            changeLocation.append(loader)
         }
         (() => {
             const removeClass = 'bg-danger'
             if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains(removeClass)) {
                 ajaxProgressBar.classList.remove(removeClass)
             }
-            ajaxProgressBar.style.visibility = 'visible'
+            ajaxProgressBar.parentNode.style.visibility = ''
             ajaxProgressBar.style.width = '80%'
         })()
         // Cache exsists.
@@ -1209,7 +1394,7 @@
             ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
             setTimeout(() => {
-                ajaxProgressBar.style.visibility = 'hidden'
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
@@ -1225,7 +1410,8 @@
             // .twitter_user-background_image -> Expand image.
             // .twitter_user-profile_image -> css: position, margin.
             // .twitter_user-profile_image -> Add .tweet-twitter_icon.
-            // .twitter_user-profile_image .img -> css: width, marginTop, border.
+            // .twitter_user-profile_image .img -> Add .ap-theme, ap-theme-{color}-background.
+            // .twitter_user-profile_image .img -> css: width, marginTop, padding.
             // .twitter_user-profile_image .img -> css: height: '', top: ''.
             // .twitter_user-name_screen_name -> Expand .twitter_user-name, .twitter_user-screen_name.
             // .twitter_user-lists_follow_button -> css: padding: ''.
@@ -1259,11 +1445,14 @@
                     tupimg.style.position = 'relative'
                     tupimg.classList.add('twitter_user-twitter_icon')
                     const tupimgimg = tupimg.querySelector('img')
+                    const apTheme = localStorage.getItem('ap-theme-dark') ? 'dark' : 'white'
+                    tupimgimg.classList.add('ap-theme')
+                    tupimgimg.classList.add(`ap_theme-${apTheme}-background`)
                     tupimgimg.style.width = '25%'
                     tupimgimg.style.height = ''
                     tupimgimg.style.top = ''
                     tupimgimg.style.marginTop = '-15.5%'
-                    tupimgimg.style.border = 'white 4px solid'
+                    tupimgimg.style.padding = '4px'
                     tupimg.insertBefore(tupimgimg, tupimg.firstChild)
                     tupimg.querySelector('a').remove()
                     tupimg.querySelector('.twitter_user-lists_follow_button').style.padding = ''
@@ -1287,7 +1476,12 @@
                         timeline.querySelector('.twitter_user-profile_timeline_navigation-tweets')
                     )
 
-                    timeline.insertAdjacentHTML('beforeend', '<div class="loader"></div>')
+                    const loader = document.createElement('div')
+                    loader.className = 'loader'
+                    const formatTimeline = document.createElement('div')
+                    formatTimeline.className = 'format_timeline'
+                    formatTimeline.appendChild(loader)
+                    timeline.appendChild(formatTimeline)
 
                     setTweetCreated_at()
                     makeTwitterUserTwitterIconClear()
@@ -1316,115 +1510,6 @@
             }
         }
     }
-
-    // $(document).on('click', '.tweet-load_more_new_tweet', function () {
-    //     var tweet_id = $('.format_timeline > div:first').data('tweet_id');
-    //     loadMoreTweet(tweet_id, 'new');
-    // })
-    // $(document).on('click', '.tweet-load_more_old_tweet', function () {
-    //     var tweet_id = $('.format_timeline > div:last').prev().data('tweet_id');
-    //     loadMoreTweet(tweet_id, 'old');
-    // })
-
-    // load_type = new, old
-    // function loadMoreTweet(tweet_id, load_type) {
-    //     const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-    //     var href = '';
-    //     if (load_type === 'new') {
-    //         href = '/twitter?since_id=' + tweet_id;
-    //     } else if (load_type === 'old') {
-    //         href = '/twitter?max_id=' + tweet_id;
-    //     } else {
-    //         console.error('load_type is not specific.');
-    //         return false;
-    //     }
-    //     loadMoreTweetLoader(load_type, true)
-    //     if ($('#twitter_user').length > 0) {
-    //         var screen_name = $('#twitter_user').find('.twitter_user-screen_name').text().replace('@', '')
-    //         href = href.replace('/twitter', '/twitter/' + screen_name)
-    //     }
-    //     $('#ajax-progress-bar').removeClass('bg-danger');
-    //     $('#ajax-progress-bar').css({
-    //         'visibility': 'visible'
-    //     });
-    //     $('#ajax-progress-bar').css({
-    //         'width': '80%'
-    //     });
-    //     alreadyBottom = true;
-
-    //     fetch(
-    //         href, {
-    //             method: 'GET',
-    //             mode: 'cors',
-    //             credentials: 'include',
-    //         }
-    //     ).then(response => {
-    //         if (response.ok) {
-    //             return response.text()
-    //         } else {
-    //             console.error(data)
-    //             showError()
-    //         }
-    //     }).then(data => {
-    //         var current_scrollHeight = 0
-    //         if (load_type === 'new') {
-    //             current_scrollHeight = document.body.scrollHeight
-    //             $('.format_timeline > div:first').before($(data).find('.format_timeline').html())
-    //         } else if (load_type === 'old') {
-    //             $('.format_timeline > div:last').prev().after($(data).find('.format_timeline').html())
-    //         }
-    //         loadMoreTweetLoader(load_type, false)
-
-    //         setTweetCreated_at()
-
-    //         alreadyBottom = false;
-
-
-    //         if (load_type === 'new') {
-    //             var diff = document.body.scrollHeight - current_scrollHeight
-    //             window.scrollTo(window.scrollX, window.scrollY + diff)
-    //         }
-
-    //         AquaProjectsCache[location.href.replace(location.origin, '')] = document
-
-    //         ajaxProgressBar.style.width = '100%'
-    //         ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
-
-    //         setTimeout(() => {
-    //             ajaxProgressBar.style.visibility = 'hidden'
-    //             ajaxProgressBar.style.width = '0%'
-    //             ajaxProgressBar.style.transition = ''
-    //         }, 200)
-
-    //     }).catch(err => {
-    //         console.error(err)
-    //         showError()
-    //     })
-
-    //     function loadMoreTweetLoader(load_type, showFlag) {
-    //         if (load_type === 'new' || load_type === 'old') {
-    //             if (showFlag == true) {
-    //                 $('.tweet-load_more_' + load_type + '_tweet').find('.tweet-load_more_' + load_type + '_tweet_message').each(function (index, element) {
-    //                     $(element).css({
-    //                         'display': 'none'
-    //                     })
-    //                 })
-    //                 $('.tweet-load_more_' + load_type + '_tweet_loader').css({
-    //                     'display': 'block'
-    //                 })
-    //             } else if (showFlag == false) {
-    //                 $('.tweet-load_more_' + load_type + '_tweet').find('.tweet-load_more_' + load_type + '_tweet_message').each(function (index, element) {
-    //                     $(element).css({
-    //                         'display': 'block'
-    //                     })
-    //                 })
-    //                 $('.tweet-load_more_' + load_type + '_tweet_loader').css({
-    //                     'display': 'none'
-    //                 })
-    //             }
-    //         }
-    //     }
-    // }
 
     function changeTwitterTimelineBackgroundSize() {
         var windowWidth = window.innerWidth
@@ -2081,14 +2166,15 @@
     }
 
     function twitterUserProfileTimelineNavigationLoader() {
-        var tweets = document.querySelectorAll('.tweet')
-        for (let index = 0; index < tweets.length; index++) {
-            tweets[index].remove()
+        const formatTimeline = document.querySelector('.format_timeline')
+        if (formatTimeline) {
+            Array.from(formatTimeline.children).forEach(element => {
+                element.remove()
+            })
         }
-        document.querySelector('.tweet-load_more_old_tweet').remove()
-        document.querySelector('.format_timeline').insertAdjacentHTML(
-            'afterbegin', '<div class="loader"></div>'
-        )
+        const loader = document.createElement('div')
+        loader.className = 'loader'
+        document.querySelector('.format_timeline').appendChild(loader)
     }
 
     function twitterUserProfileTimelineNavigationFetch(href, useCache = true) {
@@ -2096,7 +2182,7 @@
         if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains('bg-danger')) {
             ajaxProgressBar.classList.remove('bg-danger')
         }
-        ajaxProgressBar.style.visibility = 'visible'
+        ajaxProgressBar.parentNode.style.visibility = ''
 
         // Cache exsists.
         if (AquaProjectsCache[href]) {
@@ -2115,7 +2201,7 @@
                 ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
                 setTimeout(() => {
-                    ajaxProgressBar.style.visibility = 'hidden'
+                    ajaxProgressBar.parentNode.style.visibility = 'hidden'
                     ajaxProgressBar.style.width = '0%'
                     ajaxProgressBar.style.transition = ''
                 }, 200)
@@ -2158,7 +2244,7 @@
             ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
             setTimeout(() => {
-                ajaxProgressBar.style.visibility = 'hidden'
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
@@ -2260,8 +2346,6 @@
         for (let index = 0; index < tweets.length; index++) {
             tweets[index].remove()
         }
-
-        removeElement('.tweet-load_more_old_tweet')
 
         document.querySelector('.format_timeline').insertAdjacentHTML(
             'afterbegin', '<div class="loader"></div>'
@@ -2379,11 +2463,13 @@
         const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
 
         if (localStorage.getItem('ap-theme-dark')) {
+            document.head.children["theme-color"].content = '#15202b'
             body.style.backgroundColor = 'rgb(21, 32, 43)'
             body.style.color = 'rgb(255, 255, 255)'
             Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
             changeThemeNode('white', 'dark')
         } else if (localStorage.getItem('ap-theme-dark') === null) {
+            document.head.children["theme-color"].content = '#ffffff'
             body.style.backgroundColor = 'rgb(255, 255, 255)'
             body.style.color = ''
             Array.from(logo).forEach(item => item.style.filter = '')
