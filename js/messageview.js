@@ -1,5 +1,5 @@
 (() => {
-    window.addEventListener('aquaprojects_popstate', function() {
+    window.addEventListener('aquaprojects_popstate', () => {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
             convertLocalTime()
             changeViewOfConversationOrMessage()
@@ -14,7 +14,7 @@
         changeViewOfConversationOrMessage()
     })
 
-    document.addEventListener('focus', function(e) {
+    document.addEventListener('focus', e => {
         if (e.target.classList.contains('message-view_message-input')) {
             document.querySelector('.message-view_message-border').style.border = '1px solid #1da1f2'
             document.querySelector('.message-view_message-icon').style.color = '#1da1f2'
@@ -24,7 +24,7 @@
         }
     }, true)
 
-    document.addEventListener('blur', function(e) {
+    document.addEventListener('blur', e => {
         if (e.target.classList.contains('message-view_message-input')) {
             document.querySelector('.message-view_message-border').style.border = '1px solid #e6ecf0'
             document.querySelector('.message-view_message-icon').style.color = '#657786'
@@ -36,7 +36,7 @@
         }
     }, true)
 
-    document.addEventListener('mousedown', function(e) {
+    document.addEventListener('mousedown', e => {
 
         function findParents(target, className) {
             if (target.className.length !== 0 && target.classList.contains(className)) {
@@ -347,7 +347,7 @@
         function processAjaxProgressBar() {
             var ajaxProgressBar = document.querySelector('#ajax-progress-bar');
             ajaxProgressBar.classList ? ajaxProgressBar.classList.remove('bg-danger') : false
-            ajaxProgressBar.style.visibility = 'visible';
+            ajaxProgressBar.parentNode.style.visibility = '';
             ajaxProgressBar.style.width = '80%'
         }
 
@@ -356,7 +356,7 @@
             ajaxProgressBar.style.width = '100%';
             ajaxProgressBar.style.transition = 'width 0.1s ease';
             setTimeout(() => {
-                ajaxProgressBar.style.visibility = 'hidden';
+                ajaxProgressBar.parentNode.style.visibility = 'hidden';
                 ajaxProgressBar.style.width = '0%';
                 ajaxProgressBar.style.transition = '';
             }, 200);
@@ -379,7 +379,7 @@
         history.pushState(state, null, targetPage);
     }
 
-    document.addEventListener('focus', function(e) {
+    document.addEventListener('focus', e => {
         if (e.target.classList.contains('message-conversation-create-name-input')) {
             document.querySelector('.message-conversation-create-name-border').style.border = '1px solid #1da1f2'
             document.querySelector('.message-conversation-create-name-icon').style.color = '#1da1f2'
@@ -389,7 +389,7 @@
         }
     }, true)
 
-    document.addEventListener('blur', function(e) {
+    document.addEventListener('blur', e => {
         if (e.target.classList.contains('message-conversation-create-name-input')) {
             document.querySelector('.message-conversation-create-name-border').style.border = '1px solid #e6ecf0'
             document.querySelector('.message-conversation-create-name-icon').style.color = '#657786'
@@ -401,7 +401,7 @@
         }
     }, true)
 
-    document.addEventListener('mousedown', function(e) {
+    document.addEventListener('mousedown', e => {
 
         function findParents(target, className) {
             if (target.className.length !== 0 && target.classList.contains(className)) {
@@ -447,7 +447,7 @@
         }
     })
 
-    document.addEventListener('focus', function(e) {
+    document.addEventListener('focus', e => {
         if (e.target.classList.contains('message-conversation-create-participant-input')) {
             document.querySelector('.message-conversation-create-participant-border').style.border = '1px solid #1da1f2'
             document.querySelector('.message-conversation-create-participant-icon').style.color = '#1da1f2'
@@ -457,7 +457,7 @@
         }
     }, true)
 
-    document.addEventListener('blur', function(e) {
+    document.addEventListener('blur', e => {
         if (e.target.classList.contains('message-conversation-create-participant-input')) {
             document.querySelector('.message-conversation-create-participant-border').style.border = '1px solid #e6ecf0'
             document.querySelector('.message-conversation-create-participant-icon').style.color = '#657786'
@@ -469,7 +469,7 @@
         }
     }, true)
 
-    document.addEventListener('mousedown', function(e) {
+    document.addEventListener('mousedown', e => {
 
         function findParents(target, className) {
             if (target.className.length !== 0 && target.classList.contains(className)) {
@@ -892,11 +892,13 @@
         const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
 
         if (localStorage.getItem('ap-theme-dark')) {
+            document.head.children["theme-color"].content = '#15202b'
             body.style.backgroundColor = 'rgb(21, 32, 43)'
             body.style.color = 'rgb(255, 255, 255)'
             Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
             changeThemeNode('white', 'dark')
         } else if (localStorage.getItem('ap-theme-dark') === null) {
+            document.head.children["theme-color"].content = '#ffffff'
             body.style.backgroundColor = 'rgb(255, 255, 255)'
             body.style.color = ''
             Array.from(logo).forEach(item => item.style.filter = '')
