@@ -316,11 +316,13 @@
         const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
 
         if (localStorage.getItem('ap-theme-dark')) {
+            document.head.children["theme-color"].content = '#15202b'
             body.style.backgroundColor = 'rgb(21, 32, 43)'
             body.style.color = 'rgb(255, 255, 255)'
             Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
             changeThemeNode('white', 'dark')
         } else if (localStorage.getItem('ap-theme-dark') === null) {
+            document.head.children["theme-color"].content = '#ffffff'
             body.style.backgroundColor = 'rgb(255, 255, 255)'
             body.style.color = ''
             Array.from(logo).forEach(item => item.style.filter = '')
