@@ -161,8 +161,26 @@ a:hover {
     transition: top 0.2s ease;
 }
 
+.header-summarize_button {
+    display: none;
+}
+
 .logo {
-    display: inline-block;
+    padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+    .header-summarize_button {
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        margin: 0 0 0 10px;
+        cursor: pointer;
+    }
+
+    .logo {
+        padding: 0;
+    }
 }
 
 .username {
@@ -845,6 +863,8 @@ a:hover {
 .tweet-twitter_retweet,
 .tweet-twitter_share {
     flex-basis: calc(100% / 3);
+    display: flex;
+    align-items: center;
 }
 
 .tweet:hover {
@@ -1025,16 +1045,18 @@ a:hover {
 }
 
 .twitter_user-background_image>img {
-    width: calc(100% - 2px);
+    width: 100%;
     height: 33.3333%;
     min-height: 140px;
+    max-height: 140px;
     object-fit: cover;
 }
 
 @media (min-width: 600px) {
     .twitter_user-background_image>img {
         width: 100%;
-        min-height: 199.406px;
+        min-height: calc(598px / 3);
+        max-height: calc(598px / 3);
     }
 }
 
@@ -1062,16 +1084,6 @@ a:hover {
     height: 54px;
 }
 
-.tweet-load_more_old_tweet {
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    cursor: pointer;
-    height: 49px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
 .tweet-twitter_user_tooltip {
     width: 300px;
     display: none;
@@ -1083,14 +1095,19 @@ a:hover {
     z-index: 1;
 }
 
+.twitter-slider-item {
+    cursor: pointer;
+    position: absolute;
+    background: #8ED0F9;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+}
+
 .seamless_configuration-view {
     margin: 0 0 0 12px;
     padding: 12px 12px 12px 0;
     cursor: pointer;
-}
-
-.seamless_configuration-view:hover {
-    background-color: #e6ecf0;
 }
 
 .seamless_configuration-edit {
