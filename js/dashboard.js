@@ -60,7 +60,7 @@
     function changeTwitterContentOptimized(href) {
         closeAccountInformation()
 
-        var ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+        const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
         if (!AquaProjectsCache[href]) {
             var changeContentArea = document.querySelector('#main')
             ajaxProgressBar.classList.add('bg-danger')
@@ -95,7 +95,7 @@
         ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
         setTimeout(() => {
-            ajaxProgressBar.style.visibility = 'hidden'
+            ajaxProgressBar.parentNode.style.visibility = 'hidden'
             ajaxProgressBar.style.width = '0%'
             ajaxProgressBar.style.transition = ''
         }, 200)
@@ -159,6 +159,9 @@
                 parentElementClone.id = _parentElement.id
                 parentElementClone.className = _parentElement.className
                 parentElementClone.style = _parentElement.style.cssText
+                Object.keys(_parentElement.dataset).forEach(
+                    key => parentElementClone.dataset[key] = _parentElement.dataset[key]
+                )
                 const currentCloseElements = Array.from(_parentElement.children)
                 for (let index = 0; index < currentCloseElements.length; index++) {
                     const element = currentCloseElements[index];
@@ -168,6 +171,9 @@
                         _removeElement.id = removeElement.id
                         _removeElement.className = removeElement.className
                         _removeElement.style = removeElement.style.cssText
+                        Object.keys(removeElement.dataset).forEach(
+                            key => _removeElement.dataset[key] = removeElement.dataset[key]
+                        )
                         parentElementClone.appendChild(_removeElement)
                         continue
                     }
@@ -201,7 +207,7 @@
         if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains(removeClass)) {
             ajaxProgressBar.classList.remove(removeClass)
         }
-        ajaxProgressBar.style.visibility = 'visible'
+        ajaxProgressBar.parentNode.style.visibility = ''
         ajaxProgressBar.style.width = '80%'
 
         closeAccountInformation()
@@ -229,7 +235,7 @@
             ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
             setTimeout(() => {
-                ajaxProgressBar.style.visibility = 'hidden'
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
@@ -276,7 +282,7 @@
             ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
 
             setTimeout(() => {
-                ajaxProgressBar.style.visibility = 'hidden'
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
@@ -287,7 +293,7 @@
             ajaxProgressBar.classList.remove(removeClass)
         }
 
-        ajaxProgressBar.style.visibility = 'visible'
+        ajaxProgressBar.parentNode.style.visibility = ''
         ajaxProgressBar.style.width = '80%'
 
         closeAccountInformation()
