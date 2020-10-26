@@ -1,0 +1,33 @@
+@font-face {
+    font-family: 'twittericons';
+    src: url('data:font/woff;base64,d09GRgABAAAAAAUwAAoAAAAAB9gAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAAA9AAAAD4AAABWVrVjNWNtYXAAAAE0AAAAPwAAAUoCmQF3Z2x5ZgAAAXQAAAHEAAACIOegUfRoZWFkAAADOAAAADEAAAA2Gpd+DmhoZWEAAANsAAAAHAAAACQIYAQDaG10eAAAA4gAAAAOAAAAEBAAAABsb2NhAAADmAAAAAoAAAAKAVwAtG1heHAAAAOkAAAAHgAAACABEABSbmFtZQAAA8QAAAFOAAACnUfdODFwb3N0AAAFFAAAABsAAAAvAhYBA3icY2BkYWCcwMDKwMHUyXSGgYGhH0IzvmYwYuRgYGBiYGVmwAoC0lxTGBwYHBmcWUDcGBaIMCOIAACX5QeeAAB4nGNgYGBmgGAZBkYGEHAB8hjBfBYGDSDNBqQZGZiALOf//8EqHEH0/wNQ9UDAyMZAOWBkYqaCKQMGALmmBw4AeJxNUM9rE0EUfm8mJmR2m2b2x4wmsmm2mDUKptnGjVCoh9aLQsFcSiokxEsPQiktRgoWBG/Fk2CP9Wj/AT22/4kX6bHnkkNnfbul6DA8Pt77vpnvfcCATgH5H/DgEcCDsNuCaBX7AeqbWoQSr2BJgU6g/wQjwsUwIsAQp+bI5Sd7m9OFxnRz76TgmaPp5WCfeTjY2MDXHtsfTLbR6lq4PWnM4df04LTAh53OkBdOD1KzM8c/8MPhhflu2zi5GB5y8VkoRQWApWnu6y2E8AIAW+E8Svp1sYKeWkEyJqNWWPQaqOLnmPSipTvhYySC1CpOep1cUPSyoSTyMvVai/xK1MSIvVmfVRynMmsnOBI1t3ws7onjctk8m9/52O7j+F/P/Y+O74QY46/1LYZO3cH+Q/NyLLxcmZG/YNLGnyNBkm+Cbs0VI/OK2M59hyK+yRn4DOqwku2TOSzdOqSaPJU6yBdxw3a+SC+JlabRcjMbrmKsfEnpL/F6dfeTHdgpWDqwz9WCOrcDbe3G5od5311D1fQpHa6kRr+pcK3LLklgWSlktLPrK+n7kpXPLLwb2Nd1ImBYVapqfkut5S2mh8jxX5XLZ4R4nGNgZGBgAGJV3ul34/ltvjJwszCAwO09c3pg9P//DAwsjMw/gVwOBiaQKABBWwveAAAAeJxjYGRgYGEAghgQ+f8fCxMDIwMqYAEANi4CbnicY2FgYGBBwgAAsAARAAAAAAAAAEwAtAEQAAB4nGNgZGBgYGFwY2BiAAEQyQWEDAz/wXwGAA+6AWMAAHicfY+7TsMwGIWP6QXRIgZQUUezIESl9CKmTkhIzcDWocxp6rSpkjhK3FZdeQcGnobHYGPjMZA4TTy0SCWWf3/ny2/HAXCJLwiUT4uzZIFzppJPcIobyxX6O8tV8oPlGpp4tFynf7bcQAcvlpu4witPENUzpnu8WRZo48PyCS7wablC/225Sv6xXMO1aFmuoy06lhuYiCfLTdyKd1clKvOMmsnpVrrRNl0YlZlNaLiEvk7ysZqvIu9A7fNEZXmoE9l3evv64Nh8PR8YE8gg07Ec6cSoKNIyzfRS+cZZGJMOu93AesfXMVwoJJwZPBiuM0hMsWV1EXFNsSh8xrpByFqmED40d+YYM8+xYrf3T9cxPylyTrPLEn046B3tPn7bHGveYlDsCZgD9mjEpFGxd9cdcWiatHi3pPHpneIPDe0QXY7gT79TfD3+BUMyfz0AAHicY2BigAAuBuyAhYGBkYmRmZEFzAMAAp4AHQA=') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class*='twittericons-'] {
+    display: flex;
+    justify-content: center;
+}
+
+[class*='twittericons-']:before {
+    padding: 0 0.4rem 0 0;
+    font-size: 0.9rem;
+    display: inline-block;
+    font-family: 'twittericons';
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+.twittericons-heart:before {
+    content: '\0041';
+}
+
+.twittericons-retweet:before {
+    content: '\0042';
+}
+
+.twittericons-share:before {
+    content: '\0043';
+}
