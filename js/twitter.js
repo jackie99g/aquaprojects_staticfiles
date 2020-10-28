@@ -5,7 +5,7 @@
             initTweetIntersectionObserver()
             initTweetPictureInsersectionObserver()
             initTweetTwitterUserIconInsersectionObserver()
-            // initLastTweetInsersectionObserver()
+            initLastTweetInsersectionObserver()
             makeTwitterUserTwitterIconClear()
             setTweetCreated_at()
             twitterProfile()
