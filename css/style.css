@@ -13,6 +13,17 @@ video {
     outline: none;
 }
 
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+@media(prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(21, 32, 43);
+        color: rgb(255, 255, 255);
+    }
+}
+
 .animated {
     animation-duration: 0.3s !important;
 }
@@ -97,7 +108,7 @@ a:hover {
 }
 
 /* ap_theme */
-.ap_theme-white-border {
+.ap_theme-light-border {
     border-color: #e6ecf0;
 }
 
@@ -105,15 +116,25 @@ a:hover {
     border-color: #38444d;
 }
 
-.ap_theme-white-background {
+.ap_theme-default-border {
+    border-color: #e6ecf0;
+}
+
+@media(prefers-color-scheme: dark) {
+    .ap_theme-default-border {
+        border-color: #38444d;
+    }
+}
+
+.ap_theme-light-background {
     background-color: rgb(255, 255, 255);
 }
 
-.ap_theme-white-background:hover {
+.ap_theme-light-background:hover {
     background-color: rgb(245, 248, 250);
 }
 
-.ap_theme-white-background-skelton:hover {
+.ap_theme-light-background-skelton:hover {
     background-color: rgb(245, 248, 250, 0.5);
 }
 
@@ -129,12 +150,86 @@ a:hover {
     background-color: rgb(25, 39, 52, 0.5);
 }
 
-.ap_theme-white-color-sub {
+.ap_theme-default-background {
+    background-color: rgb(255, 255, 255);
+}
+
+.ap_theme-default-background:hover {
+    background-color: rgb(245, 248, 250);
+}
+
+.ap_theme-default-background-skelton:hover {
+    background-color: rgb(245, 248, 250, 0.5);
+}
+
+@media(prefers-color-scheme: dark) {
+    .ap_theme-default-background {
+        background-color: rgb(21, 32, 43);
+    }
+
+    .ap_theme-default-background:hover {
+        background-color: rgb(25, 39, 52);
+    }
+
+    .ap_theme-default-background-skelton:hover {
+        background-color: rgb(25, 39, 52, 0.5);
+    }
+}
+
+.ap_theme-light-color-sub {
     color: #657786;
 }
 
 .ap_theme-dark-color-sub {
     color: #8899A6;
+}
+
+.ap_theme-default-color-sub {
+    color: #657786;
+}
+
+@media(prefers-color-scheme: dark) {
+    .ap_theme-default-color-sub {
+        color: #8899A6;
+    }
+}
+
+/* Ripple effect */
+.ap_theme-light-ripple,
+.ap_theme-dark-ripple,
+.ap_theme-default-ripple {
+    border: none;
+    cursor: pointer;
+    outline: none;
+    background-position: center;
+    transition: background 0.4s;
+}
+
+.ap_theme-light-ripple:hover {
+    background: #f5f8fa radial-gradient(circle, transparent 1%, #f5f8fa 1%) center/15000%;
+}
+
+
+.ap_theme-dark-ripple:hover {
+    background: #192734 radial-gradient(circle, transparent 1%, #192734 1%) center/15000%;
+}
+
+.ap_theme-default-ripple:hover {
+    background: #f5f8fa radial-gradient(circle, transparent 1%, #f5f8fa 1%) center/15000%;
+}
+
+@media(prefers-color-scheme: dark) {
+    .ap_theme-default-ripple:hover {
+        background: #192734 radial-gradient(circle, transparent 1%, #192734 1%) center/15000%;
+    }
+}
+
+.ap_theme-light-ripple:active,
+.ap_theme-dark-ripple:active,
+.ap_theme-default-ripple:active {
+    background-color: #6eb9f7;
+    background-size: 100%;
+    transition: background 0s;
 }
 
 .box {
@@ -180,6 +275,12 @@ a:hover {
 
     .logo {
         padding: 0;
+    }
+}
+
+@media(prefers-color-scheme: dark) {
+    .header .logo img {
+        filter: brightness(0) invert(1);
     }
 }
 
@@ -749,25 +850,6 @@ a:hover {
     opacity: 1;
 }
 
-/* Ripple effect */
-.ripple {
-    border: none;
-    cursor: pointer;
-    outline: none;
-    background-position: center;
-    transition: background 0.4s;
-}
-
-.ripple:hover {
-    background: #fff radial-gradient(circle, transparent 1%, #fff 1%) center/15000%;
-}
-
-.ripple:active {
-    background-color: #6eb9f7;
-    background-size: 100%;
-    transition: background 0s;
-}
-
 .timeline_background {
     top: 0;
     background-size: cover;
@@ -1128,6 +1210,43 @@ a:hover {
 .seamless_configuration-input:focus {
     border-bottom: 1.5px solid #1da1f2;
     outline: none;
+}
+
+.seamless_configuration-form-radio-button {
+    border: 1px solid #e6ecf0;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.seamless_configuration-form-radio-input:checked+.seamless_configuration-form-radio-button {
+    border: 1px solid #1da1f2;
+    background: #1da1f2;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.seamless_configuration-form-radio-input:checked+.seamless_configuration-form-radio-button:before {
+    content: '';
+    display: block;
+    border-bottom: 1.75px solid #f8f9fa;
+    border-right: 1.75px solid #f8f9fa;
+    height: 70%;
+    width: 35%;
+    transform: rotate(45deg);
+    transform-origin: 60% 120%;
+}
+
+.seamless_configuration-view-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.seamless_configuration-view-arrow {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .box_anchor_container {
