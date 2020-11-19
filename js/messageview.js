@@ -1,13 +1,13 @@
 (() => {
     window.addEventListener('aquaprojects_popstate', () => {
-        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
+        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/messageview') {
             convertLocalTime()
             changeViewOfConversationOrMessage()
             startWebsocketConnection()
             changeTheme()
         }
     })
-    if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/messageview') {
+    if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/messageview') {
         window.dispatchEvent(new Event('aquaprojects_popstate'));
     }
     window.addEventListener("resize", () => {
@@ -37,21 +37,6 @@
     }, true)
 
     document.addEventListener('mousedown', e => {
-
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-view_message-close')) {
             document.querySelector('.message-view_message-input').value = ''
             document.querySelector('.message-view_message-close').style.display = 'none'
@@ -89,20 +74,6 @@
     })
 
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-view_message-send')) {
             var query = document.querySelector('.message-view_message-input').value
             if (query !== '') {
@@ -195,20 +166,6 @@
     }
 
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (e.target.classList.contains('message-view_message-timestamp')) {
             var message_id = findParents(e.target, 'message-view_message').dataset.message_id
             deleteMessage(message_id)
@@ -254,20 +211,6 @@
     }
 
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-conversation')) {
             var conversation_id = findParents(e.target, 'message-conversation').dataset.conversation_id
             var conversation_name = findParents(e.target, 'message-conversation')
@@ -402,21 +345,6 @@
     }, true)
 
     document.addEventListener('mousedown', e => {
-
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-conversation-create-name-close')) {
             document.querySelector('.message-conversation-create-name-input').value = ''
             document.querySelector('.message-conversation-create-name-close').style.display = 'none'
@@ -470,21 +398,6 @@
     }, true)
 
     document.addEventListener('mousedown', e => {
-
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-conversation-create-participant-close')) {
             document.querySelector('.message-conversation-create-participant-input').value = ''
             document.querySelector('.message-conversation-create-participant-close').style.display = 'none'
@@ -516,20 +429,6 @@
     })
 
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, ('message-conversation-title-new_conversation'))) {
             if (document.querySelector('.message-conversation-list').style.display === 'block') {
                 document.querySelector('.message-conversation-list').style.display = 'none'
@@ -824,20 +723,6 @@
     }
 
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-profile-conversation')) {
             if (socket === null) return false
             socket.emit('get_my_sid', {})
@@ -849,20 +734,6 @@
     })
 
     document.addEventListener('click', e => {
-        function findParents(target, className) {
-            if (target.className.length !== 0 && target.classList.contains(className)) {
-                return target
-            }
-            var currentNode = target.parentNode
-            if (currentNode === document || currentNode === null) {
-                return false
-            } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-                return currentNode
-            } else {
-                return findParents(currentNode, className)
-            }
-        }
-
         if (findParents(e.target, 'message-view_message-title-information')) {
             if (!location.pathname.split('/')[2]) return false
             var conversation_id = location.pathname.split('/')[2]
@@ -891,18 +762,48 @@
         const logo = document.querySelectorAll('.header .logo img')
         const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
 
-        if (localStorage.getItem('ap-theme-dark')) {
+        if (localStorage.getItem('ap-theme') === 'dark') {
             document.head.children["theme-color"].content = '#15202b'
             body.style.backgroundColor = 'rgb(21, 32, 43)'
             body.style.color = 'rgb(255, 255, 255)'
             Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
-            changeThemeNode('white', 'dark')
-        } else if (localStorage.getItem('ap-theme-dark') === null) {
+            changeThemeNode(detectPreviousTheme('dark'), 'dark')
+        } else if (localStorage.getItem('ap-theme') === 'light') {
             document.head.children["theme-color"].content = '#ffffff'
             body.style.backgroundColor = 'rgb(255, 255, 255)'
             body.style.color = ''
             Array.from(logo).forEach(item => item.style.filter = '')
-            changeThemeNode('dark', 'white')
+            changeThemeNode(detectPreviousTheme('light'), 'light')
+        } else {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.head.children["theme-color"].content = '#15202b'
+                body.style.backgroundColor = 'rgb(21, 32, 43)'
+                body.style.color = 'rgb(255, 255, 255)'
+                Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
+                changeThemeNode(detectPreviousTheme('default'), 'default')
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.head.children["theme-color"].content = '#ffffff'
+                body.style.backgroundColor = 'rgb(255, 255, 255)'
+                body.style.color = ''
+                Array.from(logo).forEach(item => item.style.filter = '')
+                changeThemeNode(detectPreviousTheme('default'), 'default')
+            }
+        }
+
+        function detectPreviousTheme(currentTheme) {
+            const themes = ['light', 'dark', 'default']
+            themes.splice(
+                themes.findIndex(item => item === currentTheme), 1
+            )
+            for (let index = 0; index < changeStyles.length; index++) {
+                const element = changeStyles[index]
+                for (let index = 0; index < themes.length; index++) {
+                    const theme = themes[index];
+                    if (document.querySelectorAll(`.ap_theme-${theme}-${element}`).length) {
+                        return theme
+                    }
+                }
+            }
         }
 
         function changeThemeNode(beforeTheme, afterTheme) {
@@ -923,6 +824,21 @@
                 )
                 element.className = changedClassName
             }
+        }
+    }
+
+    function findParents(target, className) {
+        if (target === document) return false
+        if (target.className.length !== 0 && target.classList.contains(className)) {
+            return target
+        }
+        var currentNode = target.parentNode
+        if (currentNode === document || currentNode === null) {
+            return false
+        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
+            return currentNode
+        } else {
+            return findParents(currentNode, className)
         }
     }
 
