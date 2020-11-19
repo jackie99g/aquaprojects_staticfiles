@@ -1454,7 +1454,10 @@
                     tupimg.style.position = 'relative'
                     tupimg.classList.add('twitter_user-twitter_icon')
                     const tupimgimg = tupimg.querySelector('img')
-                    const apTheme = localStorage.getItem('ap-theme-dark') ? 'dark' : 'white'
+                    const apTheme =
+                        localStorage.getItem('ap-theme') === 'dark' ? 'dark' :
+                        localStorage.getItem('ap-theme') === 'light' ? 'light' :
+                        'default'
                     tupimgimg.classList.add('ap-theme')
                     tupimgimg.classList.add(`ap_theme-${apTheme}-background`)
                     tupimgimg.style.width = '25%'
