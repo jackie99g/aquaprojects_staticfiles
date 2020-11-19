@@ -2,7 +2,9 @@
     window.addEventListener('aquaprojects_popstate', () => {
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
             initReduceAnimation()
-            initAdoptDarkTheme()
+            initSelectTheme()
+            initSidebarPosition()
+            changeTheme()
         }
     })
     if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
@@ -130,11 +132,20 @@
         }
     })
 
+
+    // seamless_configuration-form-radio
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'seamless_configuration-form-radio')) {
+            const target = findParents(e.target, 'seamless_configuration-form-radio')
+            target.querySelector('input').click()
+        }
+    })
+
     // connect-google
     document.addEventListener('click', e => {
         if (findParents(e.target, 'connect-google')) {
-            const googleStatus = findParents(e.target, 'google-status')
-            const googleStatusMessage = findParents(e.target, 'google-status-message')
+            const googleStatus = e.target.parentNode.querySelector('.google-status')
+            const googleStatusMessage = e.target.parentNode.querySelector('.google-status-message')
             const href = '/settings/connect/google'
 
             googleStatus.classList.add('loader')
@@ -156,7 +167,6 @@
                     googleStatus.innerHTML = 'failed...'
                 }
             }).then(data => {
-                console.error(response)
                 googleStatus.classList.remove('loader')
                 googleStatusMessage.innerHTML = ''
                 googleStatus.innerHTML = `Succeed! ${data}`
@@ -169,8 +179,8 @@
     // disconnect-google
     document.addEventListener('click', e => {
         if (findParents(e.target, 'disconnect-google')) {
-            const googleStatus = findParents(e.target, 'google-status')
-            const googleStatusMessage = findParents(e.target, 'google-status-message')
+            const googleStatus = e.target.parentNode.querySelector('.google-status')
+            const googleStatusMessage = e.target.parentNode.querySelector('.google-status-message')
             const href = '/settings/disconnect/google'
 
             googleStatus.classList.add('loader')
@@ -192,7 +202,6 @@
                     googleStatus.innerHTML = 'failed...'
                 }
             }).then(data => {
-                console.error(response)
                 googleStatus.classList.remove('loader')
                 googleStatusMessage.innerHTML = ''
                 googleStatus.innerHTML = `Succeed! ${data}`
@@ -237,8 +246,10 @@
             const sidebarPositionElement = findParents(e.target, 'sidebar_position')
             const checked = sidebarPositionElement.querySelector('input').checked
             let SIDEBAR_POSITION = 0
+            localStorage.removeItem('ap-sidebar_position')
             if (checked) {
                 SIDEBAR_POSITION = 1
+                localStorage.setItem('ap-sidebar_position', true)
             }
             sidebarPosition(SIDEBAR_POSITION)
             const currentDate = new Date()
@@ -248,7 +259,10 @@
         }
 
         function sidebarPosition(sidebarPositionNumber) {
-            const dashboardPannel = document.querySelector('.dashboard_pannel')
+            const dashboardPannel =
+                document.querySelector('.dashboard_pannel') !== null ?
+                document.querySelector('.dashboard_pannel') :
+                document.querySelector('.dashboard_pannel_0')
             var customSidePannelSm = dashboardPannel.querySelector('.custom_side_pannel_sm')
             var customSidePannelSmParent = customSidePannelSm.parentNode
             var dashboardAnchorGroup = customSidePannelSmParent.querySelector('.dashboard_anchor_group')
@@ -285,14 +299,30 @@
             reduceAnimationElement.querySelector('input').checked = ''
     }
 
-    // adopt_dark_theme changes
-    document.addEventListener('change', e => {
-        if (findParents(e.target, 'adopt_dark_theme')) {
-            findParents(e.target, 'adopt_dark_theme').querySelector('input').checked ?
-                localStorage.setItem('ap-theme-dark', true) :
-                localStorage.removeItem('ap-theme-dark')
-
-            const APTHEME = localStorage.getItem('ap-theme-dark') ? 'dark' : 'white'
+    // .seamless_configuration-form.select_theme
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'seamless_configuration-form-radio')) {
+            const target = findParents(e.target, 'seamless_configuration-form-radio')
+            const seamlessConfigurationFormRadio =
+                target.parentNode.querySelectorAll('.seamless_configuration-form-radio')
+            const radioIndex = Array.from(seamlessConfigurationFormRadio).findIndex(
+                item => item === target
+            )
+            switch (radioIndex) {
+                case 1:
+                    localStorage.setItem('ap-theme', 'dark')
+                    break
+                case 2:
+                    localStorage.setItem('ap-theme', 'light')
+                    break
+                default:
+                    localStorage.removeItem('ap-theme')
+                    const expires = new Date().toUTCString()
+                    document.cookie = `ap_theme=; path=/; expires=${expires}`
+                    return changeTheme()
+                    break
+            }
+            const APTHEME = localStorage.getItem('ap-theme') === 'dark' ? 'dark' : 'light'
             const currentDate = new Date()
             currentDate.setFullYear(currentDate.getFullYear() + 1)
             const expires = currentDate.toUTCString()
@@ -302,31 +332,78 @@
         }
     })
 
-    function initAdoptDarkTheme() {
-        const adoptDarkThemeElement = document.querySelector('.adopt_dark_theme')
-        adoptDarkThemeElement.style.display = ''
-        localStorage.getItem('ap-theme-dark') ?
-            adoptDarkThemeElement.querySelector('input').checked = 'chekced' :
-            adoptDarkThemeElement.querySelector('input').checked = ''
+    function initSelectTheme() {
+        const selectTheme = document.querySelector('.seamless_configuration-form.select_theme')
+        selectTheme.style.display = ''
+        const seamlessConfigurationFormRadio =
+            selectTheme.querySelectorAll('.seamless_configuration-form-radio')
+        switch (localStorage.getItem('ap-theme')) {
+            case 'dark':
+                seamlessConfigurationFormRadio[1].querySelector('input').click()
+                break
+            case 'light':
+                seamlessConfigurationFormRadio[2].querySelector('input').click()
+                break
+            default:
+                seamlessConfigurationFormRadio[0].querySelector('input').click()
+                break
+        }
+    }
+
+    function initSidebarPosition() {
+        const sidebarPosition = document.querySelector('.sidebar_position')
+        sidebarPosition.style.display = ''
+        sidebarPosition.querySelector('input').checked =
+            localStorage.getItem('ap-sidebar_position') ? 'chekced' : ''
     }
 
     function changeTheme() {
         const body = document.querySelector('body')
         const logo = document.querySelectorAll('.header .logo img')
-        const changeStyles = ['border', 'background', 'background-skelton', 'color-sub']
+        const changeStyles = ['border', 'background', 'background-skelton', 'color-sub', 'ripple']
 
-        if (localStorage.getItem('ap-theme-dark')) {
+        if (localStorage.getItem('ap-theme') === 'dark') {
             document.head.children["theme-color"].content = '#15202b'
             body.style.backgroundColor = 'rgb(21, 32, 43)'
             body.style.color = 'rgb(255, 255, 255)'
             Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
-            changeThemeNode('white', 'dark')
-        } else if (localStorage.getItem('ap-theme-dark') === null) {
+            changeThemeNode(detectPreviousTheme('dark'), 'dark')
+        } else if (localStorage.getItem('ap-theme') === 'light') {
             document.head.children["theme-color"].content = '#ffffff'
             body.style.backgroundColor = 'rgb(255, 255, 255)'
             body.style.color = ''
             Array.from(logo).forEach(item => item.style.filter = '')
-            changeThemeNode('dark', 'white')
+            changeThemeNode(detectPreviousTheme('light'), 'light')
+        } else {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.head.children["theme-color"].content = '#15202b'
+                body.style.backgroundColor = 'rgb(21, 32, 43)'
+                body.style.color = 'rgb(255, 255, 255)'
+                Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
+                changeThemeNode(detectPreviousTheme('default'), 'default')
+            } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.head.children["theme-color"].content = '#ffffff'
+                body.style.backgroundColor = 'rgb(255, 255, 255)'
+                body.style.color = ''
+                Array.from(logo).forEach(item => item.style.filter = '')
+                changeThemeNode(detectPreviousTheme('default'), 'default')
+            }
+        }
+
+        function detectPreviousTheme(currentTheme) {
+            const themes = ['light', 'dark', 'default']
+            themes.splice(
+                themes.findIndex(item => item === currentTheme), 1
+            )
+            for (let index = 0; index < changeStyles.length; index++) {
+                const element = changeStyles[index]
+                for (let index = 0; index < themes.length; index++) {
+                    const theme = themes[index];
+                    if (document.querySelectorAll(`.ap_theme-${theme}-${element}`).length) {
+                        return theme
+                    }
+                }
+            }
         }
 
         function changeThemeNode(beforeTheme, afterTheme) {
