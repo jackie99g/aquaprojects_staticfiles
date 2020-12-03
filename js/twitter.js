@@ -103,12 +103,18 @@
     }
 
     function makeTwitterUserTwitterIconClear() {
-        var twitterUserTwitterIcon = document.querySelector('.twitter_user-twitter_icon img')
-        if (!twitterUserTwitterIcon) {
-            return false
+        const twitterUserTwitterIcon = document.querySelector('.twitter_user-twitter_icon img')
+        const twitterProfileIcon = Array.from(document.querySelectorAll('.twitter-profile img'))
+        if (twitterUserTwitterIcon) {
+            const tutiSrc = twitterUserTwitterIcon.src
+            twitterUserTwitterIcon.src = tutiSrc.replace('_normal', '_400x400')
         }
-        var twitterUserTwitterIconSrc = twitterUserTwitterIcon.src
-        twitterUserTwitterIcon.src = twitterUserTwitterIconSrc.replace('_normal', '_400x400')
+        if (twitterProfileIcon) {
+            twitterProfileIcon.forEach(element => {
+                const elementSrc = element.src
+                element.src = elementSrc.replace('_normal', '_400x400')
+            })
+        }
     }
 
     function initTweetIntersectionObserver() {
@@ -1551,7 +1557,7 @@
         }
     })
 
-    function twitterProfile() {
+    async function twitterProfile() {
         var windowWidth = window.innerWidth
         if (windowWidth < 768) return false
         var href = '/twitter/profile'
@@ -1562,8 +1568,9 @@
                 'afterbegin', AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
             )
         } else {
-            refreshtwitterProfile(href)
+            await refreshtwitterProfile(href)
         }
+        makeTwitterUserTwitterIconClear()
     }
 
     function refreshtwitterProfile(href) {
