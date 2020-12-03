@@ -1072,6 +1072,7 @@ a:hover {
 .tweet-twitter_picture_zoom-container {
     display: flex;
     cursor: pointer;
+    width: 100%;
 }
 
 .tweet-twitter_picture_zoom-element {
