@@ -232,6 +232,24 @@ a:hover {
     transition: background 0s;
 }
 
+.ap_theme-light-logo {
+    filter: invert(59%) sepia(62%) saturate(3971%) hue-rotate(176deg) brightness(98%) contrast(94%);
+}
+
+.ap_theme-dark-logo {
+    filter: brightness(0) invert(1);
+}
+
+.ap_theme-default-logo {
+    filter: invert(59%) sepia(62%) saturate(3971%) hue-rotate(176deg) brightness(98%) contrast(94%);
+}
+
+@media(prefers-color-scheme: dark) {
+    .ap_theme-default-logo {
+        filter: brightness(0) invert(1);
+    }
+}
+
 .box {
     width: 100%;
     height: 150vh;
