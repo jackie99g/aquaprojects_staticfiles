@@ -1547,6 +1547,12 @@
         }
     }
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter-refresh')) {
+            changeContent(location.href.replace(location.origin, ''))
+        }
+    })
+
     window.addEventListener('resize', () => {
         if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
             changeTwitterTimelineBackgroundSize()
