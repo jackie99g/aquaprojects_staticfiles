@@ -325,17 +325,14 @@
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
         const body = document.querySelector('body')
-        const logo = document.querySelectorAll('.header .logo img')
         if (e.matches) {
             document.head.children["theme-color"].content = '#15202b'
             body.style.backgroundColor = 'rgb(21, 32, 43)'
             body.style.color = 'rgb(255, 255, 255)'
-            Array.from(logo).forEach(item => item.style.filter = 'brightness(0) invert(1)')
         } else {
             document.head.children["theme-color"].content = '#ffffff'
             body.style.backgroundColor = 'rgb(255, 255, 255)'
             body.style.color = ''
-            Array.from(logo).forEach(item => item.style.filter = '')
         }
     })
 
