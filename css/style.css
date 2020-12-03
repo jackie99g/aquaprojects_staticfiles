@@ -291,11 +291,7 @@ a:hover {
 
 .account {
     position: fixed;
-    top: 58.5px;
-    right: 5px;
-    width: 300px;
-    height: auto;
-    border-radius: 10px;
+    top: 57px;
     background: inherit;
     padding: 15px;
     visibility: hidden;
