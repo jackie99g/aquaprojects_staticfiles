@@ -1039,8 +1039,7 @@
 
     function prevSlideBtn() {
         const container = document.querySelector('.tweet-twitter_picture_zoom-container')
-        const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
-        const elementWidth = elements[0].offsetWidth
+        const elementWidth = window.innerWidth
         const elementIndex = currentSlideNumberProxy.number
 
         container.addEventListener('transitionend', () =>
@@ -1062,7 +1061,7 @@
     function nextSlideBtn() {
         const container = document.querySelector('.tweet-twitter_picture_zoom-container')
         const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
-        const elementWidth = elements[0].offsetWidth
+        const elementWidth = window.innerWidth
         const elementIndex = currentSlideNumberProxy.number
 
         container.addEventListener('transitionend', () =>
@@ -1083,8 +1082,7 @@
 
     function jumpToSlide(jumpToSlideNumber) {
         const container = document.querySelector('.tweet-twitter_picture_zoom-container')
-        const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
-        const elementWidth = elements[0].offsetWidth
+        const elementWidth = window.innerWidth
         const elementIndex = jumpToSlideNumber
 
         container.style.transition = 'all 0ms ease 0s'
