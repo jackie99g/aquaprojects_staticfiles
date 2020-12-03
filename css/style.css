@@ -460,7 +460,7 @@ a:hover {
 
 .side_border {
     border-right-style: solid;
-    border-bottom-width: 1px;
+    border-right-width: 1px;
     padding: 15px;
 }
 
