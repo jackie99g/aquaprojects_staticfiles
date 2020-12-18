@@ -15,9 +15,12 @@
     document.addEventListener('click', e => {
         if (findParents(e.target, 'seamless_configuration-view')) {
             const target = findParents(e.target, 'seamless_configuration-view')
-            const targetPage = target.href.replace(location.origin, '')
-            const currentPage = location.href.replace(location.origin, '')
-            easyPushState(targetPage, currentPage)
+            const seamlessConfiguration = findParents(e.target, 'seamless_configuration')
+            if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
+                const targetPage = target.href.replace(location.origin, '')
+                const currentPage = location.href.replace(location.origin, '')
+                easyPushState(targetPage, currentPage)
+            }
 
             const configurationGroup = findParents(target, 'seamless_configuration-group')
 
@@ -41,8 +44,10 @@
                 elementView.style.display = 'none'
             }
 
-            AquaProjectsCache[location.href.replace(location.origin, '')] =
-                document.cloneNode(true)
+            if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
+                AquaProjectsCache[location.href.replace(location.origin, '')] =
+                    document.cloneNode(true)
+            }
 
             document.title = 'Aqua Projects - ' + location.pathname.substring(1)
             e.preventDefault()
@@ -53,10 +58,13 @@
     document.addEventListener('click', e => {
         if (findParents(e.target, 'seamless_configuration-back_button')) {
             const target = findParents(e.target, 'seamless_configuration-back_button')
-            const targetPage = '/settings'
-            const currentPage = location.href.replace(location.origin, '')
-            history.state['currentPage'] === targetPage ?
-                history.back() : easyPushState(targetPage, currentPage)
+            const seamlessConfiguration = findParents(e.target, 'seamless_configuration')
+            if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
+                const targetPage = '/settings'
+                const currentPage = location.href.replace(location.origin, '')
+                history.state['currentPage'] === targetPage ?
+                    history.back() : easyPushState(targetPage, currentPage)
+            }
 
             const configurationGroup = findParents(target, 'seamless_configuration-group')
 
