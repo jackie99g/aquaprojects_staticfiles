@@ -1701,7 +1701,7 @@
             var displayTime = ''
             var displayCreated_at = new Date(createdat_title)
             var month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            displayTime = month_list[displayCreated_at.getMonth()] + ' ' + displayCreated_at.getDate() + ' ' + displayCreated_at.getFullYear()
+            displayTime = month_list[displayCreated_at.getMonth()] + ' ' + displayCreated_at.getDate() + ', ' + displayCreated_at.getFullYear()
             return displayTime
         }
     }
