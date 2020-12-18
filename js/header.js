@@ -13,7 +13,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'load_pictures')) {
-            const prop = document.querySelector('.load_pictures').checked
+            const prop = 
+            document.querySelector('.load_pictures').querySelector('input').checked
             if (prop) {
                 localStorage.setItem('twitter-view_pictures', true)
             } else {
@@ -32,7 +33,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'load_clear_icon')) {
-            const prop = document.querySelector('.load_clear_icon').checked
+            const prop = 
+            document.querySelector('.load_clear_icon').querySelector('input').checked
             if (prop) {
                 twitterViewClearIcon()
             } else {
@@ -81,7 +83,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'show_left_sidebar')) {
-            const prop = document.querySelector('.show_left_sidebar').checked
+            const prop = 
+            document.querySelector('.show_left_sidebar').querySelector('input').checked
             if (prop) {
                 showLeftSidebar()
             } else {
@@ -187,12 +190,12 @@
             if (windowWidth < 768) {
                 if (visibleState === 'hidden') {
                     account.style.visibility = 'visible'
-                    account.style.height = 'calc(100vh - 117.5px)'
+                    account.style.height = 'calc(100vh - 107px)'
                     account.style.width = '100%'
                     account.style.right = ''
                     account.style.boxShadow = ''
                     account.style.borderRadius = ''
-                    account.style.overFlow = ''
+                    account.style.overflow = 'auto'
                     document.querySelector('#main').style.display = 'none'
                 } else {
                     account.style.visibility = 'hidden'
@@ -201,18 +204,18 @@
                     account.style.right = ''
                     account.style.boxShadow = ''
                     account.style.borderRadius = '10px'
-                    account.style.overFlow = ''
+                    account.style.overflow = ''
                     document.querySelector('#main').style.display = ''
                 }
             } else {
                 if (visibleState === 'hidden') {
                     account.style.visibility = 'visible'
-                    account.style.height = ''
+                    account.style.height = '600px'
                     account.style.width = '300px'
                     account.style.right = '5px'
                     account.style.boxShadow = '0px 8px 16px #00000026'
                     account.style.borderRadius = '10px'
-                    account.style.overFlow = ''
+                    account.style.overflow = 'auto'
                     document.querySelector('#main').style.display = ''
                 } else {
                     account.style.visibility = 'hidden'
@@ -221,7 +224,7 @@
                     account.style.right = '5px'
                     account.style.boxShadow = ''
                     account.style.borderRadius = '10px'
-                    account.style.overFlow = ''
+                    account.style.overflow = ''
                     document.querySelector('#main').style.display = ''
                 }
             }
@@ -230,26 +233,14 @@
             const isTwitterViewPictures = localStorage.getItem('twitter-view_pictures')
             const isTwitterViewClearIcon = localStorage.getItem('twitter-view_clear_icon')
             const isShowLeftSidebar = localStorage.getItem('show_left_sidebar')
-            if (isShowRightSidebar == 'true') {
-                document.querySelector('.show_right_sidebar').checked = true
-            } else {
-                document.querySelector('.show_right_sidebar').checked = false
-            }
-            if (isTwitterViewPictures == 'true') {
-                document.querySelector('.load_pictures').checked = true
-            } else {
-                document.querySelector('.load_pictures').checked = false
-            }
-            if (isTwitterViewClearIcon == 'true') {
-                document.querySelector('.load_clear_icon').checked = true
-            } else {
-                document.querySelector('.load_clear_icon').checked = false
-            }
-            if (isShowLeftSidebar == 'true') {
-                document.querySelector('.show_left_sidebar').checked = true
-            } else {
-                document.querySelector('.show_left_sidebar').checked = false
-            }
+            document.querySelector('.show_right_sidebar').querySelector('input').checked =
+                isShowRightSidebar === 'true' ? true : false
+            document.querySelector('.load_pictures').querySelector('input').checked =
+                isTwitterViewPictures === 'true' ? true : false
+            document.querySelector('.load_clear_icon').querySelector('input').checked =
+                isTwitterViewClearIcon === 'true' ? true : false
+            document.querySelector('.show_left_sidebar').querySelector('input').checked =
+                isShowLeftSidebar === 'true' ? true : false
         }
     })
 
@@ -273,7 +264,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'show_right_sidebar')) {
-            const prop = document.querySelector('.show_right_sidebar').checked
+            const prop = 
+            document.querySelector('.show_right_sidebar').querySelector('input').checked
             if (prop) {
                 showRightSidebar()
             } else {
