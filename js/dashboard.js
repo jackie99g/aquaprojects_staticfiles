@@ -1,8 +1,5 @@
 (() => {
-    $(document).ready(() => {
-        document.dispatchEvent(new Event('DOMContentLoaded'))
-    })
-    document.addEventListener('DOMContentLoaded', () => {
+    (() => {
         AquaProjectsCache[location.href.replace(location.origin, '')] = document.cloneNode(true)
         var currentPage = location.href.replace(location.origin, '')
         if (location.pathname !== '/') document.title = 'Aqua Projects - ' + location.pathname.substring(1)
@@ -14,7 +11,7 @@
         history.replaceState(state, null, currentPage)
         const da = document.querySelector(`.dashboard_anchor_${location.pathname.split('/')[1]}`)
         if (da) da.classList.add('select_active_dashboard')
-    })
+    })()
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'dashboard_anchor')) {
