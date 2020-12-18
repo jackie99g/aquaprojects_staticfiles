@@ -296,12 +296,6 @@ a:hover {
     }
 }
 
-@media(prefers-color-scheme: dark) {
-    .header .logo img {
-        filter: brightness(0) invert(1);
-    }
-}
-
 .username {
     display: inline-block;
     margin: auto 5px auto auto;
@@ -311,7 +305,6 @@ a:hover {
     position: fixed;
     top: 57px;
     background: inherit;
-    padding: 15px;
     visibility: hidden;
 }
 
@@ -489,6 +482,7 @@ a:hover {
 .account_user_info {
     display: flex;
     flex-direction: row;
+    padding: 1rem;
 }
 
 .account_picture {
@@ -1298,4 +1292,11 @@ a:hover {
 .box_element {
     width: 100%;
     flex-shrink: 0;
+}
+
+.account svg {
+    filter: invert(51%) sepia(3%) saturate(3529%) hue-rotate(168deg) brightness(79%) contrast(80%);
+    margin-right: 1rem;
+    width: 1.5rem;
+    height: 1.5rem;
 }
