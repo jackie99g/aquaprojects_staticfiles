@@ -623,7 +623,7 @@
                 const insertInReplyToStatus = cacheCloneNode.querySelector('.format_timeline').firstElementChild
                 insertInReplyToStatus.style.padding = '0 0 12px'
                 insertInReplyToStatus.style.border = '0'
-                insertInReplyToStatus.style.flexBasis = '100%'
+                insertInReplyToStatus.style.gridColumn = '1/3'
                 inReplyToStatus.insertAdjacentElement('afterend', insertInReplyToStatus)
                 inReplyToStatus.remove()
 
@@ -660,7 +660,7 @@
                 const insertInReplyToStatus = cacheCloneNode.querySelector('.format_timeline').firstElementChild
                 insertInReplyToStatus.style.padding = '0 0 12px'
                 insertInReplyToStatus.style.border = '0'
-                insertInReplyToStatus.style.flexBasis = '100%'
+                insertInReplyToStatus.style.gridColumn = '1/3'
                 inReplyToStatus.insertAdjacentElement('afterend', insertInReplyToStatus)
                 inReplyToStatus.remove()
 
@@ -1420,6 +1420,7 @@
             // The following will be changed:
             // twitter_user -> Add id as twitter_user.
             // .twitter_title-home-text -> Add twitter user name.
+            // .twitter-back -> css: display: block.
             // .twitter_user-background_image -> Expand image.
             // .twitter_user-profile_image -> css: position, margin.
             // .twitter_user-profile_image -> Add .tweet-twitter_icon.
@@ -1448,6 +1449,13 @@
                     timeline.insertAdjacentHTML('afterbegin', twitterTitle)
                     var twitterUserName = document.querySelector('.timeline .twitter_user-name > span').innerHTML
                     document.querySelector('.twitter_title-home-text').innerHTML = twitterUserName
+                    document.querySelector('.twitter-back').style.display = 'block'
+                    const tTitleHomeBlock = document.querySelector('.twitter_title-home-block')
+                    tTitleHomeBlock.style.gridTemplateColumns = '3rem 1fr 3rem 3rem 3rem'
+                    const tthdesc = document.querySelector('.twitter_title-home-description')
+                    const tuscount = element.querySelector('.twitter_user-statuses_count')
+                    const statusesCount = tuscount.querySelector('span:nth-child(2)').innerText
+                    tthdesc.innerHTML = `${statusesCount} Tweets`
 
                     const tubgimg = timeline.querySelector('.twitter_user-background_image')
                     const tubgimgcode = `<img src="${tubgimg.dataset['imgSrc']}" loading="lazy">`
@@ -1518,6 +1526,9 @@
                     timeline.innerHTML = element.outerHTML
                     document.querySelector('.timeline').insertAdjacentHTML('afterbegin', twitterTitle)
                     document.querySelector('.twitter_title-home-text').innerHTML = 'Tweets'
+                    document.querySelector('.twitter-back').style.display = 'block'
+                    const tTitleHomeBlock = document.querySelector('.twitter_title-home-block')
+                    tTitleHomeBlock.style.gridTemplateColumns = '3rem 1fr 3rem 3rem 3rem'
 
                     var timelineArea = document.querySelector('.timeline')
                     timelineArea.insertAdjacentHTML('beforeend', '<div class="loader"></div>')
@@ -2378,14 +2389,19 @@
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_title-home-search')) {
             const tthb = findParents(e.target, 'twitter_title-home-block')
+            const titleBack = tthb.querySelector('.twitter-back')
             const titleText = tthb.querySelector('.twitter_title-home-text')
             const titleSearch = tthb.querySelector('.twitter_title-home-search')
+            const titleRefresh = tthb.querySelector('.twitter-refresh')
             const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
             const titleSearchBox = tthb.querySelector('.twitter-search_box')
             const titleSearchBoxInput = tthb.querySelector('.twitter-search_box-input')
 
+            tthb.style.gridTemplateColumns = '1fr'
+            titleBack.style.display = 'none'
             titleText.style.display = 'none'
             titleSearch.style.display = 'none'
+            titleRefresh.style.display = 'none'
             titleTwitterProfile.style.display = 'none'
             titleSearchBox.style.display = ''
             titleSearchBoxInput.value = ''
@@ -2396,13 +2412,18 @@
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter-search_box-back')) {
             const tthb = findParents(e.target, 'twitter_title-home-block')
+            const titleBack = tthb.querySelector('.twitter-back')
             const titleText = tthb.querySelector('.twitter_title-home-text')
             const titleSearch = tthb.querySelector('.twitter_title-home-search')
+            const titleRefresh = tthb.querySelector('.twitter-refresh')
             const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
             const titleSearchBox = tthb.querySelector('.twitter-search_box')
 
+            tthb.style.gridTemplateColumns = '3rem 1fr 3rem 3rem 3rem'
+            titleBack.style.display = ''
             titleText.style.display = ''
             titleSearch.style.display = ''
+            titleRefresh.style.display = ''
             titleTwitterProfile.style.display = ''
             titleSearchBox.style.display = 'none'
             titleSearchBox.blur()
