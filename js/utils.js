@@ -58,6 +58,12 @@ function changeTheme() {
     function changeThemeClass(nodeList, beforeTheme, afterTheme) {
         for (let index = 0; index < nodeList.length; index++) {
             const element = nodeList[index];
+            if (element.tagName === 'svg') {
+                element.setAttribute('class', element.getAttribute('class').replaceAll(
+                    `ap_theme-${beforeTheme}`, `ap_theme-${afterTheme}`
+                ))
+                continue
+            }
             const changedClassName = element.className.replaceAll(
                 `ap_theme-${beforeTheme}`, `ap_theme-${afterTheme}`
             )
