@@ -130,11 +130,11 @@ a:hover {
     background-color: rgb(255, 255, 255);
 }
 
-.ap_theme-light-background:hover {
+.ap_theme-light-background:hover:not(.ap_not_hover) {
     background-color: rgb(245, 248, 250);
 }
 
-.ap_theme-light-background-skelton:hover {
+.ap_theme-light-background-skelton:hover:not(.ap_not_hover) {
     background-color: rgb(245, 248, 250, 0.5);
 }
 
@@ -142,11 +142,11 @@ a:hover {
     background-color: rgb(21, 32, 43);
 }
 
-.ap_theme-dark-background:hover {
+.ap_theme-dark-background:hover:not(.ap_not_hover) {
     background-color: rgb(25, 39, 52);
 }
 
-.ap_theme-dark-background-skelton:hover {
+.ap_theme-dark-background-skelton:hover:not(.ap_not_hover) {
     background-color: rgb(25, 39, 52, 0.5);
 }
 
@@ -154,12 +154,18 @@ a:hover {
     background-color: rgb(255, 255, 255);
 }
 
-.ap_theme-default-background:hover {
+.ap_theme-default-background:hover:not(.ap_not_hover) {
     background-color: rgb(245, 248, 250);
 }
 
-.ap_theme-default-background-skelton:hover {
+.ap_theme-default-background-skelton:hover:not(.ap_not_hover) {
     background-color: rgb(245, 248, 250, 0.5);
+}
+
+.ap_theme-light-background:active.ap_active,
+.ap_theme-dark-background:active.ap_active,
+.ap_theme-default-background:active.ap_active {
+    background-color: rgba(29, 161, 242, 0.2);
 }
 
 @media(prefers-color-scheme: dark) {
@@ -167,11 +173,11 @@ a:hover {
         background-color: rgb(21, 32, 43);
     }
 
-    .ap_theme-default-background:hover {
+    .ap_theme-default-background:hover:not(.ap_not_hover) {
         background-color: rgb(25, 39, 52);
     }
 
-    .ap_theme-default-background-skelton:hover {
+    .ap_theme-default-background-skelton:hover:not(.ap_not_hover) {
         background-color: rgb(25, 39, 52, 0.5);
     }
 }
