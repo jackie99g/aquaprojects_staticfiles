@@ -365,20 +365,6 @@
         main.style.display = ''
     }
 
-    function findParents(target, className) {
-        if (target.className.length !== 0 && target.classList.contains(className)) {
-            return target
-        }
-        var currentNode = target.parentNode
-        if (currentNode === document || currentNode === null) {
-            return false
-        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-            return currentNode
-        } else {
-            return findParents(currentNode, className)
-        }
-    }
-
     function scrollPageTop() {
         scrollTop(500)
 
