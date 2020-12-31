@@ -866,27 +866,25 @@ a:hover {
 }
 
 .tweet {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto 1fr;
     padding: 12px 16px;
     border-bottom-style: solid;
     border-bottom-width: 1px;
 }
 
 .tweet-twitter_retweet_header {
-    flex-basis: 100%;
-    color: #657786;
+    grid-column: 1/3;
     margin-bottom: 8px;
     margin-left: 28px;
 }
 
 .tweet-twitter_icon {
-    flex-shrink: 0;
+    grid-column: 1/2;
 }
 
 .tweet-twitter_main {
     margin-left: 8px;
-    flex: 1;
     overflow: hidden;
 }
 
@@ -928,7 +926,11 @@ a:hover {
 }
 
 .tweet-twitter_picture {
+    position: absolute;
+    height: 100%;
+    width: 100%;
     object-fit: cover;
+    src: url(https://jackie99g.github.io/aquaprojects_staticfiles/images/icon.svg);
 }
 
 .tweet-twitter_social {
@@ -963,6 +965,12 @@ a:hover {
     border-style: solid;
     border-width: 1px;
     border-radius: 12px;
+}
+
+.tweet-twitter_pictures_container:before {
+    display: block;
+    padding-top: 56.25%;
+    content: "";
 }
 
 .twitter_trends_block {
@@ -1192,6 +1200,18 @@ a:hover {
     border-radius: 50%;
     width: 12px;
     height: 12px;
+}
+
+.twitter-grid-area-1132 {
+    grid-area: 1/1/3/2;
+}
+
+.twitter-grid-area-1223 {
+    grid-area: 1/2/2/3;
+}
+
+.twitter-grid-area-2233 {
+    grid-area: 2/2/3/3;
 }
 
 .seamless_configuration-view {
