@@ -9,8 +9,7 @@
             'currentPage': currentPage,
         }
         history.replaceState(state, null, currentPage)
-        const da = document.querySelector(`.dashboard_anchor_${location.pathname.split('/')[1]}`)
-        if (da) da.classList.add('select_active_dashboard')
+        markDashboardAnchorGroup()
     })()
 
     document.addEventListener('click', e => {
@@ -28,6 +27,7 @@
             currentPage === targetPage ? scrollPageTop() : window.scrollTo(0, 0)
 
             resetDashboardAnchorGroup()
+            markDashboardAnchorGroup()
             changeContent(targetPage)
             e.preventDefault()
         }
@@ -43,6 +43,8 @@
         const body = document.querySelector('body')
         body.style.marginRight = ''
         body.style.overflowY = ''
+        resetDashboardAnchorGroup()
+        markDashboardAnchorGroup()
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
             changeTwitterContentOptimized(history.state['targetPage'])
         } else if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/newsplus') {
@@ -344,6 +346,12 @@
         }
         const userPicture = document.querySelector('.user_picture')
         userPicture.style.background = ''
+    }
+
+    function markDashboardAnchorGroup() {
+        const targetClass = `.dashboard_anchor_${location.pathname.split('/')[1]}`
+        const da = document.querySelectorAll(targetClass)
+        if (da) Array.from(da).forEach(element => element.classList.add('select_active_dashboard'))
     }
 
     function closeAccountInformation() {
