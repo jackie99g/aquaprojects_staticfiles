@@ -2443,6 +2443,27 @@
         }
     })
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter-back')) {
+            const targetPage = '/twitter'
+            const currentPage = location.href.replace(location.origin, '')
+            if (history.state['currentPage'] === currentPage) {
+                easyPushState(targetPage, currentPage)
+                changeContent(targetPage)
+            } else {
+                history.back()
+            }
+
+            function easyPushState(targetPage, currentPage) {
+                const state = {
+                    'targetPage': targetPage,
+                    'currentPage': currentPage
+                }
+                history.pushState(state, null, targetPage)
+            }
+        }
+    })
+
     function averageColorByImage(src) {
         const canvas = document.createElement("canvas")
         const ctx = canvas.getContext('2d');
