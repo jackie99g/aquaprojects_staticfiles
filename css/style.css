@@ -269,7 +269,6 @@ a:hover {
     border-bottom-style: solid;
     border-bottom-width: 1px;
     z-index: 2;
-    transition: top 0.2s ease;
 }
 
 .header-summarize_button {
