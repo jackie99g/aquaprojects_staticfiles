@@ -1293,8 +1293,8 @@ a:hover {
     flex-shrink: 0;
 }
 
-.account svg {
-    filter: invert(51%) sepia(3%) saturate(3529%) hue-rotate(168deg) brightness(79%) contrast(80%);
+.account svg,
+.custom_side_pannel_sm svg {
     margin-right: 1rem;
     width: 1.5rem;
     height: 1.5rem;
