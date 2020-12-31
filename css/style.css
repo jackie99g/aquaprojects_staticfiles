@@ -540,12 +540,7 @@ a:hover {
     }
 }
 
-.select_active {
-    color: #1da1f2;
-    border-bottom: 1px solid #1da1f2;
-}
-
-.select_active_dashboard {
+.select_active_dashboard svg {
     color: #1da1f2;
 }
 
