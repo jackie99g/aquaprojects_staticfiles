@@ -1046,7 +1046,6 @@ a:hover {
 }
 
 .twitter_title-home-text {
-    margin: auto 12px;
     font-weight: 700;
 }
 
@@ -1157,7 +1156,18 @@ a:hover {
 .twitter_title-block {
     border-bottom-style: solid;
     border-bottom-width: 1px;
-    height: 54px;
+}
+
+.twitter_title-block:not(.ap_not_tracking) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+@media (min-width: 768px) {
+    .twitter_title-block {
+        position: static;
+    }
 }
 
 .tweet-twitter_user_tooltip {
