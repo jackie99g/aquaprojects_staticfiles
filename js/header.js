@@ -1,20 +1,41 @@
 (() => {
     let startPos = 0
+    const headerContent = document.querySelector('.header_contents')
+    const headerContentHeight = headerContent.offsetHeight
+    let headerContentScrollLevel = headerContent.offsetHeight
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY
-        const headerContent = document.querySelector('.header_contents')
-        if (scrollY > startPos && scrollY > headerContent.offsetHeight) {
-            headerContent.style.top = `-${headerContent.offsetHeight}px`
+        const windowWidth = window.innerWidth
+        if (windowWidth < 768 &&
+            document.querySelector('.ap_header_not_tracking') &&
+            scrollY > headerContentHeight + Math.abs(scrollY - startPos)) {
+            return false
+        }
+
+        if (scrollY > startPos) {
+            headerContentScrollLevel -= (scrollY - startPos)
+            if (headerContentScrollLevel > 0) {
+                headerContent.style.top = `${-(headerContentHeight - headerContentScrollLevel)}px`
+            } else {
+                headerContentScrollLevel = 0
+                headerContent.style.top = `${-(headerContentHeight)}px`
+            }
         } else {
-            headerContent.style.top = '0'
+            headerContentScrollLevel += (startPos - scrollY)
+            if (headerContentHeight > headerContentScrollLevel) {
+                headerContent.style.top = `${-(headerContentHeight - headerContentScrollLevel)}px`
+            } else {
+                headerContentScrollLevel = headerContentHeight
+                headerContent.style.top = '0'
+            }
         }
         startPos = scrollY
     })
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'load_pictures')) {
-            const prop = 
-            document.querySelector('.load_pictures').querySelector('input').checked
+            const prop =
+                document.querySelector('.load_pictures').querySelector('input').checked
             if (prop) {
                 localStorage.setItem('twitter-view_pictures', true)
             } else {
@@ -33,8 +54,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'load_clear_icon')) {
-            const prop = 
-            document.querySelector('.load_clear_icon').querySelector('input').checked
+            const prop =
+                document.querySelector('.load_clear_icon').querySelector('input').checked
             if (prop) {
                 twitterViewClearIcon()
             } else {
@@ -83,8 +104,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'show_left_sidebar')) {
-            const prop = 
-            document.querySelector('.show_left_sidebar').querySelector('input').checked
+            const prop =
+                document.querySelector('.show_left_sidebar').querySelector('input').checked
             if (prop) {
                 showLeftSidebar()
             } else {
@@ -264,8 +285,8 @@
 
     document.addEventListener('change', e => {
         if (findParents(e.target, 'show_right_sidebar')) {
-            const prop = 
-            document.querySelector('.show_right_sidebar').querySelector('input').checked
+            const prop =
+                document.querySelector('.show_right_sidebar').querySelector('input').checked
             if (prop) {
                 showRightSidebar()
             } else {
