@@ -208,11 +208,13 @@
                 userPicture.style.background = ''
             }
             account.scrollTo(0, 0)
+            const apSidebarPosition = localStorage.getItem('ap-sidebar_position') ? true : false
+            const reduceHeight = apSidebarPosition === true ? '(3.2rem + 1px + 57px)' : '57px'
             const windowWidth = window.innerWidth
             if (windowWidth < 768) {
                 if (visibleState === 'hidden') {
                     account.style.visibility = 'visible'
-                    account.style.height = 'calc(100vh - 107px)'
+                    account.style.height = `calc(100% - ${reduceHeight})`
                     account.style.width = '100%'
                     account.style.right = ''
                     account.style.boxShadow = ''
