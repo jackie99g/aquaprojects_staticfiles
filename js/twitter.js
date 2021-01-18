@@ -1187,27 +1187,46 @@
         }
     })
 
+    let twitterPictureAverageColorList = []
+
     function AverageColorByImageOnTweetTwitterPictureZoom() {
-        var ttpz = document.querySelector('.tweet-twitter_picture_zoom')
-        var ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
+        const ttpz = document.querySelector('.tweet-twitter_picture_zoom')
+        const ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
 
-        var ttpzc = ttpz.querySelector('.tweet-twitter_picture_zoom-container')
-        var ttpzce = ttpzc.querySelectorAll('.tweet-twitter_picture_zoom-element img')
+        const ttpzc = ttpz.querySelector('.tweet-twitter_picture_zoom-container')
+        const ttpzce = ttpzc.querySelectorAll('.tweet-twitter_picture_zoom-element img')
 
-        var ImgTable = []
+        const imgTable = []
         for (let index = 0; index < ttpzce.length; index++) {
             const element = ttpzce[index];
-            ImgTable.push(element.src)
+            imgTable.push(element.src)
         }
 
-        averageColorByImage(ImgTable[currentSlideNumberProxy.number]).then(res => {
-            var rgb_color = `rgb(${res[0]}, ${res[1]}, ${res[2]}`
-            ttpz.style.background = `${rgb_color}, 0.9)`
+        const twitterPictureSrc = imgTable[currentSlideNumberProxy.number]
+
+        const twitterPictureData = twitterPictureAverageColorList.find(
+            element => element['src'] === twitterPictureSrc)
+
+        if (twitterPictureData) {
+            setBackgroundColor(twitterPictureData['rgb'])
+        } else {
+            averageColorByImage(twitterPictureSrc).then(res => {
+                twitterPictureAverageColorList.push({
+                    'src': twitterPictureSrc,
+                    'rgb': res
+                })
+                setBackgroundColor(res)
+            })
+        }
+
+        function setBackgroundColor(rgb) {
+            const rgbColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}`
+            ttpz.style.background = `${rgbColor}, 0.9)`
             for (let index = 0; index < ttpzn.length; index++) {
                 const element = ttpzn[index];
-                element.style.background = `${rgb_color})`
+                element.style.background = `${rgbColor})`
             }
-        })
+        }
     }
 
     let selectExistOwnListResutId = ''
