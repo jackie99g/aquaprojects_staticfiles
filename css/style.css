@@ -286,14 +286,14 @@ a:hover {
 }
 
 .logo {
-    padding: 0 16px;
+    padding: 0 1rem;
 }
 
 @media (min-width: 768px) {
     .header-summarize_button {
         display: flex;
         align-items: center;
-        padding: 0 16px;
+        padding: 0 1rem;
         margin: 0 0 0 10px;
         cursor: pointer;
     }
@@ -305,7 +305,13 @@ a:hover {
 
 .username {
     display: inline-block;
-    margin: auto 5px auto auto;
+    margin: auto 0 auto auto;
+}
+
+@media (min-width: 768px) {
+    .username {
+        margin: auto 10px auto auto;
+    }
 }
 
 .account {
@@ -355,10 +361,10 @@ a:hover {
 }
 
 .user_picture {
-    width: 40px;
-    height: 40px;
+    width: 3rem;
+    height: 3rem;
     padding: 3.5px;
-    margin-right: 5px;
+    margin-right: calc(1rem - 3.5px);
     border-radius: 50%;
     transition: all 0.2s;
     cursor: pointer;
@@ -371,8 +377,8 @@ a:hover {
 .user_picture_img {
     display: inline-block;
     border-radius: 50%;
-    width: 33px;
-    height: 33px;
+    width: calc(3rem - 7px);
+    height: calc(3rem - 7px);
 }
 
 .dashboard_pannel {
