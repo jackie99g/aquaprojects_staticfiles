@@ -251,19 +251,33 @@
     // sidebar_position changes
     document.addEventListener('change', e => {
         if (findParents(e.target, 'sidebar_position')) {
-            const sidebarPositionElement = findParents(e.target, 'sidebar_position')
-            const checked = sidebarPositionElement.querySelector('input').checked
-            let SIDEBAR_POSITION = 0
-            localStorage.removeItem('ap-sidebar_position')
-            if (checked) {
-                SIDEBAR_POSITION = 1
-                localStorage.setItem('ap-sidebar_position', true)
+            const target = findParents(e.target, 'seamless_configuration-form-radio')
+            const seamlessConfigurationFormRadio =
+                target.parentNode.querySelectorAll('.seamless_configuration-form-radio')
+            const radioIndex = Array.from(seamlessConfigurationFormRadio).findIndex(
+                item => item === target
+            )
+            let sidebar_position = 'top'
+            switch (radioIndex) {
+                case 1:
+                    localStorage.setItem('ap_sidebar_position', 'bottom')
+                    sidebar_position = 'bottom'
+                    break
+                case 2:
+                    localStorage.setItem('ap_sidebar_position', 'off')
+                    sidebar_position = 'off'
+                    break
+                default:
+                    localStorage.removeItem('ap_sidebar_position')
+                    const expires = new Date().toUTCString()
+                    document.cookie = `ap_sidebar_position=; path=/; expires=${expires}`
+                    return sidebarPosition()
             }
-            sidebarPosition(SIDEBAR_POSITION)
+            sidebarPosition(sidebar_position)
             const currentDate = new Date()
             currentDate.setFullYear(currentDate.getFullYear() + 1)
             const expires = currentDate.toUTCString()
-            document.cookie = `ap_sidebar_position=${SIDEBAR_POSITION}; path=/; expires=${expires}`
+            document.cookie = `ap_sidebar_position=${sidebar_position}; path=/; expires=${expires}`
         }
 
         function sidebarPosition(sidebarPositionNumber) {
@@ -274,13 +288,23 @@
             var customSidePannelSm = dashboardPannel.querySelector('.custom_side_pannel_sm')
             var customSidePannelSmParent = customSidePannelSm.parentNode
             var dashboardAnchorGroup = customSidePannelSmParent.querySelector('.dashboard_anchor_group')
-            if (sidebarPositionNumber === 0) {
+            if (sidebarPositionNumber === undefined) {
+                customSidePannelSmParent.style.display = ''
                 customSidePannelSmParent.style.width = '100%'
                 dashboardAnchorGroup.classList.remove('flex_box_sm')
                 dashboardAnchorGroup.classList.add('flex_box_sm_0')
                 dashboardPannel.classList.remove('dashboard_pannel_0')
                 dashboardPannel.classList.add('dashboard_pannel')
-            } else {
+            } else if (sidebarPositionNumber === 'off') {
+                customSidePannelSmParent.style.display = 'none'
+                customSidePannelSmParent.style.width = ''
+                dashboardAnchorGroup.classList.remove('flex_box_sm_0')
+                dashboardAnchorGroup.classList.add('flex_box_sm')
+                dashboardPannel.classList.remove('dashboard_pannel')
+                dashboardPannel.classList.add('dashboard_pannel_0')
+
+            } else if (sidebarPositionNumber === 'bottom') {
+                customSidePannelSmParent.style.display = ''
                 customSidePannelSmParent.style.width = ''
                 dashboardAnchorGroup.classList.remove('flex_box_sm_0')
                 dashboardAnchorGroup.classList.add('flex_box_sm')
@@ -309,7 +333,7 @@
 
     // .seamless_configuration-form.select_theme
     document.addEventListener('click', e => {
-        if (findParents(e.target, 'seamless_configuration-form-radio')) {
+        if (findParents(e.target, 'select_theme')) {
             const target = findParents(e.target, 'seamless_configuration-form-radio')
             const seamlessConfigurationFormRadio =
                 target.parentNode.querySelectorAll('.seamless_configuration-form-radio')
@@ -359,10 +383,21 @@
     }
 
     function initSidebarPosition() {
-        const sidebarPosition = document.querySelector('.sidebar_position')
+        const sidebarPosition = document.querySelector('.seamless_configuration-form.sidebar_position')
         sidebarPosition.style.display = ''
-        sidebarPosition.querySelector('input').checked =
-            localStorage.getItem('ap-sidebar_position') ? 'chekced' : ''
+        const seamlessConfigurationFormRadio =
+            sidebarPosition.querySelectorAll('.seamless_configuration-form-radio')
+        switch (localStorage.getItem('ap_sidebar_position')) {
+            case 'bottom':
+                seamlessConfigurationFormRadio[1].querySelector('input').click()
+                break
+            case 'off':
+                seamlessConfigurationFormRadio[2].querySelector('input').click()
+                break
+            default:
+                seamlessConfigurationFormRadio[0].querySelector('input').click()
+                break
+        }
     }
 
     function easyPushState(targetPage, currentPage) {
