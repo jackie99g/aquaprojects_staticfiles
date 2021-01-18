@@ -208,8 +208,9 @@
                 userPicture.style.background = ''
             }
             account.scrollTo(0, 0)
-            const apSidebarPosition = localStorage.getItem('ap-sidebar_position') ? true : false
-            const reduceHeight = apSidebarPosition === true ? '(3.2rem + 1px + 57px)' : '57px'
+            const apSidebarPosition = localStorage.getItem('ap_sidebar_position')
+            const needsPadding = apSidebarPosition === 'bottom' ? true : false
+            const reduceHeight = needsPadding === true ? '(3.2rem + 1px + 57px)' : '57px'
             const windowWidth = window.innerWidth
             if (windowWidth < 768) {
                 if (visibleState === 'hidden') {
