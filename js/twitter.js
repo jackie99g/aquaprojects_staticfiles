@@ -2438,7 +2438,8 @@
             const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
             const titleSearchBox = tthb.querySelector('.twitter-search_box')
 
-            tthb.style.gridTemplateColumns = '3rem 1fr 3rem 3rem 3rem'
+            tthb.style.gridTemplateColumns = location.pathname === '/twitter' ?
+                '1fr 3rem 3rem 3rem' : '3rem 1fr 3rem 3rem 3rem'
             titleBack.style.display = ''
             titleText.style.display = ''
             titleSearch.style.display = ''
