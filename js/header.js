@@ -207,6 +207,7 @@
                 }
                 userPicture.style.background = ''
             }
+            account.scrollTo(0, 0)
             const windowWidth = window.innerWidth
             if (windowWidth < 768) {
                 if (visibleState === 'hidden') {
