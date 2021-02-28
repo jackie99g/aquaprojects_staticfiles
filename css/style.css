@@ -21,7 +21,7 @@ body {
     background-color: rgb(255, 255, 255);
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     body {
         background-color: rgb(21, 32, 43);
         color: rgb(255, 255, 255);
@@ -43,7 +43,7 @@ body {
     display: none;
 }
 
-.tgl+.tgl-btn {
+.tgl + .tgl-btn {
     display: block;
     width: 44px;
     height: 28px;
@@ -52,31 +52,31 @@ body {
     user-select: none;
 }
 
-.tgl+.tgl-btn::after,
-.tgl+.tgl-btn::before {
+.tgl + .tgl-btn::after,
+.tgl + .tgl-btn::before {
     position: relative;
     display: block;
-    content: "";
+    content: '';
     width: 50%;
     height: 100%;
 }
 
-.tgl+.tgl-btn::after {
+.tgl + .tgl-btn::after {
     left: 0;
 }
 
-.tgl+.tgl-btn::before {
+.tgl + .tgl-btn::before {
     display: none;
 }
 
-.tgl-flat+.tgl-btn::after {
+.tgl-flat + .tgl-btn::after {
     transition: left 0.2s ease;
     background: var(--buttonDisableColor);
-    content: "";
+    content: '';
     border-radius: 1em;
 }
 
-.tgl-flat+.tgl-btn {
+.tgl-flat + .tgl-btn {
     padding: 2px;
     background: transparent;
     border: 4px solid var(--buttonDisableColor);
@@ -84,11 +84,11 @@ body {
 }
 
 /* checked */
-.tgl-flat:checked+.tgl-btn {
+.tgl-flat:checked + .tgl-btn {
     border: 4px solid var(--buttonColor);
 }
 
-.tgl-flat:checked+.tgl-btn::after {
+.tgl-flat:checked + .tgl-btn::after {
     left: 50%;
     background: var(--buttonColor);
 }
@@ -124,7 +124,7 @@ a:hover {
     border-color: #e6ecf0;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .ap_theme-default-border {
         border-color: #38444d;
     }
@@ -172,7 +172,7 @@ a:hover {
     background-color: rgba(29, 161, 242, 0.2);
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .ap_theme-default-background {
         background-color: rgb(21, 32, 43);
     }
@@ -191,16 +191,16 @@ a:hover {
 }
 
 .ap_theme-dark-color-sub {
-    color: #8899A6;
+    color: #8899a6;
 }
 
 .ap_theme-default-color-sub {
     color: #657786;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .ap_theme-default-color-sub {
-        color: #8899A6;
+        color: #8899a6;
     }
 }
 
@@ -216,21 +216,24 @@ a:hover {
 }
 
 .ap_theme-light-ripple:hover {
-    background: #f5f8fa radial-gradient(circle, transparent 1%, #f5f8fa 1%) center/15000%;
+    background: #f5f8fa radial-gradient(circle, transparent 1%, #f5f8fa 1%)
+        center/15000%;
 }
 
-
 .ap_theme-dark-ripple:hover {
-    background: #192734 radial-gradient(circle, transparent 1%, #192734 1%) center/15000%;
+    background: #192734 radial-gradient(circle, transparent 1%, #192734 1%)
+        center/15000%;
 }
 
 .ap_theme-default-ripple:hover {
-    background: #f5f8fa radial-gradient(circle, transparent 1%, #f5f8fa 1%) center/15000%;
+    background: #f5f8fa radial-gradient(circle, transparent 1%, #f5f8fa 1%)
+        center/15000%;
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .ap_theme-default-ripple:hover {
-        background: #192734 radial-gradient(circle, transparent 1%, #192734 1%) center/15000%;
+        background: #192734 radial-gradient(circle, transparent 1%, #192734 1%)
+            center/15000%;
     }
 }
 
@@ -243,7 +246,8 @@ a:hover {
 }
 
 .ap_theme-light-logo {
-    filter: invert(59%) sepia(62%) saturate(3971%) hue-rotate(176deg) brightness(98%) contrast(94%);
+    filter: invert(59%) sepia(62%) saturate(3971%) hue-rotate(176deg)
+        brightness(98%) contrast(94%);
 }
 
 .ap_theme-dark-logo {
@@ -251,10 +255,11 @@ a:hover {
 }
 
 .ap_theme-default-logo {
-    filter: invert(59%) sepia(62%) saturate(3971%) hue-rotate(176deg) brightness(98%) contrast(94%);
+    filter: invert(59%) sepia(62%) saturate(3971%) hue-rotate(176deg)
+        brightness(98%) contrast(94%);
 }
 
-@media(prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     .ap_theme-default-logo {
         filter: brightness(0) invert(1);
     }
@@ -356,11 +361,11 @@ a:hover {
     border-radius: 5px;
 }
 
-.dashboard_button>a {
+.dashboard_button > a {
     color: white;
 }
 
-.username>a {
+.username > a {
     color: black;
 }
 
@@ -515,7 +520,7 @@ a:hover {
 }
 
 .switch__animation:after {
-    content: "Disable animation";
+    content: 'Disable animation';
     position: absolute;
 }
 
@@ -992,7 +997,7 @@ a:hover {
 .tweet-twitter_pictures_container:before {
     display: block;
     padding-top: 56.25%;
-    content: "";
+    content: '';
 }
 
 .twitter_trends_block {
@@ -1042,36 +1047,36 @@ a:hover {
     0% {
         opacity: 0;
         -webkit-transform: translate3d(0, 100%, 0);
-        transform: translate3d(0, 100%, 0)
+        transform: translate3d(0, 100%, 0);
     }
 
     to {
         opacity: 1;
         -webkit-transform: translateZ(0);
-        transform: translateZ(0)
+        transform: translateZ(0);
     }
 }
 
 .fadeInUp {
     -webkit-animation-name: fadeInUp;
-    animation-name: fadeInUp
+    animation-name: fadeInUp;
 }
 
 @keyframes fadeOutUp {
     0% {
-        opacity: 1
+        opacity: 1;
     }
 
     to {
         opacity: 0;
         -webkit-transform: translate3d(0, -100%, 0);
-        transform: translate3d(0, -100%, 0)
+        transform: translate3d(0, -100%, 0);
     }
 }
 
 .fadeOutUp {
     -webkit-animation-name: fadeOutUp;
-    animation-name: fadeOutUp
+    animation-name: fadeOutUp;
 }
 
 .twitter-client {
@@ -1153,7 +1158,7 @@ a:hover {
     color: rgb(29, 161, 242);
 }
 
-.twitter_user-background_image>img {
+.twitter_user-background_image > img {
     width: 100%;
     height: 33.3333%;
     min-height: 140px;
@@ -1162,7 +1167,7 @@ a:hover {
 }
 
 @media (min-width: 600px) {
-    .twitter_user-background_image>img {
+    .twitter_user-background_image > img {
         width: 100%;
         min-height: calc(598px / 3);
         max-height: calc(598px / 3);
@@ -1219,7 +1224,7 @@ a:hover {
 .twitter-slider-item {
     cursor: pointer;
     position: absolute;
-    background: #8ED0F9;
+    background: #8ed0f9;
     border-radius: 50%;
     width: 12px;
     height: 12px;
@@ -1270,7 +1275,8 @@ a:hover {
     height: 1.5rem;
 }
 
-.seamless_configuration-form-radio-input:checked+.seamless_configuration-form-radio-button {
+.seamless_configuration-form-radio-input:checked
+    + .seamless_configuration-form-radio-button {
     border: 1px solid #1da1f2;
     background: #1da1f2;
     border-radius: 50%;
@@ -1278,7 +1284,8 @@ a:hover {
     height: 1.5rem;
 }
 
-.seamless_configuration-form-radio-input:checked+.seamless_configuration-form-radio-button:before {
+.seamless_configuration-form-radio-input:checked
+    + .seamless_configuration-form-radio-button:before {
     content: '';
     display: block;
     border-bottom: 1.75px solid #f8f9fa;
