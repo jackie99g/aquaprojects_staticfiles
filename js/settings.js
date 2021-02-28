@@ -20,7 +20,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
             if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
                 const targetPage = target.href.replace(location.origin, '')
                 const currentPage = location.href.replace(location.origin, '')
-                easyPushState(targetPage, currentPage)
+                history.pushState({ targetPage, currentPage }, null, targetPage)
             }
 
             const configurationGroup = findParents(target, 'seamless_configuration-group')
@@ -63,8 +63,8 @@ import { changeTheme, findParents, getCookie } from './utils.js'
             if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
                 const targetPage = '/settings'
                 const currentPage = location.href.replace(location.origin, '')
-                history.state['currentPage'] === targetPage ?
-                    history.back() : easyPushState(targetPage, currentPage)
+                history.state['currentPage'] === targetPage
+                    ? history.back() : history.pushState({ targetPage, currentPage }, null, targetPage)
             }
 
             const configurationGroup = findParents(target, 'seamless_configuration-group')
@@ -399,13 +399,5 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 seamlessConfigurationFormRadio[0].querySelector('input').click()
                 break
         }
-    }
-
-    function easyPushState(targetPage, currentPage) {
-        const state = {
-            'targetPage': targetPage,
-            'currentPage': currentPage
-        }
-        history.pushState(state, null, targetPage)
     }
 })()
