@@ -4,6 +4,10 @@
     --theme-color-blue: #1b95e0;
 }
 
+#main {
+    padding: 0;
+}
+
 .btn,
 h1 {
     font-size: inherit;
