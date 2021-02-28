@@ -60,6 +60,7 @@
                 }
                 var ttp = element.target
                 ttp.src = ttp.dataset['src']
+                ttp.crossOrigin = 'anonymous'
                 observer.unobserve(ttp)
             })
         }
@@ -97,6 +98,7 @@
                 var ttui = element.target
                 var ttuiSrc = ttui.src
                 ttui.src = ttuiSrc.replace('_normal', '_400x400')
+                ttui.crossOrigin = 'anonymous'
                 observer.unobserve(ttui)
             })
         }
