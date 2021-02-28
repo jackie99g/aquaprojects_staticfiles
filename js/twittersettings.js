@@ -69,19 +69,4 @@ import { findParents } from './utils.js'
             document.querySelector('html').style.fontSize = `${htmlFontSize}px`
         }
     })
-
-    function findParents(target, className) {
-        if (target === document) return false
-        if (target.className.length !== 0 && target.classList.contains(className)) {
-            return target
-        }
-        var currentNode = target.parentNode
-        if (currentNode === document || currentNode === null) {
-            return false
-        } else if (currentNode.className.length !== 0 && currentNode.classList.contains(className)) {
-            return currentNode
-        } else {
-            return findParents(currentNode, className)
-        }
-    }
 })()
