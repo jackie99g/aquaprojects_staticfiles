@@ -143,7 +143,7 @@ export function error(obj) {
 export function locationMatch(target) {
     const pathname = location.pathname.replace(location.origin, '')
     const firstDirectory = `/${pathname.split('/')[1]}`
-    return firstDirectory === target ? true : false
+    return firstDirectory === target
 }
 
 export function getApTheme() {
@@ -195,6 +195,14 @@ export function getApCache(cacheName) {
 export function removeClass(target, className) {
     if (target.classList && target.classList.contains(className)) {
         target.classList.remove(className)
+    }
+}
+
+export function toggleClass(target, className) {
+    if (target.classList && target.classList.contains(className)) {
+        target.classList.remove(className)
+    } else if (target.classList && !target.classList.contains(className)) {
+        target.classList.add(className)
     }
 }
 
