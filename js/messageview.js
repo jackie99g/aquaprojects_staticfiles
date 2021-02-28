@@ -1,3 +1,4 @@
+import { changeTheme, findParents, getCookie } from './utils.js'
 (() => {
     window.addEventListener('aquaprojects_popstate', () => {
         if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/messageview') {

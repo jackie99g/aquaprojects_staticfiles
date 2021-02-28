@@ -1,4 +1,4 @@
-function changeTheme() {
+export function changeTheme() {
     const body = document.querySelector('body')
     const changeStyles = [
         'border', 'background', 'background-skelton',
@@ -72,7 +72,7 @@ function changeTheme() {
     }
 }
 
-function findParents(target, className) {
+export function findParents(target, className) {
     if (target === document) return false
     if (target.className.length !== 0 && target.classList.contains(className)) {
         return target
@@ -87,7 +87,7 @@ function findParents(target, className) {
     }
 }
 
-function getCookie(name) {
+export function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');

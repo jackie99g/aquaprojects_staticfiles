@@ -1,3 +1,4 @@
+import { findParents } from './utils.js'
 (() => {
     let startPos = 0
     const headerContent = document.querySelector('.header_contents')

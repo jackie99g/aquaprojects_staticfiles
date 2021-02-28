@@ -1,3 +1,4 @@
+import { changeTheme, findParents } from './utils.js'
 (() => {
     let currentSlideNumber = 0
 
