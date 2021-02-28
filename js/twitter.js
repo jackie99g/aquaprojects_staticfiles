@@ -1,29 +1,30 @@
-import { changeTheme, findParents, getCookie } from './utils.js'
-(() => {
+import { changeTheme, findParents, getCookie, log, error } from './utils.js'
+import * as utils from './utils.js'
+!(() => {
     window.addEventListener('aquaprojects_popstate', () => {
-        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
-            console.log('twitter!')
+        if (utils.locationMatch('/twitter')) {
+            log('twitter!')
             initTweetIntersectionObserver()
-            initTweetPictureInsersectionObserver()
-            initTweetTwitterUserIconInsersectionObserver()
-            initLastTweetInsersectionObserver()
+            initTweetPictureIntersectionObserver()
+            initTweetTwitterUserIconIntersectionObserver()
+            initLastTweetIntersectionObserver()
             makeTwitterUserTwitterIconClear()
             setTweetCreated_at()
             twitterProfile()
             twitterTrends()
             changeTwitterTimelineBackgroundSize()
             changeTheme()
-            console.log('twitter! popstate event finished.')
+            log('twitter! popstate event finished.')
         }
     })
-    if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
-        window.dispatchEvent(new Event('aquaprojects_popstate'));
+    if (utils.locationMatch('/twitter')) {
+        window.dispatchEvent(new Event('aquaprojects_popstate'))
     }
 
     // setInterval(() => {
     //     if (location.href.replace(location.origin, '') === '/twitter') {
     //         var currentTime = new Date()
-    //         console.log(currentTime)
+    //         log(currentTime)
     //         var tweet_id = $('.format_timeline > div:first').data('tweet_id');
     //         if (document.hidden === false) {
     //             loadMoreTweet(tweet_id, 'new');
@@ -31,27 +32,27 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     //     }
     // }, 60 * 1000);
 
-    var tweetPictureInsersectionObserver = null
+    var tweetPictureIntersectionObserver = null
 
-    function initTweetPictureInsersectionObserver() {
-        if (tweetPictureInsersectionObserver) {
+    function initTweetPictureIntersectionObserver() {
+        if (tweetPictureIntersectionObserver) {
             try {
-                tweetPictureInsersectionObserver.disconnect()
-                tweetPictureInsersectionObserver = null
+                tweetPictureIntersectionObserver.disconnect()
+                tweetPictureIntersectionObserver = null
             } catch (e) {
-                console.error(e)
+                error(e)
             }
         }
-        tweetPictureInsersectionObserver = new IntersectionObserver(
-            processTweetPictureInsersectionObserver
+        tweetPictureIntersectionObserver = new IntersectionObserver(
+            handleIntersect
         )
-        var ttps = document.querySelectorAll('.tweet-twitter_picture')
+        const ttps = document.querySelectorAll('.tweet-twitter_picture')
         for (let index = 0; index < ttps.length; index++) {
-            const element = ttps[index];
-            tweetPictureInsersectionObserver.observe(element)
+            const element = ttps[index]
+            tweetPictureIntersectionObserver.observe(element)
         }
 
-        function processTweetPictureInsersectionObserver(entries, observer) {
+        function handleIntersect(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
                     return false
@@ -59,36 +60,35 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 if (!localStorage.getItem('twitter-view_pictures')) {
                     return false
                 }
-                var ttp = element.target
-                ttp.src = ttp.dataset['src']
+                const ttp = element.target
+                ttp.src = ttp.dataset.src
                 ttp.crossOrigin = 'anonymous'
                 observer.unobserve(ttp)
             })
         }
     }
 
-    var tweetTwitterUserIconInsersectionObserver = null
+    var tweetTwitterUserIconIntersectionObserver = null
 
-    function initTweetTwitterUserIconInsersectionObserver() {
-        if (tweetTwitterUserIconInsersectionObserver) {
+    function initTweetTwitterUserIconIntersectionObserver() {
+        if (tweetTwitterUserIconIntersectionObserver) {
             try {
-                tweetTwitterUserIconInsersectionObserver.disconnect()
-                tweetTwitterUserIconInsersectionObserver = null
+                tweetTwitterUserIconIntersectionObserver.disconnect()
+                tweetTwitterUserIconIntersectionObserver = null
             } catch (e) {
-                console.error(e)
+                error(e)
             }
         }
-        tweetTwitterUserIconInsersectionObserver = new IntersectionObserver(
-            processTweetTwitterUserIconInsersectionObserver
+        tweetTwitterUserIconIntersectionObserver = new IntersectionObserver(
+            handleIntersect
         )
         var ttui = document.querySelectorAll('.tweet-twitter_icon img')
         for (let index = 0; index < ttui.length; index++) {
-            const element = ttui[index];
-            tweetTwitterUserIconInsersectionObserver.observe(element)
-
+            const element = ttui[index]
+            tweetTwitterUserIconIntersectionObserver.observe(element)
         }
 
-        function processTweetTwitterUserIconInsersectionObserver(entries, observer) {
+        function handleIntersect(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
                     return false
@@ -96,8 +96,8 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 if (!localStorage.getItem('twitter-view_clear_icon')) {
                     return false
                 }
-                var ttui = element.target
-                var ttuiSrc = ttui.src
+                const ttui = element.target
+                const ttuiSrc = ttui.src
                 ttui.src = ttuiSrc.replace('_normal', '_400x400')
                 ttui.crossOrigin = 'anonymous'
                 observer.unobserve(ttui)
@@ -106,8 +106,10 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     }
 
     function makeTwitterUserTwitterIconClear() {
-        const twitterUserTwitterIcon = document.querySelector('.twitter_user-twitter_icon img')
-        const twitterProfileIcon = Array.from(document.querySelectorAll('.twitter-profile img'))
+        const tuti = document.querySelector('.twitter_user-twitter_icon img')
+        const tpi = document.querySelectorAll('.twitter-profile img')
+        const twitterUserTwitterIcon = tuti
+        const twitterProfileIcon = Array.from(tpi)
         if (twitterUserTwitterIcon) {
             const tutiSrc = twitterUserTwitterIcon.src
             twitterUserTwitterIcon.src = tutiSrc.replace('_normal', '_400x400')
@@ -125,61 +127,65 @@ import { changeTheme, findParents, getCookie } from './utils.js'
             // Whether load tweets object?
             if (document.querySelector('.twitter_new_tweets_of_no_content')) {
                 calculateTweetsToDisplayFirst()
-                window.dispatchEvent(new Event('aquaprojects_popstate'))
+                optimizedDispatchEvent()
 
                 setTimeout(() => {
-                    const tntonc =
-                        document.querySelector('.twitter_new_tweets_of_no_content')
+                    const tntonc = document.querySelector(
+                        '.twitter_new_tweets_of_no_content'
+                    )
                     const tweet = document.querySelector('.tweet')
-                    if (!tntonc || !tweet) return false
-                    const is_tweetId =
-                        document.querySelector('.format_timeline .tweet').dataset['tweet_id']
+                    if (!tntonc || !tweet) return
+                    const is_tweetId = document.querySelector(
+                        '.format_timeline .tweet'
+                    ).dataset['tweet_id']
                     is_tweetId ? loadTheOthersTweet() : loadCacheOfMainArea()
                     window.dispatchEvent(new Event('aquaprojects_popstate'))
 
                     setTimeout(() => {
                         scanTweetHeight()
-                        const currentPage = location.href.replace(location.origin, '')
-                        let replaceState = Object.assign({}, history.state)
+                        const currentPage = utils.getCurrentPage()
+                        const replaceState = Object.assign({}, history.state)
                         replaceState['scrollTop'] = window.scrollY
                         history.replaceState(replaceState, null, currentPage)
-                    }, 0);
+                    }, 0)
 
                     function loadCacheOfMainArea() {
                         const href = location.href.replace(location.origin, '')
-                        var changeLocation = document.querySelector('#main')
-                        while (changeLocation.firstChild) {
-                            changeLocation.removeChild(changeLocation.firstChild)
-                        }
-                        var changeLocationCloneNode =
-                            AquaProjectsCache[href].cloneNode(true).querySelector('#main')
-                        Array.from(changeLocationCloneNode.children).forEach(element => {
-                            changeLocation.appendChild(element)
-                        });
+                        utils.repaintNode(href, '#main')
                     }
-                }, 0);
+                }, 0)
             } else {
                 scanTweetHeight()
             }
-        }, 0);
+
+            function optimizedDispatchEvent() {
+                initTweetIntersectionObserver()
+                initTweetPictureIntersectionObserver()
+                initTweetTwitterUserIconIntersectionObserver()
+                initLastTweetIntersectionObserver()
+                makeTwitterUserTwitterIconClear()
+                setTweetCreated_at()
+                changeTheme()
+            }
+        }, 0)
     }
 
     function calculateTweetsToDisplayFirst() {
         let twitter_target_tweet_id = 0
-        const twitter_each_tweets_height = history.state['twitter_each_tweets_height']
+        const twitter_each_tweets_height =
+            history.state['twitter_each_tweets_height']
         const format_timeline_height = history.state['format_timeline_height']
 
         const href = location.href.replace(location.origin, '')
-        const cacheNodeNoCopy = AquaProjectsCache[href]
+        const cacheNodeNoCopy = window.AquaProjectsCache[href]
         const cacheNode = cacheNodeNoCopy.querySelector('.format_timeline')
         const cacheTweets = cacheNode.querySelectorAll('.tweet')
-        let correctCacheTweets = []
+        const correctCacheTweets = []
         let newTweetOfNoContentHeight = 0
-        let slicedTweets = []
 
         // Collect tweet object not contain quoted tweet
         for (let index = 0; index < cacheTweets.length; index++) {
-            const element = cacheTweets[index];
+            const element = cacheTweets[index]
             if (!element.parentNode.classList.length === 0) {
                 continue
             }
@@ -190,72 +196,71 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         }
 
         // Search twitter_target_tweet_id
-        const searchTwitterTargetTweetId = (() => {
+        const searchTwitterTargetTweetId = () => {
             const targetScrollY = window.scrollY
+            const teth = twitter_each_tweets_height
 
-            if (!twitter_each_tweets_height) {
-                twitter_target_tweet_id = correctCacheTweets[0].dataset['tweet_id']
+            if (!teth) {
+                twitter_target_tweet_id =
+                    correctCacheTweets[0].dataset['tweet_id']
                 return
             }
 
-            let totalEachHeight = []
-            for (let index = 0; index < twitter_each_tweets_height.length; index++) {
-                const element = twitter_each_tweets_height[index];
-                let elementTopY = index === 0 ?
-                    element['tweet_height'] :
-                    totalEachHeight[index - 1]['tweet_height'] + element['tweet_height']
-                totalEachHeight[index] = {
-                    'tweet_id': element['tweet_id'],
-                    'tweet_height': elementTopY
-                }
+            const totalEachHeight = []
+            for (let index = 0; index < teth.length; index++) {
+                const element = teth[index]
+                let elementTopY =
+                    index === 0
+                        ? element['tweet_height']
+                        : totalEachHeight[index - 1]['tweet_height'] +
+                          element['tweet_height']
+                totalEachHeight.push({
+                    tweet_id: element['tweet_id'],
+                    tweet_height: elementTopY,
+                })
             }
 
-            let diffEachHeight = []
+            const diffEachHeight = []
             for (let index = 0; index < totalEachHeight.length; index++) {
-                const element = totalEachHeight[index];
+                const element = totalEachHeight[index]
                 let diff = targetScrollY - element['tweet_height']
-                diffEachHeight[index] = {
-                    'tweet_id': element['tweet_id'],
-                    'diff': diff
-                }
+                diffEachHeight.push({
+                    tweet_id: element['tweet_id'],
+                    diff: diff,
+                })
             }
 
             let minDiff = 0
             let targetTweetData = {}
             for (let index = 0; index < diffEachHeight.length; index++) {
-                const element = diffEachHeight[index];
+                const element = diffEachHeight[index]
                 if (index === 0) {
                     minDiff = Math.abs(element['diff'])
                     targetTweetData = element
                 } else {
                     minDiff = Math.abs(Math.min(element['diff'], minDiff))
-                    targetTweetData = minDiff === element['diff'] ?
-                        element : targetTweetData
+                    targetTweetData =
+                        minDiff === element['diff'] ? element : targetTweetData
                 }
             }
 
             twitter_target_tweet_id = targetTweetData['tweet_id']
-        })
+        }
         searchTwitterTargetTweetId()
 
         // Collect tweets to display
         const tweetIndex = correctCacheTweets
             .map(item => item.dataset['tweet_id'])
             .findIndex(item => item === twitter_target_tweet_id)
-        let slicedTweetsBeginIntex = tweetIndex - 10
-        let slicedTweetsEndIndex = tweetIndex + 10 + 1
-        if (slicedTweetsBeginIntex < 0) {
-            slicedTweetsBeginIntex = 0
-        }
-        if (slicedTweetsEndIndex > correctCacheTweets.length) {
-            slicedTweetsEndIndex = correctCacheTweets.length
-        }
-        slicedTweets = correctCacheTweets.slice(slicedTweetsBeginIntex, slicedTweetsEndIndex)
-        // Array.from(slicedTweets).forEach(element => element.cloneNode(true))
+        const cctl = correctCacheTweets.length
+        const calculatedStartIndex = tweetIndex - 10
+        const calculatedEndIndex = tweetIndex + 10 + 1
+        const start = calculatedStartIndex < 0 ? 0 : calculatedStartIndex
+        const end = calculatedEndIndex > cctl ? cctl : calculatedEndIndex
+        const slicedTweets = correctCacheTweets.slice(start, end)
 
         // Calculate twitter_new_tweets_of_no_content height
-        const calculateTwitterNewTweetsOfNoContentHeight = (() => {
-
+        const calculateTwitterNewTweetsOfNoContentHeight = () => {
             if (!twitter_each_tweets_height) {
                 newTweetOfNoContentHeight = 0
                 return
@@ -264,13 +269,16 @@ import { changeTheme, findParents, getCookie } from './utils.js'
             const newTweetOfNoContentIndedx = twitter_each_tweets_height
                 .map(item => item['tweet_id'])
                 .findIndex(item => item === slicedTweets[0].dataset['tweet_id'])
-            const newTweetOfNoContentHeightList =
-                twitter_each_tweets_height.slice(0, newTweetOfNoContentIndedx)
-            for (let index = 0; index < newTweetOfNoContentHeightList.length; index++) {
-                const element = newTweetOfNoContentHeightList[index];
+            const newTweetOfNoContentHeightList = twitter_each_tweets_height.slice(
+                0,
+                newTweetOfNoContentIndedx
+            )
+            const ntonchl = newTweetOfNoContentHeightList
+            for (let index = 0; index < ntonchl.length; index++) {
+                const element = ntonchl[index]
                 newTweetOfNoContentHeight += element['tweet_height']
             }
-        })
+        }
         calculateTwitterNewTweetsOfNoContentHeight()
 
         // Set cacheNode that removed format_timeline
@@ -285,7 +293,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         // Add displaying tweets
         const displayingTweets = document.createDocumentFragment()
         for (let index = 0; index < slicedTweets.length; index++) {
-            const element = slicedTweets[index].cloneNode(true);
+            const element = slicedTweets[index].cloneNode(true)
             displayingTweets.appendChild(element)
         }
 
@@ -293,7 +301,9 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         const oldTweetOfNocontent = document.createElement('div')
         oldTweetOfNocontent.className = 'twitter_old_tweets_of_no_content'
 
-        ft.style.height = format_timeline_height ? `${format_timeline_height}px` : ''
+        ft.style.height = format_timeline_height
+            ? `${format_timeline_height}px`
+            : ''
         ft.appendChild(newTweetOfNoContent)
         ft.appendChild(displayingTweets)
         ft.appendChild(oldTweetOfNocontent)
@@ -302,7 +312,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         if (localStorage.getItem('twitter-view_pictures')) {
             const ttp = document.querySelectorAll('.tweet-twitter_picture')
             for (let index = 0; index < ttp.length; index++) {
-                const element = ttp[index];
+                const element = ttp[index]
                 if (element.complete) {
                     element.src = element.dataset['src']
                 }
@@ -312,19 +322,19 @@ import { changeTheme, findParents, getCookie } from './utils.js'
 
     function loadTheOthersTweet() {
         const href = location.href.replace(location.origin, '')
-        var dataNode = AquaProjectsCache[href]
-        var tweets = dataNode.querySelectorAll('.tweet')
-        var correctTweets = []
-        var newTweets = []
-        var oldTweets = []
+        const dataNode = window.AquaProjectsCache[href]
+        const tweets = dataNode.querySelectorAll('.tweet')
+        const correctTweets = []
+        const newTweets = []
+        const oldTweets = []
         var displayedNewTweet = null
         var displayedOldTweet = null
 
-        var displayedTweets = document.querySelectorAll('.tweet')
-        var correctDisplayedTweets = []
+        const displayedTweets = document.querySelectorAll('.tweet')
+        const correctDisplayedTweets = []
 
         for (let index = 0; index < displayedTweets.length; index++) {
-            const element = displayedTweets[index];
+            const element = displayedTweets[index]
             if (element.parentNode.classList.contains('quoted_status')) {
                 continue
             }
@@ -332,7 +342,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         }
 
         for (let index = 0; index < tweets.length; index++) {
-            const element = tweets[index];
+            const element = tweets[index]
             if (element.parentNode.classList.contains('quoted_status')) {
                 continue
             }
@@ -340,136 +350,154 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         }
 
         for (let index = 0; index < correctDisplayedTweets.length; index++) {
-            const element = correctDisplayedTweets[index];
+            const element = correctDisplayedTweets[index]
             if (!element.dataset['tweet_id']) {
                 continue
             }
             if (!displayedNewTweet) {
                 displayedNewTweet = correctDisplayedTweets[index]
             }
-            displayedOldTweet = correctDisplayedTweets[correctDisplayedTweets.length - 1]
+            displayedOldTweet =
+                correctDisplayedTweets[correctDisplayedTweets.length - 1]
         }
 
         // Load new tweets from data into the memory.
         for (let index = 0; index < correctTweets.length; index++) {
-            const element = correctTweets[index];
+            const element = correctTweets[index]
             if (!element.dataset['tweet_id']) {
                 continue
             }
-            if (element.dataset['tweet_id'] === displayedNewTweet.dataset['tweet_id']) {
+            if (
+                element.dataset['tweet_id'] ===
+                displayedNewTweet.dataset['tweet_id']
+            ) {
                 break
             }
             newTweets.push(element)
         }
 
         // Load old tweets from data into the memory.
-        (() => {
+        !(() => {
             var isPassedTweet = false
             for (let index = 0; index < correctTweets.length; index++) {
-                const element = correctTweets[index];
+                const element = correctTweets[index]
                 if (!element.dataset['tweet_id']) {
                     continue
                 }
                 if (isPassedTweet) {
                     oldTweets.push(element)
                 }
-                if (element.dataset['tweet_id'] === displayedOldTweet.dataset['tweet_id']) {
+                if (
+                    element.dataset['tweet_id'] ===
+                    displayedOldTweet.dataset['tweet_id']
+                ) {
                     isPassedTweet = true
                 }
             }
         })()
 
-        var formatTimeline = document.querySelector('.format_timeline')
+        const formatTimeline = document.querySelector('.format_timeline')
 
         // Create new tweets document fragement
-        var formatTimelineNewTweets = document.createDocumentFragment()
+        const formatTimelineNewTweets = document.createDocumentFragment()
         for (let index = 0; index < newTweets.length; index++) {
-            const element = newTweets[index].cloneNode(true);
+            const element = newTweets[index].cloneNode(true)
             formatTimelineNewTweets.appendChild(element)
         }
 
         // Create old tweets document fragement
-        var formatTimelineOldTweets = document.createDocumentFragment()
+        const formatTimelineOldTweets = document.createDocumentFragment()
         for (let index = 0; index < oldTweets.length; index++) {
-            const element = oldTweets[index].cloneNode(true);
+            const element = oldTweets[index].cloneNode(true)
             formatTimelineOldTweets.appendChild(element)
         }
 
         formatTimeline.style.height = ''
-        formatTimeline.querySelector('.twitter_new_tweets_of_no_content').remove()
-        formatTimeline.querySelector('.twitter_old_tweets_of_no_content').remove()
-        formatTimeline.insertBefore(formatTimelineNewTweets, formatTimeline.firstChild)
+        formatTimeline
+            .querySelector('.twitter_new_tweets_of_no_content')
+            .remove()
+        formatTimeline
+            .querySelector('.twitter_old_tweets_of_no_content')
+            .remove()
+        formatTimeline.insertBefore(
+            formatTimelineNewTweets,
+            formatTimeline.firstChild
+        )
         formatTimeline.appendChild(formatTimelineOldTweets)
     }
 
     function scanTweetHeight() {
         const tweets = document.querySelectorAll('.tweet')
         const formatTimeline = document.querySelector('.format_timeline')
-        const currentPage = location.href.replace(location.origin, '')
-        var twitter_each_tweets_height = []
+        const currentPage = utils.getCurrentPage()
+        const twitter_each_tweets_height = []
         for (let index = 0; index < tweets.length; index++) {
-            const element = tweets[index];
-            if (!element.parentNode.classList.contains('format_timeline')) continue
+            const element = tweets[index]
+            if (!element.parentNode.classList.contains('format_timeline')) {
+                continue
+            }
             twitter_each_tweets_height.push({
-                'tweet_id': element.dataset['tweet_id'],
-                'tweet_height': element.offsetHeight,
+                tweet_id: element.dataset['tweet_id'],
+                tweet_height: element.offsetHeight,
             })
         }
-        (() => {
-            var replaceState = Object.assign({}, history.state)
-            replaceState['twitter_each_tweets_height'] = twitter_each_tweets_height
+        !(() => {
+            const replaceState = Object.assign({}, history.state)
+            replaceState[
+                'twitter_each_tweets_height'
+            ] = twitter_each_tweets_height
             replaceState['format_timeline_height'] = formatTimeline.scrollHeight
             history.replaceState(replaceState, null, currentPage)
         })()
-        console.log(twitter_each_tweets_height)
+        log(twitter_each_tweets_height)
         return twitter_each_tweets_height
     }
 
-    var lastTweetInsersectionObserver = null
+    var lastTweetIntersectionObserver = null
 
-    function initLastTweetInsersectionObserver() {
-        if (lastTweetInsersectionObserver) {
+    function initLastTweetIntersectionObserver() {
+        if (lastTweetIntersectionObserver) {
             try {
-                lastTweetInsersectionObserver.disconnect()
-                lastTweetInsersectionObserver = null
+                lastTweetIntersectionObserver.disconnect()
+                lastTweetIntersectionObserver = null
             } catch (e) {
-                console.error(e)
+                error(e)
             }
         }
-        lastTweetInsersectionObserver = new IntersectionObserver(
-            processLastTweetInsersectionObserver
+        lastTweetIntersectionObserver = new IntersectionObserver(
+            handleIntersect
         )
-        const lastTweet = document.querySelector(
-            `.format_timeline .tweet:nth-child(${
-                document.querySelectorAll('.format_timeline > .tweet').length
-            })`
-        )
-        if (document.querySelector('.format_timeline').dataset['since_id'] && lastTweet) {
-            lastTweetInsersectionObserver.observe(lastTweet)
+        const formatTimeline = document.querySelector('.format_timeline')
+        const ftt = document.querySelectorAll('.format_timeline > .tweet')
+        const fttl = ftt.length
+        const lastTweetSelector = `.tweet:nth-child(${fttl})`
+        const lastTweet = formatTimeline.querySelector(lastTweetSelector)
+        if (formatTimeline.dataset['since_id'] && lastTweet) {
+            lastTweetIntersectionObserver.observe(lastTweet)
         }
 
-        function processLastTweetInsersectionObserver(entries, observer) {
+        function handleIntersect(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
                     return false
                 }
-                const maxId = document.querySelector('.format_timeline').dataset['max_id']
+                const maxId = formatTimeline.dataset['max_id']
                 downloadMoreTweet('', maxId)
                 observer.unobserve(element.target)
             })
         }
     }
 
-    function downloadMoreTweet(sinceId, maxId) {
+    async function downloadMoreTweet(sinceId, maxId) {
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
         const href = location.href.replace(location.origin, '')
         const parameters = buildParameter({
             since_id: sinceId,
-            max_id: maxId
+            max_id: maxId,
         })
         const saveCacheAdress = `${href}?${parameters}`
 
-        class recalculateDownloadTweetId extends Error {
+        class recalculateDownloadTweetId extends error {
             constructor(message, sinceId, maxId) {
                 super(message)
                 this.description = message
@@ -483,62 +511,78 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         ajaxProgressBar.parentNode.style.visibility = ''
         ajaxProgressBar.style.width = '80%'
 
-        fetch(
-            saveCacheAdress, {
+        try {
+            const fetching = fetch(saveCacheAdress, {
                 method: 'GET',
                 mode: 'cors',
-                credentials: 'include'
+                credentials: 'include',
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                throw new recalculateDownloadTweetId(
+                    'Not found timeline',
+                    sinceId,
+                    maxId
+                )
             }
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
-                throw new recalculateDownloadTweetId('Not found timeline', sinceId, maxId)
-            }
-        }).then(data => {
+            const data = await response.text()
+
             // Save Cache.
-            AquaProjectsCache[saveCacheAdress] =
-                document.createRange().createContextualFragment(data)
+            utils.saveApCache(saveCacheAdress, data)
             if (href !== location.href.replace(location.origin, '')) {
-                console.log('It seems that you moved to a different page first.')
+                log('It seems that you moved to a different page first.')
                 return false
             }
 
             // Insert tweets to main.
-            const cache = AquaProjectsCache[saveCacheAdress].querySelector('.format_timeline')
+            const ftSelectors = '.format_timeline'
+            const cache = utils.getApCacheNode(saveCacheAdress, ftSelectors)
             const cacheTweets = Array.from(cache.children)
             const index = cacheTweets.findIndex(
                 element => maxId === element.dataset['tweet_id']
             )
-            const formatTimelineMain = AquaProjectsCache[href].querySelector('.format_timeline')
+            const formatTimelineMain = utils.getApCacheNode(href, ftSelectors)
             if (sinceId) {
-                cacheTweets.slice(0, index + 1).reverse().forEach(
-                    element => formatTimelineMain.insertBefore(element.cloneNode(true),
-                        formatTimelineMain.querySelector('.tweet'))
-                )
+                cacheTweets
+                    .slice(0, index + 1)
+                    .reverse()
+                    .forEach(element =>
+                        formatTimelineMain.insertBefore(
+                            element.cloneNode(true),
+                            formatTimelineMain.querySelector('.tweet')
+                        )
+                    )
             } else if (maxId) {
-                cacheTweets.slice(index, cacheTweets.length).forEach(
-                    element => formatTimelineMain.appendChild(element.cloneNode(true))
-                )
+                cacheTweets
+                    .slice(index, cacheTweets.length)
+                    .forEach(element =>
+                        formatTimelineMain.appendChild(element.cloneNode(true))
+                    )
             }
 
             // Create tweets document fragement.
             const tweets = document.createDocumentFragment()
             if (sinceId) {
-                cacheTweets.slice(0, index + 1).forEach(
-                    element => tweets.appendChild(element.cloneNode(true))
-                )
+                cacheTweets
+                    .slice(0, index + 1)
+                    .forEach(element =>
+                        tweets.appendChild(element.cloneNode(true))
+                    )
             } else if (maxId) {
-                cacheTweets.slice(index, cacheTweets.length).forEach(
-                    element => tweets.appendChild(element.cloneNode(true))
-                )
+                cacheTweets
+                    .slice(index, cacheTweets.length)
+                    .forEach(element =>
+                        tweets.appendChild(element.cloneNode(true))
+                    )
             }
 
             // Insert tweets.
             const formatTimeline = document.querySelector('.format_timeline')
             if (sinceId) {
-                const refChild = document.querySelector('.format_timeline > .tweet')
+                const selectors = '.format_timeline > .tweet'
+                const refChild = document.querySelector(selectors)
                 formatTimeline.insertBefore(tweets, refChild)
             } else if (maxId) {
                 formatTimeline.appendChild(tweets)
@@ -566,71 +610,94 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
-
-        }).catch(err => {
+        } catch (err) {
             if (err instanceof recalculateDownloadTweetId) {
-                const tweets = document.querySelectorAll('.format_timeline > .tweet')
-
-                // Search orignal tweet
-                let foundOriginalTweet = null
-                const tweetsArray = err.maxId ? Array.from(tweets) : Array.from(tweets).reverse()
-                for (let index = 0; index < tweetsArray.length; index++) {
-                    const tweet = tweetsArray[index];
-                    for (let index = 0; index < Array.from(tweet.children).length; index++) {
-                        const children = Array.from(tweet.children)[index].children;
-                        for (let index = 0; index < Array.from(children).length; index++) {
-                            const classes = Array.from(children)[index].className;
-                            if (!classes.includes('tweet-twitter_retweet_header')) {
-                                foundOriginalTweet = tweet
-                            }
-                        }
-
-                    }
-                }
-
-                if (err.sinceId) {
-                    downloadMoreTweet(foundOriginalTweet.dataset['tweet_id'])
-                } else if (err.maxId) {
-                    downloadMoreTweet('', foundOriginalTweet.dataset['tweet_id'])
-                }
+                hundleRecalculateDownloadTweetId(err)
             }
-        })
+        }
 
         function buildParameter(params) {
             let parameters = ''
             Object.keys(params).forEach((key, index, array) => {
                 if (params[key]) parameters += `${key}=${params[key]}&`
-                if (index === array.length - 1) parameters = parameters.slice(0, -1)
+                if (index === array.length - 1)
+                    parameters = parameters.slice(0, -1)
             })
             return parameters
         }
+
+        function hundleRecalculateDownloadTweetId(err) {
+            const selectors = '.format_timeline > .tweet'
+            const tweets = document.querySelectorAll(selectors)
+
+            // Search orignal tweet
+            let foundOriginalTweet = null
+            const ta = err.maxId
+                ? Array.from(tweets)
+                : Array.from(tweets).reverse()
+
+            ta.forEach(t => {
+                const tca = Array.from(t.children)
+                tca.forEach(tc => {
+                    const tcca = Array.from(tc)
+                    tcca.forEach(tcc => {
+                        const tccClassName = tcc.className
+                        const ttrhStr = 'tweet-twitter_retweet_header'
+                        if (tccClassName.indexOf(ttrhStr) === -1) {
+                            foundOriginalTweet = t
+                        }
+                    })
+                })
+            })
+
+            if (err.sinceId) {
+                downloadMoreTweet(foundOriginalTweet.dataset['tweet_id'])
+            } else if (err.maxId) {
+                downloadMoreTweet('', foundOriginalTweet.dataset['tweet_id'])
+            }
+        }
     }
 
-    var tweetTwitterPictureClick = null
+    let isTweetTwitterPictureClick = false
 
     // tweet-twitter_in_reply_to_status
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_in_reply_to_status')) {
-            const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-            if (findParents(e.target, 'tweet-twitter_in_reply_to_status')) tweetTwitterPictureClick = true
-            const inReplyToStatus = findParents(e.target, 'tweet-twitter_in_reply_to_status')
-            const inReplyToStatusId = inReplyToStatus.dataset['in_reply_to_status_id']
-            const inReplyToScreenName = inReplyToStatus.dataset['in_reply_to_screen_name']
-            const href = `/twitter/${inReplyToScreenName}/status/${inReplyToStatusId}`
+            tweetTwitterInReplyToStatusClick(e)
+        }
+    })
+
+    async function tweetTwitterInReplyToStatusClick(e) {
+        const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+        if (findParents(e.target, 'tweet-twitter_in_reply_to_status')) {
+            isTweetTwitterPictureClick = true
+        }
+        const status = findParents(e.target, 'tweet-twitter_in_reply_to_status')
+        const statusId = status.dataset['in_reply_to_status_id']
+        const screenName = status.dataset['in_reply_to_screen_name']
+        const href = `/twitter/${screenName}/status/${statusId}`
+
+        try {
+            const fetching = fetch(href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            })
 
             ajaxProgressBar.parentNode.style.visibility = ''
             ajaxProgressBar.style.width = '80%'
 
-            if (AquaProjectsCache[href]) {
-                const cacheCloneNode = AquaProjectsCache[href].cloneNode(true)
-                const insertInReplyToStatus = cacheCloneNode.querySelector('.format_timeline').firstElementChild
-                insertInReplyToStatus.style.padding = '0 0 12px'
-                insertInReplyToStatus.style.border = '0'
-                insertInReplyToStatus.style.gridColumn = '1/3'
-                inReplyToStatus.insertAdjacentElement('afterend', insertInReplyToStatus)
-                inReplyToStatus.remove()
+            if (window.AquaProjectsCache[href]) {
+                const ftSelectors = '.format_timeline'
+                const ftCache = utils.getApCacheNode(href, ftSelectors)
+                const insertStatus = ftCache.firstElementChild.cloneNode(true)
+                insertStatus.style.padding = '0 0 12px'
+                insertStatus.style.border = '0'
+                insertStatus.style.gridColumn = '1/3'
+                status.insertAdjacentElement('afterend', insertStatus)
+                status.remove()
 
-                window.dispatchEvent(new Event('aquaprojects_popstate'));
+                window.dispatchEvent(new Event('aquaprojects_popstate'))
 
                 ajaxProgressBar.style.width = '100%'
                 ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
@@ -643,54 +710,47 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 return false
             }
 
-            fetch(
-                href, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include'
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                    showError()
-                }
-            }).then(data => {
-                // Save Cache.
-                AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
-                const cacheCloneNode = AquaProjectsCache[href].cloneNode(true)
-                const insertInReplyToStatus = cacheCloneNode.querySelector('.format_timeline').firstElementChild
-                insertInReplyToStatus.style.padding = '0 0 12px'
-                insertInReplyToStatus.style.border = '0'
-                insertInReplyToStatus.style.gridColumn = '1/3'
-                inReplyToStatus.insertAdjacentElement('afterend', insertInReplyToStatus)
-                inReplyToStatus.remove()
-
-                window.dispatchEvent(new Event('aquaprojects_popstate'));
-
-                ajaxProgressBar.style.width = '100%'
-                ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
-
-                setTimeout(() => {
-                    ajaxProgressBar.parentNode.style.visibility = 'hidden'
-                    ajaxProgressBar.style.width = '0%'
-                    ajaxProgressBar.style.transition = ''
-                }, 200)
-                return false
-            }).catch(err => {
-                console.error(err)
+            const response = await fetching
+            if (!response.ok) {
+                error(response)
                 showError()
-            })
+                return
+            }
+            const data = await response.text()
+
+            // Save Cache.
+            utils.saveApCache(href, data)
+            const ftSelectors = '.format_timeline'
+            const ftCache = utils.getApCacheNode(href, ftSelectors)
+            const insertStatus = ftCache.firstElementChild.cloneNode(true)
+            insertStatus.style.padding = '0 0 12px'
+            insertStatus.style.border = '0'
+            insertStatus.style.gridColumn = '1/3'
+            status.insertAdjacentElement('afterend', insertStatus)
+            status.remove()
+
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
+
+            ajaxProgressBar.style.width = '100%'
+            ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
+
+            setTimeout(() => {
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
+                ajaxProgressBar.style.width = '0%'
+                ajaxProgressBar.style.transition = ''
+            }, 200)
+            return
+        } catch (err) {
+            error(err)
         }
-    })
+    }
 
     // tweet-twitter_user_tooltip
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_user_tooltip')) {
-            tweetTwitterPictureClick = true
+            isTweetTwitterPictureClick = true
             if (findParents(e.target, 'twitter_anchor')) {
-                tweetTwitterPictureClick = false
+                isTweetTwitterPictureClick = false
             }
         }
     })
@@ -698,132 +758,139 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     // tweet-twitter_favorite, tweet-twitter_retweet
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_social')) {
-            tweetTwitterPictureClick = true
+            isTweetTwitterPictureClick = true
         }
     })
 
     // tweet-twitter_full_text_hashtags
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_full_text_hashtags')) {
-            tweetTwitterPictureClick = true
+            isTweetTwitterPictureClick = true
         }
     })
 
     // tweet-twitter_picture
     document.addEventListener('click', e => {
-        function searchNearNode(target, className) {
-            var searchParentNode = target.parentNode
-            if (searchParentNode === null) {
-                return false
-            }
-            var nearNodeList = searchParentNode.children
-            for (let index = 0; index < Array.from(nearNodeList).length; index++) {
-                const element = Array.from(nearNodeList)[index];
-                for (let index = 0; index < className.length; index++) {
-                    const cn = className[index];
-                    if (element.classList.length !== 0 && element.classList.contains(cn)) {
-                        return element
-                    }
-                }
-            }
-        }
-
-        var ecl = [
+        const ecl = [
+            'tweet-twitter_picture',
             'tweet-twitter_video-play_icon',
             'tweet-twitter_video-duration',
+            'tweet-twitter_video',
         ]
-
-        if (findParents(e.target, 'tweet-twitter_picture') || searchNearNode(e.target, ecl)) {
-            tweetTwitterPictureClick = true
-
-            if (e.target.classList.contains('tweet-twitter_video')) {
-                return false
-            }
-
-            var tweetTwitterPictureImg = findParents(e.target, 'tweet-twitter_picture')
-            if (!tweetTwitterPictureImg) {
-                tweetTwitterPictureImg = searchNearNode(e.target, ['tweet-twitter_picture'])
-            }
-
-            if (tweetTwitterPictureImg.src !== tweetTwitterPictureImg.dataset['src']) {
-                tweetTwitterPictureImg.src = tweetTwitterPictureImg.dataset.src
-                return false
-            }
-
-            var tweetTwitterPictures = findParents(e.target, 'tweet-twitter_pictures')
-            if (tweetTwitterPictures.querySelector('video')) {
-                var tweetTwitterPicturesVideo = tweetTwitterPictures.querySelector('video')
-                Array.from(tweetTwitterPicturesVideo.parentNode.children).forEach(element => {
-                    element.style.display = 'none'
-                })
-
-                var tweetTwitterPicturesVideoClone = tweetTwitterPicturesVideo.cloneNode(true)
-                tweetTwitterPicturesVideoClone.style.display = ''
-                videoCloneSource = tweetTwitterPicturesVideoClone.querySelector('source')
-                videoCloneSource.src = videoCloneSource.dataset.src
-                tweetTwitterPicturesVideo.insertAdjacentElement('afterend', tweetTwitterPicturesVideoClone)
-
-                tweetTwitterPicturesVideo.remove()
-
-                return false
-            }
-
-            var tweetTwitterPictureElements = tweetTwitterPictures.querySelectorAll('.tweet-twitter_picture')
-            var currentImgSrc = findParents(e.target, 'tweet-twitter_picture').dataset['src']
-            var currentImgNumber = 0
-            var ImgTable = []
-
-            for (let index = 0; index < tweetTwitterPictureElements.length; index++) {
-                ImgTable.push(tweetTwitterPictureElements[index].dataset['src'])
-                if (currentImgSrc === tweetTwitterPictureElements[index].dataset['src']) {
-                    currentImgNumber = index
-                }
-            }
-
-            const ttpzc = document.querySelector('.tweet-twitter_picture_zoom-container')
-            while (ttpzc.lastChild) ttpzc.removeChild(ttpzc.lastChild)
-
-            for (let index = 0; index < ImgTable.length; index++) {
-                const ttpze = document.createElement('div')
-                ttpze.className = 'tweet-twitter_picture_zoom-element'
-
-                const ttpzei = document.createElement('img')
-                ttpzei.className = 'tweet-twitter_picture_zoom-element_img'
-                ttpzei.src = ImgTable[index]
-
-                ttpze.appendChild(ttpzei)
-                ttpzc.appendChild(ttpze)
-            }
-
-            const ttpz = document.querySelector('.tweet-twitter_picture_zoom')
-            const ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
-
-            ttpz.style.display = 'flex'
-
-            const apTheme = localStorage.getItem('ap-theme') === 'dark' && 'dark'
-            const prefersColorSchemeDark =
-                window.matchMedia('(prefers-color-scheme: dark)').matches
-
-            ttpz.style.background =
-                apTheme === 'dark' || prefersColorSchemeDark ?
-                'rgba(21, 32, 43, 0.8)' : 'rgba(255, 255, 255, 0.8)'
-
-            for (let index = 0; index < ttpzn.length; index++) {
-                const element = ttpzn[index];
-                element.style.background =
-                    apTheme === 'dark' || prefersColorSchemeDark ?
-                    'rgba(21, 32, 43)' : 'rgba(255, 255, 255)'
-            }
-
-            jumpToSlide(currentImgNumber)
-            tweetTwitterPictureZoomOpen(currentImgNumber)
+        if (ecl.some(element => findParents(e.target, element))) {
+            tweetTwitterPictureClick(e)
         }
     })
+
+    async function tweetTwitterPictureClick(e) {
+        isTweetTwitterPictureClick = true
+
+        const selectors = '.tweet-twitter_picture'
+
+        if (e.target.classList.contains('tweet-twitter_video')) {
+            return
+        }
+
+        const ttpClassName = 'tweet-twitter_picture'
+        let tweetTwitterPictureImg = findParents(e.target, ttpClassName)
+        if (!tweetTwitterPictureImg) {
+            const targetParentNode = e.target.parentNode
+            tweetTwitterPictureImg = targetParentNode.querySelector(selectors)
+        }
+
+        if (tweetTwitterPictureImg.src !== tweetTwitterPictureImg.dataset.src) {
+            tweetTwitterPictureImg.src = tweetTwitterPictureImg.dataset.src
+            tweetTwitterPictureImg.crossOrigin = 'anonymous'
+            return
+        }
+
+        const ttpsClassName = 'tweet-twitter_pictures'
+        const tweetTwitterPictures = findParents(e.target, ttpsClassName)
+
+        if (tweetTwitterPictures.querySelector('video')) {
+            const ttpsv = tweetTwitterPictures.querySelector('video')
+            Array.from(ttpsv.parentNode.children).forEach(element => {
+                if (element.style.paddingTop === '') {
+                    element.style.display = 'none'
+                }
+            })
+
+            const ttpsvClone = ttpsv.cloneNode(true)
+            ttpsvClone.style.display = ''
+            const videoCloneSource = ttpsvClone.querySelector('source')
+            videoCloneSource.src = videoCloneSource.dataset.src
+            videoCloneSource.crossOrigin = 'anonymous'
+            ttpsv.insertAdjacentElement('afterend', ttpsvClone)
+
+            ttpsv.remove()
+
+            return
+        }
+
+        const ttpe = tweetTwitterPictures.querySelectorAll(selectors)
+        const currentImg = findParents(e.target, 'tweet-twitter_picture')
+        const currentImgSrc = currentImg.dataset.src
+        let currentImgNumber = 0
+        const ImgTable = []
+
+        for (let index = 0; index < ttpe.length; index++) {
+            ImgTable.push(ttpe[index].dataset.src)
+            if (currentImgSrc === ttpe[index].dataset.src) {
+                currentImgNumber = index
+            }
+        }
+
+        const ttpzcSelectors = '.tweet-twitter_picture_zoom-container'
+        const ttpzc = document.querySelector(ttpzcSelectors)
+        while (ttpzc.lastChild) ttpzc.removeChild(ttpzc.lastChild)
+
+        for (let index = 0; index < ImgTable.length; index++) {
+            const ttpze = document.createElement('div')
+            ttpze.className = 'tweet-twitter_picture_zoom-element'
+
+            const ttpzei = document.createElement('img')
+            ttpzei.className = 'tweet-twitter_picture_zoom-element_img'
+            ttpzei.src = ImgTable[index]
+            ttpzei.crossOrigin = 'anonymous'
+
+            ttpze.appendChild(ttpzei)
+            ttpzc.appendChild(ttpze)
+        }
+
+        const ttpz = document.querySelector('.tweet-twitter_picture_zoom')
+        const ttpznSelectors = '.tweet-twitter_picture_zoom-navigator'
+        const ttpzn = document.querySelectorAll(ttpznSelectors)
+
+        ttpz.style.display = 'flex'
+
+        const apThemeDark = localStorage.getItem('ap-theme') === 'dark'
+        const mediaQueryString = '(prefers-color-scheme: dark)'
+        const prefersColorSchemeDark = window.matchMedia(mediaQueryString)
+
+        ttpz.style.background =
+            apThemeDark || prefersColorSchemeDark.matches
+                ? 'rgba(21, 32, 43, 0.8)'
+                : 'rgba(255, 255, 255, 0.8)'
+
+        for (let index = 0; index < ttpzn.length; index++) {
+            const element = ttpzn[index]
+            element.style.background =
+                apThemeDark || prefersColorSchemeDark.matches
+                    ? 'rgba(21, 32, 43)'
+                    : 'rgba(255, 255, 255)'
+        }
+
+        jumpToSlide(currentImgNumber)
+        tweetTwitterPictureZoomOpen(currentImgNumber)
+    }
 
     // tweet-twitter_picture_zoom-container
     document.addEventListener('touchstart', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+            const container = findParents(
+                e.target,
+                'tweet-twitter_picture_zoom-container'
+            )
             boxContainerTouchStart(e, container)
         }
     })
@@ -831,7 +898,8 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     // tweet-twitter_picture_zoom-container
     document.addEventListener('touchmove', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+            const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
+            const container = findParents(e.target, ttpzcClassName)
             boxContainerTouchMove(e, container)
         }
     })
@@ -839,7 +907,8 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     // tweet-twitter_picture_zoom-container
     document.addEventListener('touchend', e => {
         if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const container = findParents(e.target, 'tweet-twitter_picture_zoom-container')
+            const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
+            const container = findParents(e.target, ttpzcClassName)
             boxContainerTouchEnd(e, container)
         }
     })
@@ -893,14 +962,14 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     var touchingPositionPageX = 0
     var touchStartScrollLeft = 0
     var currentSlideNumber = {
-        number: 0
+        number: 0,
     }
     var currentSlideNumberProxy = new Proxy(currentSlideNumber, {
         set: (target, property, value) => {
             target[property] = value
             tweetTwitterPictureCloseDisplayController()
             return true
-        }
+        },
     })
 
     function analyzeTransform(transform) {
@@ -915,93 +984,119 @@ import { changeTheme, findParents, getCookie } from './utils.js'
 
     function boxContainerTouchStart(e, container) {
         touchingPositionPageX = e.changedTouches[0].pageX
-        touchStartScrollLeft = container.style.transform ?
-            analyzeTransform(container.style.transform) : [0, 0, 0]
+        touchStartScrollLeft = container.style.transform
+            ? analyzeTransform(container.style.transform)
+            : [0, 0, 0]
     }
 
     function boxContainerTouchMove(e, container) {
-        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
-        const translate3dX = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
-        container.style.transform = `translate3d(${translate3dX}px, 0px, 0px)`
-
+        const pageX = e.changedTouches[0].pageX
+        const amountOfMovement = touchingPositionPageX - pageX
+        const tx = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
+        container.style.transform = `translate3d(${tx}px, 0px, 0px)`
     }
 
     function boxContainerTouchEnd(e, container) {
         const elements = document.querySelectorAll(`.${e.target.className}`)
-        const elementIndex = Array.from(elements).findIndex(item => item === e.target)
+        const elementIndex = Array.from(elements).findIndex(
+            item => item === e.target
+        )
         const elementWidth = elements[0].offsetWidth
-        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
+        const amountOfMovement =
+            touchingPositionPageX - e.changedTouches[0].pageX
 
-        container.addEventListener('transitionend', () =>
-            container.style.transition = 'all 0ms ease 0s')
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
         container.style.transition = 'all 300ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
 
         if (amountOfMovement > container.offsetWidth / 6) {
-            if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
-            container.style.transform =
-                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+            if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
+                return
+            }
+            const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumberProxy.number += 1
         } else if (amountOfMovement < -(container.offsetWidth / 6)) {
-            if (currentSlideNumberProxy.number - 1 < 0) return false
-            container.style.transform =
-                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+            if (currentSlideNumberProxy.number - 1 < 0) {
+                return
+            }
+            const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumberProxy.number -= 1
         }
 
         setTimeout(() => {
             AverageColorByImageOnTweetTwitterPictureZoom()
-        }, 0);
+        }, 0)
     }
 
     var clickingNow = false
     var clickingPositionOffsetX = 0
     var clickingPositionPageX = 0
 
+    /* eslint-disable */
     function boxContainerMouseDown(e, container) {
         clickingNow = true
         clickingPositionOffsetX = e.offsetX
         clickingPositionPageX = e.pageX
-        touchStartScrollLeft = container.style.transform ?
-            analyzeTransform(container.style.transform) : [0, 0, 0]
+        touchStartScrollLeft = container.style.transform
+            ? analyzeTransform(container.style.transform)
+            : [0, 0, 0]
     }
 
     function boxContainerMouseMove(e, container) {
         if (clickingNow) {
             const amountOfMovement = clickingPositionOffsetX - e.offsetX
-            const translate3dX = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
-            container.style.transform = `translate3d(${translate3dX}px, 0px, 0px)`
+            const tx = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
+            container.style.transform = `translate3d(${tx}px, 0px, 0px)`
         }
     }
 
     function boxContainerMouseUp(e, container) {
         const elements = document.querySelectorAll(`.${e.target.className}`)
-        const elementIndex = Array.from(elements).findIndex(item => item === e.target)
+        const elementIndex = Array.from(elements).findIndex(
+            item => item === e.target
+        )
         const elementWidth = elements[0].offsetWidth
         const amountOfMovement = clickingPositionPageX - e.pageX
 
-        container.addEventListener('transitionend', () =>
-            container.style.transition = 'all 0ms ease 0s')
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
         container.style.transition = 'all 300ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
 
         if (amountOfMovement > container.offsetWidth / 6) {
-            if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
-            container.style.transform =
-                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+            if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
+                return
+            }
+            const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumberProxy.number += 1
         } else if (amountOfMovement < -(container.offsetWidth / 6)) {
-            if (currentSlideNumberProxy.number - 1 < 0) return false
-            container.style.transform =
-                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+            if (currentSlideNumberProxy.number - 1 < 0) {
+                return
+            }
+            const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumberProxy.number -= 1
         }
 
@@ -1009,104 +1104,135 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     }
 
     function boxContainerMouseLeave(e, container) {
-        if (!clickingNow) return false
+        if (!clickingNow) return
 
         const elements = document.querySelectorAll(`.${e.target.className}`)
-        const elementIndex = Array.from(elements).findIndex(item => item === e.target)
+        const elementIndex = Array.from(elements).findIndex(
+            item => item === e.target
+        )
         const elementWidth = elements[0].offsetWidth
         const amountOfMovement = clickingPositionPageX - e.pageX
 
-        container.addEventListener('transitionend', () =>
-            container.style.transition = 'all 0ms ease 0s')
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
         container.style.transition = 'all 300ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
 
         if (amountOfMovement > container.offsetWidth / 6) {
-            if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
-            container.style.transform =
-                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+            if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
+                return
+            }
+            const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumberProxy.number += 1
         } else if (amountOfMovement < -(container.offsetWidth / 6)) {
-            if (currentSlideNumberProxy.number - 1 < 0) return false
-            container.style.transform =
-                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+            if (currentSlideNumberProxy.number - 1 < 0) {
+                return
+            }
+            const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumberProxy.number -= 1
         }
 
         clickingNow = false
     }
+    /* eslint-enable */
 
     function prevSlideBtn() {
-        const container = document.querySelector('.tweet-twitter_picture_zoom-container')
+        const containerSelectors = '.tweet-twitter_picture_zoom-container'
+        const container = document.querySelector(containerSelectors)
         const elementWidth = window.innerWidth
         const elementIndex = currentSlideNumberProxy.number
 
-        container.addEventListener('transitionend', () =>
-            container.style.transition = 'all 0ms ease 0s')
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
         container.style.transition = 'all 300ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
-        if (currentSlideNumberProxy.number - 1 < 0) return false
-        container.style.transform =
-            `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+        if (currentSlideNumberProxy.number - 1 < 0) {
+            const tx = `${elementIndex * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
+            return false
+        }
+
+        const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
+
         currentSlideNumberProxy.number -= 1
 
         setTimeout(() => {
             AverageColorByImageOnTweetTwitterPictureZoom()
-        }, 0);
+        }, 0)
     }
 
     function nextSlideBtn() {
-        const container = document.querySelector('.tweet-twitter_picture_zoom-container')
-        const elements = document.querySelectorAll(`.tweet-twitter_picture_zoom-element_img`)
+        const containerSelectors = '.tweet-twitter_picture_zoom-container'
+        const container = document.querySelector(containerSelectors)
+        const elementsSelectors = '.tweet-twitter_picture_zoom-element_img'
+        const elements = document.querySelectorAll(elementsSelectors)
         const elementWidth = window.innerWidth
         const elementIndex = currentSlideNumberProxy.number
 
-        container.addEventListener('transitionend', () =>
-            container.style.transition = 'all 0ms ease 0s')
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
         container.style.transition = 'all 300ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
-        if (elements.length - 1 < currentSlideNumberProxy.number + 1) return false
-        container.style.transform =
-            `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+        if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
+            const tx = `${elementIndex * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
+            return false
+        }
+
+        const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
         currentSlideNumberProxy.number += 1
 
         setTimeout(() => {
             AverageColorByImageOnTweetTwitterPictureZoom()
-        }, 0);
+        }, 0)
     }
 
     function jumpToSlide(jumpToSlideNumber) {
-        const container = document.querySelector('.tweet-twitter_picture_zoom-container')
+        const containerSelectors = '.tweet-twitter_picture_zoom-container'
+        const container = document.querySelector(containerSelectors)
         const elementWidth = window.innerWidth
         const elementIndex = jumpToSlideNumber
 
         container.style.transition = 'all 0ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
 
         currentSlideNumberProxy.number = jumpToSlideNumber
 
         setTimeout(() => {
             AverageColorByImageOnTweetTwitterPictureZoom()
-        }, 0);
+        }, 0)
     }
 
     function tweetTwitterPictureZoomOpen(currentImgNumber) {
         if (localStorage.getItem('twitter-reduce_animation') === null) {
-            const ttpze = document.querySelectorAll('.tweet-twitter_picture_zoom-element')
+            const ttpzeSelectors = '.tweet-twitter_picture_zoom-element'
+            const ttpze = document.querySelectorAll(ttpzeSelectors)
             const targetTtpze = ttpze[currentImgNumber]
-            if (targetTtpze.classList && targetTtpze.classList.contains('fadeInUp')) {
-                targetTtpze.classList.remove('fadeOutUp')
-            }
+            utils.removeClass(targetTtpze, 'fadeOutUp')
             targetTtpze.classList.add('animated', 'fadeInUp')
         }
         const body = document.querySelector('body')
@@ -1115,20 +1241,19 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     }
 
     function tweetTwitterPictureZoomClose() {
+        const ttpzSelectors = '.tweet-twitter_picture_zoom'
+        const ttpz = document.querySelector(ttpzSelectors)
         if (localStorage.getItem('twitter-reduce_animation') === null) {
-            const ttpze = document.querySelectorAll('.tweet-twitter_picture_zoom-element')
+            const ttpzeSelectors = '.tweet-twitter_picture_zoom-element'
+            const ttpze = document.querySelectorAll(ttpzeSelectors)
             for (let index = 0; index < ttpze.length; index++) {
-                const element = ttpze[index];
-                if (element.classList && element.classList.contains('fadeOutUp')) {
-                    element.classList.remove('fadeOutUp')
-                }
+                const element = ttpze[index]
+                utils.removeClass(element, 'fadeOutUp')
                 element.classList.add('animated', 'fadeOutUp')
                 element.addEventListener('animationend', e => {
                     if (e.animationName === 'fadeOutUp') {
-                        const tweet_twitter_picture_zoom =
-                            document.querySelector('.tweet-twitter_picture_zoom')
-                        if (tweet_twitter_picture_zoom.style.display === 'flex') {
-                            tweet_twitter_picture_zoom.style.display = 'none'
+                        if (ttpz.style.display === 'flex') {
+                            ttpz.style.display = 'none'
                         }
                     }
                 })
@@ -1137,11 +1262,11 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         const body = document.querySelector('body')
         body.style.marginRight = ''
         body.style.overflowY = ''
-        if (localStorage.getItem('twitter-reduce_animation') === null) return false
-        const tweet_twitter_picture_zoom =
-            document.querySelector('.tweet-twitter_picture_zoom')
-        if (tweet_twitter_picture_zoom.style.display === 'flex') {
-            tweet_twitter_picture_zoom.style.display = 'none'
+        if (localStorage.getItem('twitter-reduce_animation') === null) {
+            return
+        }
+        if (ttpz.style.display === 'flex') {
+            ttpz.style.display = 'none'
         }
     }
 
@@ -1155,31 +1280,35 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     })
 
     function tweetTwitterPictureCloseDisplayController() {
-        var tweetTwitterPictureZoomElementLength = document.getElementsByClassName('tweet-twitter_picture_zoom-element').length
+        const ttpzeSelectors = '.tweet-twitter_picture_zoom-element'
+        const ttpze = document.querySelectorAll(ttpzeSelectors)
+        const ttpzeLength = ttpze.length
+
+        const ttpzpSelectors = '.tweet-twitter_picture_zoom-prev'
+        const ttpznSelectors = '.tweet-twitter_picture_zoom-next'
+        const ttpzp = document.querySelector(ttpzpSelectors)
+        const ttpzn = document.querySelector(ttpznSelectors)
 
         if (currentSlideNumberProxy.number === 0) {
-            const tweetTwitterPictureZoomPrev = document.querySelector('.tweet-twitter_picture_zoom-prev')
-            tweetTwitterPictureZoomPrev.style.display = 'none'
+            ttpzp.style.display = 'none'
         } else {
-            const tweetTwitterPictureZoomPrev = document.querySelector('.tweet-twitter_picture_zoom-prev')
-            tweetTwitterPictureZoomPrev.style.display = ''
+            ttpzp.style.display = ''
         }
 
-        if (currentSlideNumberProxy.number === tweetTwitterPictureZoomElementLength - 1) {
-            const tweetTwitterPictureZoomPrev = document.querySelector('.tweet-twitter_picture_zoom-next')
-            tweetTwitterPictureZoomPrev.style.display = 'none'
-
+        if (currentSlideNumberProxy.number === ttpzeLength - 1) {
+            ttpzn.style.display = 'none'
         } else {
-            const tweetTwitterPictureZoomPrev = document.querySelector('.tweet-twitter_picture_zoom-next')
-            tweetTwitterPictureZoomPrev.style.display = ''
+            ttpzn.style.display = ''
         }
     }
 
     document.addEventListener('keydown', e => {
         const keycode = e.keyCode
         if (keycode === 37 || keycode === 39) {
-            if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
-                if (document.querySelector('.tweet-twitter_picture_zoom').style.display !== 'none') {
+            if (utils.locationMatch('/twitter')) {
+                const ttpzSelectors = '.tweet-twitter_picture_zoom'
+                const ttpz = document.querySelector(ttpzSelectors)
+                if (ttpz.style.display !== 'none') {
                     if (keycode === 37) {
                         prevSlideBtn()
                     } else if (keycode === 39) {
@@ -1190,33 +1319,35 @@ import { changeTheme, findParents, getCookie } from './utils.js'
         }
     })
 
-    let twitterPictureAverageColorList = []
+    const twitterPictureAverageColorList = []
 
     function AverageColorByImageOnTweetTwitterPictureZoom() {
-        const ttpz = document.querySelector('.tweet-twitter_picture_zoom')
-        const ttpzn = document.querySelectorAll('.tweet-twitter_picture_zoom-navigator')
-
-        const ttpzc = ttpz.querySelector('.tweet-twitter_picture_zoom-container')
-        const ttpzce = ttpzc.querySelectorAll('.tweet-twitter_picture_zoom-element img')
+        const ttpzSelectors = '.tweet-twitter_picture_zoom'
+        const ttpznSelectors = '.tweet-twitter_picture_zoom-navigator'
+        const ttpzeSelectors = '.tweet-twitter_picture_zoom-element img'
+        const ttpz = document.querySelector(ttpzSelectors)
+        const ttpzn = document.querySelectorAll(ttpznSelectors)
+        const ttpze = document.querySelectorAll(ttpzeSelectors)
 
         const imgTable = []
-        for (let index = 0; index < ttpzce.length; index++) {
-            const element = ttpzce[index];
+        for (let index = 0; index < ttpze.length; index++) {
+            const element = ttpze[index]
             imgTable.push(element.src)
         }
 
         const twitterPictureSrc = imgTable[currentSlideNumberProxy.number]
 
         const twitterPictureData = twitterPictureAverageColorList.find(
-            element => element['src'] === twitterPictureSrc)
+            element => element['src'] === twitterPictureSrc
+        )
 
         if (twitterPictureData) {
             setBackgroundColor(twitterPictureData['rgb'])
         } else {
             averageColorByImage(twitterPictureSrc).then(res => {
                 twitterPictureAverageColorList.push({
-                    'src': twitterPictureSrc,
-                    'rgb': res
+                    src: twitterPictureSrc,
+                    rgb: res,
                 })
                 setBackgroundColor(res)
             })
@@ -1226,7 +1357,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
             const rgbColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}`
             ttpz.style.background = `${rgbColor}, 0.9)`
             for (let index = 0; index < ttpzn.length; index++) {
-                const element = ttpzn[index];
+                const element = ttpzn[index]
                 element.style.background = `${rgbColor})`
             }
         }
@@ -1236,29 +1367,30 @@ import { changeTheme, findParents, getCookie } from './utils.js'
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'select_exist_own_list-list')) {
-            const target = findParents(e.target, 'select_exist_own_list-list')
-            const checkStatus = target.dataset['check_status']
-            if (checkStatus === 'none') {
-                target.dataset['check_status'] = 'checked'
-                selectExistOwnListResutId =
-                    target.querySelector('.select_exist_own_list-list_name_id_mode')
-                    .querySelector('.select_exist_own_list-list_name_id_mode-id').innerHTML
-
-                if (target.classList && target.classList.contains('checked_css_opacity')) {
-                    target.classList.remove('checked_css_opacity')
-                }
-                target.classList.add('check_css_opacity')
-            }
-            if (checkStatus === 'checked') {
-                target.dataset['check_status'] = 'none'
-                selectExistOwnListResutId = ''
-                if (target.classList && target.classList.contains('checked_css_opacity')) {
-                    target.classList.remove('checked_css_opacity')
-                }
-                target.classList.add('check_css_opacity')
-            }
+            selectExistOwnListListClick(e)
         }
     })
+
+    function selectExistOwnListListClick(e) {
+        const target = findParents(e.target, 'select_exist_own_list-list')
+        const checkStatus = target.dataset['check_status']
+        const seollnimSelectors = '.select_exist_own_list-list_name_id_mode'
+        const seollnimiSelectors = `${seollnimSelectors}-id`
+        if (checkStatus === 'none') {
+            target.dataset['check_status'] = 'checked'
+            selectExistOwnListResutId = target
+                .querySelector(seollnimSelectors)
+                .querySelector(seollnimiSelectors).innerHTML
+            utils.remove(target, 'checked_css_opacity')
+            target.classList.add('check_css_opacity')
+        }
+        if (checkStatus === 'checked') {
+            target.dataset['check_status'] = 'none'
+            selectExistOwnListResutId = ''
+            utils.remove(target, 'checked_css_opacity')
+            target.classList.add('check_css_opacity')
+        }
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'startTwitter')) {
@@ -1267,163 +1399,168 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     })
 
     function CheckTwitterWelcomeResult() {
-        const twittterCreateListName = document.querySelector('.twitter_create_list-name').value
-        const twitterCreateListDescription = document.querySelector('.twitter_create_list-description').value
-        const twitterCreateListMode = document.querySelector('.twitter_create_list-mode').querySelector('input').checked
+        const tclnSelectors = '.twitter_create_list-name'
+        const tcldSelectors = '.twitter_create_list-description'
+        const tclmSelectors = '.twitter_create_list-mode'
+        const tcln = document.querySelector(tclnSelectors)
+        const tcld = document.querySelector(tcldSelectors)
+        const tclm = document.querySelector(tclmSelectors)
+        const tclnValue = tcln.value
+        const tcldValue = tcld.value
+        const tclmInputChecked = tclm.querySelector('input').checked
+
         let is_send_ok = false
 
-        if (twittterCreateListName === '' && selectExistOwnListResutId === '') {
+        if (tclnValue === '' && selectExistOwnListResutId === '') {
             alert('Create Something.')
-        } else if (twittterCreateListName !== '' && selectExistOwnListResutId !== '') {
+        } else if (tclnValue !== '' && selectExistOwnListResutId !== '') {
             alert('only select one.')
         } else {
             is_send_ok = true
         }
-        console.table(twittterCreateListName, twitterCreateListDescription, twitterCreateListMode)
+        log(tclnValue, tcldValue, tclmInputChecked)
         if (is_send_ok === true) {
-            if (twittterCreateListName !== '') {
+            if (tclnValue !== '') {
                 SendTwitterWelcomeResult('CreateNewList', {
-                    'twittterCreateListName': twittterCreateListName,
-                    'twitterCreateListDescription': twitterCreateListDescription,
-                    'twitterCreateListMode': twitterCreateListMode,
+                    twittterCreateListName: tclnValue,
+                    twitterCreateListDescription: tcldValue,
+                    twitterCreateListMode: tclmInputChecked,
                 })
             } else if (selectExistOwnListResutId !== '') {
                 SendTwitterWelcomeResult('SelectOwnList', {
-                    'selectExistOwnListResutId': selectExistOwnListResutId,
+                    selectExistOwnListResutId: selectExistOwnListResutId,
                 })
             }
         }
     }
 
-    function SendTwitterWelcomeResult(list_mode, list_information) {
+    async function SendTwitterWelcomeResult(list_mode, list_information) {
         document.querySelector('.startingTwitter').style.display = ''
-        var post_url = 'lists';
-        var post_data = {}
+        const post_url = 'lists'
+        const post_data = {}
         post_data['list_mode'] = list_mode
         post_data['list_information'] = list_information
 
-        fetch(
-            post_url, {
+        try {
+            const fetching = fetch(post_url, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
                 body: JSON.stringify(post_data),
                 headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
             }
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
-            }
-        }).then(data => {
-            console.log(data)
+            const data = await response.text()
+
+            log(data)
             location.href = '/twitter'
-        }).catch(err => {
-            console.error(err)
-        })
+        } catch (err) {
+            error(err)
+        }
     }
 
     // twitter_anchor
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_anchor')) {
-            if (tweetTwitterPictureClick) {
-                tweetTwitterPictureClick = false
-                return false;
-            }
-            var twitterAnchorContent = findParents(e.target, 'twitter_anchor')
-
-            if (window.getSelection().toString() !== '') return false;
-            var targetPage = twitterAnchorContent.getAttribute('href')
-            targetPage = targetPage.replace(location.origin, '')
-            var currentPage = location.href;
-            currentPage = currentPage.replace(location.origin, '')
-            var state = {
-                'targetPage': targetPage,
-                'currentPage': currentPage,
-                'changeLocation': '#main'
-            };
-            let replaceState = Object.assign({}, history.state)
-            replaceState['scrollTop'] = window.scrollY
-            history.replaceState(replaceState, null, currentPage)
-            scanTweetHeight()
-            history.pushState(state, null, targetPage);
-
-            var twitterUserScreenName = twitterAnchorContent.dataset['twitter_userScreen_name']
-            var tweetId = twitterAnchorContent.dataset['tweet_id']
-            if (twitterUserScreenName !== undefined) changeContent(targetPage, 'twitter_user', twitterUserScreenName);
-            else if (tweetId !== undefined) changeContent(targetPage, 'tweet', tweetId)
-            else changeContent(targetPage);
-            window.scrollTo(0, 0)
-            e.preventDefault()
+            twitterAnchorClick(e)
         }
     })
 
-    function changeContent(href, anchorMode, anchorContext) {
+    function twitterAnchorClick(e) {
+        if (isTweetTwitterPictureClick) {
+            isTweetTwitterPictureClick = false
+            return
+        }
+        const target = findParents(e.target, 'twitter_anchor')
+
+        if (window.getSelection().toString() !== '') {
+            return
+        }
+        const targetHref = target.getAttribute('href')
+        const targetPage = targetHref.replace(location.origin, '')
+        const currentPage = utils.getCurrentPage()
+        const replaceState = Object.assign({}, history.state)
+        replaceState['scrollTop'] = window.scrollY
+        history.replaceState(replaceState, null, currentPage)
+        scanTweetHeight()
+        history.pushState({ targetPage, currentPage }, null, targetPage)
+
+        const twitterUserScreenName = target.dataset['twitter_userScreen_name']
+        const tweetId = target.dataset['tweet_id']
+        if (twitterUserScreenName !== undefined) {
+            changeContent(targetPage, 'twitter_user', twitterUserScreenName)
+        } else if (tweetId !== undefined) {
+            changeContent(targetPage, 'tweet', tweetId)
+        } else {
+            changeContent(targetPage)
+        }
+        window.scrollTo(0, 0)
+        e.preventDefault()
+    }
+
+    async function changeContent(href, anchorMode, anchorContext) {
         document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-        if (anchorMode === 'twitter_user') changeContentTwitterUser(anchorContext)
-        else if (anchorMode === 'tweet') changeContentTweet(anchorContext)
-        else {
+        if (anchorMode === 'twitter_user') {
+            changeContentTwitterUser(anchorContext)
+        } else if (anchorMode === 'tweet') {
+            changeContentTweet(anchorContext)
+        } else {
             const changeLocation = document.querySelector('#main')
-            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
+            while (changeLocation.firstChild) {
+                changeLocation.removeChild(changeLocation.firstChild)
+            }
             const loader = document.createElement('div')
             loader.className = 'loader'
             changeLocation.append(loader)
         }
-        (() => {
-            const removeClass = 'bg-danger'
-            if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains(removeClass)) {
-                ajaxProgressBar.classList.remove(removeClass)
-            }
+
+        !(() => {
+            utils.removeClass(ajaxProgressBar, 'bg-danger')
             ajaxProgressBar.parentNode.style.visibility = ''
             ajaxProgressBar.style.width = '80%'
         })()
+
         // Cache exsists.
-        if (AquaProjectsCache[href]) {
-            var mainArea = document.querySelector('#main')
-            while (mainArea.firstChild) mainArea.removeChild(mainArea.firstChild)
-            while (AquaProjectsCache[href].querySelector('#main').firstChild) {
-                mainArea.appendChild(
-                    AquaProjectsCache[href].querySelector('#main').firstChild
-                )
-            }
+        if (window.AquaProjectsCache[href]) {
+            utils.repaintNode(href, '#main', true)
 
             ajaxProgressBar.style.width = '100%'
 
-            window.dispatchEvent(new Event('aquaprojects_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
         }
 
-        fetch(
-            href, {
+        try {
+            const fetching = fetch(href, {
                 method: 'GET',
                 mode: 'cors',
-                credentials: 'include'
-            }
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+                credentials: 'include',
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
                 showError()
+                return
             }
-        }).then(data => {
+            const data = await response.text()
+
             // Save Cache.
-            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
+            utils.saveApCache(href, data)
             if (href != location.href.replace(location.origin, '')) {
-                console.log('It seems that you moved to a different page first.')
+                log('It seems that you moved to a different page first.')
                 return false
             }
-            var changeLocation = document.querySelector('#main')
-            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-            var changeLocationCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector('#main')
-            Array.from(changeLocationCloneNode.children).forEach(element => {
-                changeLocation.appendChild(element)
-            });
+            utils.repaintNode(href, '#main')
 
-            window.dispatchEvent(new Event('aquaprojects_popstate'));
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
 
             ajaxProgressBar.style.width = '100%'
             ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
@@ -1433,10 +1570,10 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
-        }).catch(err => {
-            console.error(err)
+        } catch (err) {
+            error(err)
             showError()
-        })
+        }
 
         function changeContentTwitterUser(screen_name) {
             // The following will be changed:
@@ -1457,126 +1594,150 @@ import { changeTheme, findParents, getCookie } from './utils.js'
             // .twitter_user-profile_timelines_navigation-tweets -> Add .twitter_user-profile_timelines_navigation-selected.
             // .timeline -> Add loading html.
             // .twitter_user -> call setTweetCreated_at.
-            const twitterUser = document.querySelectorAll('.twitter_user')
-            const twitterTitle = document.querySelector('.twitter_title-block').outerHTML
-            for (let index = 0; index < twitterUser.length; index++) {
-                const element = twitterUser[index];
-                if (element.dataset['twitter_userScreen_name'] === screen_name) {
-                    const timeline = document.querySelector('.timeline')
-                    timeline.innerHTML = element.outerHTML
+            const tuSelectors = '.twitter_user'
+            const tuElements = document.querySelectorAll(tuSelectors)
+            const tu = Array.from(tuElements).find(element => {
+                const keyname = 'twitter_userScreen_name'
+                return element.dataset[keyname] === screen_name
+            })
 
-                    var twitterUserContent = document.querySelector('.timeline .twitter_user')
-                    twitterUserContent.id = 'twitter_user'
+            const twitterTitle = document.querySelector('.twitter_title-block')
 
-                    timeline.insertAdjacentHTML('afterbegin', twitterTitle)
-                    var twitterUserName = document.querySelector('.timeline .twitter_user-name > span').innerHTML
-                    document.querySelector('.twitter_title-home-text').innerHTML = twitterUserName
-                    document.querySelector('.twitter-back').style.display = 'block'
-                    const tTitleHomeBlock = document.querySelector('.twitter_title-home-block')
-                    tTitleHomeBlock.style.gridTemplateColumns = '3rem 1fr 3rem 3rem 3rem'
-                    const tthdesc = document.querySelector('.twitter_title-home-description')
-                    const tuscount = element.querySelector('.twitter_user-statuses_count')
-                    const statusesCount = tuscount.querySelector('span:nth-child(2)').innerText
-                    tthdesc.innerHTML = `${statusesCount} Tweets`
+            const timeline = document.querySelector('.timeline')
+            timeline.innerHTML = tu.outerHTML
 
-                    const tubgimg = timeline.querySelector('.twitter_user-background_image')
-                    const tubgimgcode = `<img src="${tubgimg.dataset['imgSrc']}" loading="lazy">`
-                    tubgimg.insertAdjacentHTML('beforeend', tubgimgcode)
+            const twitterUserContent = timeline.querySelector(tuSelectors)
+            twitterUserContent.id = 'twitter_user'
 
-                    tupimg = timeline.querySelector('.twitter_user-profile_image')
-                    tupimg.style.margin = '10px 1rem'
-                    tupimg.style.position = 'relative'
-                    tupimg.classList.add('twitter_user-twitter_icon')
-                    const tupimgimg = tupimg.querySelector('img')
-                    const apTheme =
-                        localStorage.getItem('ap-theme') === 'dark' ? 'dark' :
-                        localStorage.getItem('ap-theme') === 'light' ? 'light' :
-                        'default'
-                    tupimgimg.classList.add('ap-theme')
-                    tupimgimg.classList.add(`ap_theme-${apTheme}-background`)
-                    tupimgimg.style.width = '25%'
-                    tupimgimg.style.height = ''
-                    tupimgimg.style.top = ''
-                    tupimgimg.style.marginTop = '-15.5%'
-                    tupimgimg.style.padding = '4px'
-                    tupimg.insertBefore(tupimgimg, tupimg.firstChild)
-                    tupimg.querySelector('a').remove()
-                    tupimg.querySelector('.twitter_user-lists_follow_button').style.padding = ''
+            timeline.insertAdjacentElement('afterbegin', twitterTitle)
+            const tunSelectors = '.twitter_user-name > span'
+            const tthtSelectors = '.twitter_title-home-text'
+            const tun = timeline.querySelector(tunSelectors)
+            document.querySelector(tthtSelectors).innerHTML = tun.innerHTML
+            document.querySelector('.twitter-back').style.display = 'block'
+            const tthbSelectors = '.twitter_title-home-block'
+            const tthb = document.querySelector(tthbSelectors)
+            tthb.style.grid = 'auto auto / 3rem 1fr 3rem 3rem 3rem'
+            const tthdSelectors = '.twitter_title-home-description'
+            const tthd = document.querySelector(tthdSelectors)
+            const tuscount = tu.querySelector('.twitter_user-statuses_count')
+            const statusesCount = tuscount.querySelector('span:nth-child(2)')
+            tthd.innerHTML = `${statusesCount.innerText} Tweets`
 
-                    const tunsn = timeline.querySelector('.twitter_user-name_screen_name')
-                    const tunsna = tunsn.querySelector('a')
-                    tunsn.querySelector('.twitter_user-name').style.fontSize = '1.2rem'
-                    tunsn.insertBefore(tunsn.querySelector('.twitter_user-name'), tunsna)
-                    tunsn.insertBefore(tunsn.querySelector('.twitter_user-screen_name'), tunsna)
-                    tunsna.remove()
+            const tubgimgSelectors = '.twitter_user-background_image'
+            const tubgimg = timeline.querySelector(tubgimgSelectors)
+            const tubgimgcode = document.createElement('img')
+            tubgimgcode.src = tubgimg.dataset['imgSrc']
+            tubgimgcode.loading = 'lazy'
+            tubgimgcode.crossOrigin = 'anonymous'
+            tubgimg.insertAdjacentElement('beforeend', tubgimgcode)
 
-                    const tul = timeline.querySelector('.twitter_user-local')
-                    tul.style.display = 'flex'
-                    tul.style.flexWrap = 'wrap'
+            const tupimg = timeline.querySelector('.twitter_user-profile_image')
+            tupimg.style.margin = '10px 1rem'
+            tupimg.style.position = 'relative'
+            tupimg.classList.add('twitter_user-twitter_icon')
+            const tupimgimg = tupimg.querySelector('img')
+            const apTheme = utils.getApTheme()
+            tupimgimg.classList.add('ap-theme')
+            tupimgimg.classList.add(`ap_theme-${apTheme}-background`)
+            tupimgimg.style.width = '25%'
+            tupimgimg.style.height = ''
+            tupimgimg.style.top = ''
+            tupimgimg.style.marginTop = '-15.5%'
+            tupimgimg.style.padding = '4px'
+            tupimg.insertBefore(tupimgimg, tupimg.firstChild)
+            tupimg.querySelector('a').remove()
+            const tulfbSelectors = '.twitter_user-lists_follow_button'
+            tupimg.querySelector(tulfbSelectors).style.padding = ''
 
-                    timeline.querySelector('.twitter_user-main').style.padding = '0 1rem'
+            const tunsnSelectors = '.twitter_user-name_screen_name'
+            const tunsn = timeline.querySelector(tunsnSelectors)
+            const tunsna = tunsn.querySelector('a')
+            tunsn.querySelector('.twitter_user-name').style.fontSize = '1.2rem'
+            tunsn.insertBefore(
+                tunsn.querySelector('.twitter_user-name'),
+                tunsna
+            )
+            tunsn.insertBefore(
+                tunsn.querySelector('.twitter_user-screen_name'),
+                tunsna
+            )
+            tunsna.remove()
 
-                    timeline.querySelector('.twitter_user-profile_timelines_navigation-block').style.display = ''
+            const tul = timeline.querySelector('.twitter_user-local')
+            tul.style.display = 'flex'
+            tul.style.flexWrap = 'wrap'
 
-                    twitterUserProfileTimelineNavigationSelected(
-                        timeline.querySelector('.twitter_user-profile_timeline_navigation-tweets')
-                    )
+            const tumSelectors = '.twitter_user-main'
+            timeline.querySelector(tumSelectors).style.padding = '0 1rem'
 
-                    const loader = document.createElement('div')
-                    loader.className = 'loader'
-                    const formatTimeline = document.createElement('div')
-                    formatTimeline.className = 'format_timeline'
-                    formatTimeline.appendChild(loader)
-                    timeline.appendChild(formatTimeline)
+            const tuptnbSelectors =
+                '.twitter_user-profile_timelines_navigation-block'
+            timeline.querySelector(tuptnbSelectors).style.display = ''
 
-                    setTweetCreated_at()
-                    makeTwitterUserTwitterIconClear()
-                    return false
-                }
-            }
+            const tuptntSelectors =
+                '.twitter_user-profile_timeline_navigation-tweets'
+            twitterUserProfileTimelineNavigationSelected(
+                timeline.querySelector(tuptntSelectors)
+            )
+
+            const loader = document.createElement('div')
+            loader.className = 'loader'
+            const formatTimeline = document.createElement('div')
+            formatTimeline.className = 'format_timeline'
+            formatTimeline.appendChild(loader)
+            timeline.appendChild(formatTimeline)
+
+            setTweetCreated_at()
+            makeTwitterUserTwitterIconClear()
+            return
         }
 
         function changeContentTweet(tweet_id) {
-
-            var twitterTitle = document.querySelector('.twitter_title-block').outerHTML
+            var twitterTitle = document.querySelector('.twitter_title-block')
 
             const tweet = document.querySelectorAll('.tweet')
-            for (let index = 0; index < tweet.length; index++) {
-                const element = tweet[index];
-                if (parseInt(element.dataset['tweet_id']) === parseInt(tweet_id)) {
-                    const timeline = document.querySelector('.timeline')
-                    timeline.innerHTML = element.outerHTML
-                    document.querySelector('.timeline').insertAdjacentHTML('afterbegin', twitterTitle)
-                    document.querySelector('.twitter_title-home-text').innerHTML = 'Tweets'
-                    document.querySelector('.twitter-back').style.display = 'block'
-                    const tTitleHomeBlock = document.querySelector('.twitter_title-home-block')
-                    tTitleHomeBlock.style.gridTemplateColumns = '3rem 1fr 3rem 3rem 3rem'
+            const targetElement = Array.from(tweet).find(element => {
+                const keyname = 'tweet_id'
+                return element.dataset[keyname] === String(tweet_id)
+            })
+            const timeline = document.querySelector('.timeline')
+            timeline.innerHTML = targetElement.outerHTML
+            timeline.insertAdjacentElement('afterbegin', twitterTitle)
+            const tthtSelectors = '.twitter_title-home-text'
+            document.querySelector(tthtSelectors).innerHTML = 'Tweets'
+            document.querySelector('.twitter-back').style.display = 'block'
+            const tthbSelectors = '.twitter_title-home-block'
+            const tthb = document.querySelector(tthbSelectors)
+            tthb.style.grid = 'auto auto / 3rem 1fr 3rem 3rem 3rem'
 
-                    var timelineArea = document.querySelector('.timeline')
-                    timelineArea.insertAdjacentHTML('beforeend', '<div class="loader"></div>')
-                    return false
-                }
-            }
+            timeline.insertAdjacentHTML(
+                'beforeend',
+                '<div class="loader"></div>'
+            )
+            return
         }
     }
 
     function changeTwitterTimelineBackgroundSize() {
-        var windowWidth = window.innerWidth
-        var timelineBackground = document.querySelectorAll('.timeline_background')
-        var mainClassList = document.querySelector('#main').classList
-        mainClassList = Object.entries(mainClassList).flat()
+        const windowWidth = window.innerWidth
+        const tbSelectors = '.timeline_background'
+        const tb = document.querySelectorAll(tbSelectors)
+
+        const main = document.querySelector('#main')
+        const mainClassList = Object.entries(main.classList).flat()
         if (windowWidth >= 992) {
-            var lg = mainClassList.filter(i => i.indexOf('lg') >= 0)
-            var lgNumber = lg[0].split('-')[lg[0].split('-').length - 1]
-            timelineBackground[0].style.width = `${windowWidth * lgNumber / 12}px`
+            const lg = mainClassList.filter(i => i.indexOf('lg') >= 0)
+            const lgNumber = lg[0].split('-')[lg[0].split('-').length - 1]
+            tb[0].style.width = `${(windowWidth * lgNumber) / 12}px`
         } else if (windowWidth >= 768) {
-            var md = mainClassList.filter(i => i.indexOf('md') >= 0)
-            var mdNumber = md[0].split('-')[md[0].split('-').length - 1]
-            timelineBackground[1].style.width = `${windowWidth * mdNumber / 12}px`
+            const md = mainClassList.filter(i => i.indexOf('md') >= 0)
+            const mdNumber = md[0].split('-')[md[0].split('-').length - 1]
+            tb[1].style.width = `${(windowWidth * mdNumber) / 12}px`
         } else {
-            var sm = mainClassList.filter(i => i.indexOf('sm') >= 0)
-            var smNumber = sm[0].split('-')[sm[0].split('-').length - 1]
-            timelineBackground[2].style.width = `${windowWidth * smNumber / 12}px`
+            const sm = mainClassList.filter(i => i.indexOf('sm') >= 0)
+            const smNumber = sm[0].split('-')[sm[0].split('-').length - 1]
+            tb[2].style.width = `${(windowWidth * smNumber) / 12}px`
         }
     }
 
@@ -1587,7 +1748,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     })
 
     window.addEventListener('resize', () => {
-        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/twitter') {
+        if (utils.locationMatch('/twitter')) {
             changeTwitterTimelineBackgroundSize()
             twitterProfile()
             twitterTrends()
@@ -1595,706 +1756,740 @@ import { changeTheme, findParents, getCookie } from './utils.js'
     })
 
     async function twitterProfile() {
-        var windowWidth = window.innerWidth
-        if (windowWidth < 768) return false
-        var href = '/twitter/profile'
-        if (AquaProjectsCache[href]) {
-            var twitterProfileArea = document.querySelector('.twitter-profile')
-            while (twitterProfileArea.firstChild) twitterProfileArea.removeChild(twitterProfileArea.firstChild)
-            twitterProfileArea.insertAdjacentElement(
-                'afterbegin', AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
-            )
+        const windowWidth = window.innerWidth
+        if (windowWidth < 768) {
+            return
+        }
+        const href = '/twitter/profile'
+        if (window.AquaProjectsCache[href]) {
+            utils.repaintNode(href, '.twitter-profile')
         } else {
             await refreshtwitterProfile(href)
         }
         makeTwitterUserTwitterIconClear()
     }
 
-    function refreshtwitterProfile(href) {
-        return new Promise((resolve, reject) => {
-            fetch(
-                href, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include'
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    alert(response)
-                }
-            }).then(data => {
-                // Save Cache.
-                AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
-                var twitterProfileArea = document.querySelector('.twitter-profile')
-                while (twitterProfileArea.firstChild) twitterProfileArea.removeChild(twitterProfileArea.firstChild)
-                twitterProfileArea.insertAdjacentElement(
-                    'afterbegin', AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
-                )
-                resolve(data)
-            }).catch(err => {
-                alert(err)
-                reject(err)
+    async function refreshtwitterProfile(href) {
+        try {
+            const fetching = fetch(href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
             })
-        })
+
+            const response = await fetching
+            if (response.ok === false) {
+                alert(response)
+            }
+            const data = await response.text()
+
+            utils.saveApCache(href, data)
+            utils.repaintNode(href, '.twitter-profile')
+        } catch (err) {
+            alert(err)
+        }
     }
 
     function twitterTrends() {
-        var windowWidth = window.innerWidth
-        if (windowWidth < 768) return false
-        var href = '/twitter/trends'
-        if (AquaProjectsCache[href]) {
-            var twitterTrendsArea = document.querySelector('.twitter-trends')
-            while (twitterTrendsArea.firstChild) twitterTrendsArea.removeChild(twitterTrendsArea.firstChild)
-            twitterTrendsArea.insertAdjacentElement(
-                'afterbegin', AquaProjectsCache[href].querySelector('.twitter-trends').cloneNode(true)
-            )
+        const windowWidth = window.innerWidth
+        if (windowWidth < 768) {
+            return
+        }
+        const href = '/twitter/trends'
+        if (window.AquaProjectsCache[href]) {
+            utils.repaintNode(href, '.twitter-trends')
         } else {
-            refreshTwitterTrends()
+            refreshTwitterTrends(href)
         }
 
-        function refreshTwitterTrends() {
-            fetch(
-                href, {
+        async function refreshTwitterTrends(href) {
+            try {
+                const fetching = fetch(href, {
                     method: 'GET',
                     mode: 'cors',
                     credentials: 'include',
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
+                })
+
+                const response = await fetching
+                if (response.ok === false) {
                     alert(response)
                 }
-            }).then(data => {
-                // Save Cache.
-                AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
-                var twitterTrendsArea = document.querySelector('.twitter-trends')
-                while (twitterTrendsArea.firstChild) twitterTrendsArea.removeChild(twitterTrendsArea.firstChild)
-                twitterTrendsArea.insertAdjacentElement(
-                    'afterbegin', AquaProjectsCache[href].querySelector('.twitter-trends').cloneNode(true)
-                )
-            }).catch(data => {
-                alert(data)
-            })
+                const data = await response.text()
+
+                utils.saveApCache(href, data)
+                utils.repaintNode(href, '.twitter-trends')
+            } catch (err) {
+                alert(err)
+            }
         }
     }
 
     function setTweetCreated_at() {
+        const month_list = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ]
+
         const ttc = document.querySelectorAll('.tweet-twitter_createdat')
         for (let index = 0; index < ttc.length; index++) {
-            const element = ttc[index];
+            const element = ttc[index]
             const createdat_title = element.getAttribute('title')
             const created_at_time = new Date(createdat_title).getTime()
             const currentTime = new Date().getTime()
             const diffTime = currentTime - created_at_time
-            var displayTime = calculateTime(diffTime, createdat_title)
-            displayTime = ' · ' + displayTime
-            element.innerHTML = displayTime
+            const displayTime = calculateTime(diffTime, createdat_title)
+            element.innerHTML = ` · ${displayTime}`
         }
 
-        var twitterUserPageCreatedAt = document.querySelector('.timeline #twitter_user .twitter_user-created_at')
+        const twitterUserPageCreatedAt = document.querySelector(
+            '.timeline #twitter_user .twitter_user-created_at'
+        )
         if (!twitterUserPageCreatedAt) {
-            return false
+            return
         }
 
-        (() => {
-            var createdat_title = twitterUserPageCreatedAt.title
-            var calendarIcon = '<i class="far fa-calendar-alt" style="padding-top: 4px;"></i>'
-            var created_at_time = new Date(createdat_title).getTime()
-            var currentTime = new Date().getTime()
-            var diffTime = currentTime - created_at_time
-            var displayTime = calculateJoinTime(diffTime, createdat_title)
-            displayTime = `<span style="padding-left: 4px;">${displayTime}</span>`
-            twitterUserPageCreatedAt.innerHTML = `${calendarIcon}${displayTime}`
+        !(() => {
+            const createdat_title = twitterUserPageCreatedAt.title
+            const calendarIcon =
+                '<i class="far fa-calendar-alt" style="padding-top: 4px;"></i>'
+            const created_at_time = new Date(createdat_title).getTime()
+            const currentTime = new Date().getTime()
+            const diffTime = currentTime - created_at_time
+            const displayTime = calculateJoinTime(diffTime, createdat_title)
+            const timeBlock = document.createElement('span')
+            timeBlock.style.paddingLeft = '4px'
+            timeBlock.innerHTML = displayTime
+            twitterUserPageCreatedAt.innerHTML = calendarIcon
+            twitterUserPageCreatedAt.appendChild(timeBlock)
         })()
 
         function calculateTime(diffTime, createdat_title) {
-            var diffTime = diffTime
             diffTime /= 1000
-            var displayTime = ''
+            let displayTime = ''
             if (diffTime < 60) {
-                displayTime = parseInt(diffTime) + 's'
+                displayTime = `${parseInt(diffTime)} s`
             } else if (diffTime < 60 * 60) {
-                displayTime = parseInt(diffTime / 60) + 'm'
+                displayTime = `${parseInt(diffTime / 60)} m`
             } else if (diffTime < 60 * 60 * 24) {
-                displayTime = parseInt(diffTime / 60 / 60) + 'h'
+                displayTime = `${parseInt(diffTime / 60 / 60)} h`
             } else {
-                var displayCreated_at = new Date(createdat_title)
-                var month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                displayTime = month_list[displayCreated_at.getMonth()] + ' ' + displayCreated_at.getDate()
+                const displayCreated_at = new Date(createdat_title)
+                const month = month_list[displayCreated_at.getMonth()]
+                const date = displayCreated_at.getDate()
+                displayTime = `${month} ${date}`
             }
             return displayTime
         }
 
         function calculateJoinTime(diffTime, createdat_title) {
-            var diffTime = diffTime
             diffTime /= 1000
-            var displayTime = ''
-            var displayCreated_at = new Date(createdat_title)
-            var month_list = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            displayTime = month_list[displayCreated_at.getMonth()] + ' ' + displayCreated_at.getDate() + ', ' + displayCreated_at.getFullYear()
-            return displayTime
+            const displayCreated_at = new Date(createdat_title)
+            const month = month_list[displayCreated_at.getMonth()]
+            const date = displayCreated_at.getDate()
+            const year = displayCreated_at.getFullYear()
+            return `${month} ${date}, ${year}`
         }
     }
 
-    document.addEventListener('mouseover', e => {
-        if (findParents(e.target, 'tweet-twitter_user_name')) {
-            const target = findParents(e.target, 'tweet-twitter_user_name')
-            const y = target.offsetTop + target.clientHeight
-            target.querySelector('.tweet-twitter_user_tooltip').style.display = 'block'
-            target.querySelector('.tweet-twitter_user_tooltip').style.top = y
-        }
-    }, true)
+    document.addEventListener(
+        'mouseover',
+        e => {
+            if (findParents(e.target, 'tweet-twitter_user_name')) {
+                tweetTwitterUserNameMouseover(e)
+            }
+        },
+        true
+    )
 
-    document.addEventListener('mouseleave', e => {
-        if (findParents(e.target, 'tweet-twitter_user_name')) {
-            const target = findParents(e.target, 'tweet-twitter_user_name')
-            target.querySelector('.tweet-twitter_user_tooltip').style.display = ''
-        }
-    }, true)
+    function tweetTwitterUserNameMouseover(e) {
+        const target = findParents(e.target, 'tweet-twitter_user_name')
+        const y = target.offsetTop + target.clientHeight
+        const ttutSelectors = '.tweet-twitter_user_tooltip'
+        const ttut = target.querySelector(ttutSelectors)
+        ttut.style.display = 'block'
+        ttut.style.top = y
+    }
+
+    document.addEventListener(
+        'mouseleave',
+        e => {
+            if (findParents(e.target, 'tweet-twitter_user_name')) {
+                tweetTwitterUserNameMouseleave(e)
+            }
+        },
+        true
+    )
+
+    function tweetTwitterUserNameMouseleave(e) {
+        const target = findParents(e.target, 'tweet-twitter_user_name')
+        target.querySelector('.tweet-twitter_user_tooltip').style.display = ''
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_user-lists_button')) {
-            const target = findParents(e.target, 'twitter_user-lists_button')
-            const lists_status = target.dataset['twitter_userLists_status']
-            const screen_name = target.dataset['twitter_userScreen_name']
-            const twitterUserListButton = document.querySelectorAll('.twitter_user-lists_button')
-            for (let index = 0; index < twitterUserListButton.length; index++) {
-                const element = twitterUserListButton[index];
-                if (element.dataset['twitter_userScreen_name'] === screen_name) {
-                    element.disabled = true
-                }
-            }
-            if (lists_status === 'unknown') {
-                listsMembers(screen_name)
-            } else if (lists_status === 'tracked') {
-                listsMembersDestroy(screen_name)
-            } else if (lists_status === 'untracked') {
-                listsMembersCreate(screen_name)
-            }
+            twitterUserListsButtonClick(e)
         }
     })
 
-    function listsMembers(screen_name) {
-        fetch(
-            '/twitter/lists/members', {
+    function twitterUserListsButtonClick(e) {
+        const target = findParents(e.target, 'twitter_user-lists_button')
+        const lists_status = target.dataset['twitter_userLists_status']
+        const screen_name = target.dataset['twitter_userScreen_name']
+        const twitterUserListButton = document.querySelectorAll(
+            '.twitter_user-lists_button'
+        )
+        for (let index = 0; index < twitterUserListButton.length; index++) {
+            const element = twitterUserListButton[index]
+            const keyname = 'twitter_userScreen_name'
+            if (element.dataset[keyname] === screen_name) {
+                element.disabled = true
+            }
+        }
+        if (lists_status === 'unknown') {
+            listsMembers(screen_name)
+        } else if (lists_status === 'tracked') {
+            listsMembersDestroy(screen_name)
+        } else if (lists_status === 'untracked') {
+            listsMembersCreate(screen_name)
+        }
+    }
+
+    async function listsMembers(screen_name) {
+        const href = '/twitter/lists/members'
+        try {
+            const fetching = fetch(href, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
                 body: JSON.stringify({
-                    "screen_name": screen_name,
+                    screen_name: screen_name,
                 }),
                 headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
             }
-        }).then(data => {
-            const twitterUserListButton = document.querySelectorAll('.twitter_user-lists_button')
+
+            const data = await response.text()
+
+            const keyname = 'twitter_userScreen_name'
+            const twitterUserListButton = document.querySelectorAll(
+                '.twitter_user-lists_button'
+            )
             for (let index = 0; index < twitterUserListButton.length; index++) {
-                const element = twitterUserListButton[index];
-                if (element.dataset['twitter_userScreen_name'] === screen_name) {
+                const element = twitterUserListButton[index]
+                if (element.dataset[keyname] === screen_name) {
                     element.disabled = false
+                    const keyname = 'twitter_userLists_status'
                     if (data === 'untracked') {
-                        var userplus = '<i class="fas fa-user-plus"></i>'
-                        while (element.firstChild) element.removeChild(element.firstChild)
-                        element.insertAdjacentHTML('beforeend', userplus)
-                        element.dataset['twitter_userLists_status'] = 'untracked'
+                        const i = document.createElement('i')
+                        i.classList.add('fas', 'fa-user-plus')
+                        utils.emptyNode(element)
+                        element.appendChild(i)
+                        element.dataset[keyname] = 'untracked'
                     } else if (data === 'tracked') {
-                        var usercheck = '<i class="fas fa-user-check"></i>'
-                        while (element.firstChild) element.removeChild(element.firstChild)
-                        element.insertAdjacentHTML('beforeend', usercheck)
-                        element.dataset['twitter_userLists_status'] = 'tracked'
-                    } else {
-                        console.error(err)
+                        const i = document.createElement('i')
+                        i.classList.add('fas', 'fa-user-check')
+                        utils.emptyNode(element)
+                        element.appendChild(i)
+                        element.dataset[keyname] = 'tracked'
                     }
                 }
             }
-        }).catch(err => {
-            console.error(err)
-        })
+        } catch (err) {
+            error(err)
+        }
     }
 
-    function listsMembersCreate(screen_name) {
-        fetch(
-            '/twitter/lists/members/create', {
+    async function listsMembersCreate(screen_name) {
+        const href = '/twitter/lists/members/create'
+        try {
+            const fetching = fetch(href, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
                 body: JSON.stringify({
-                    "screen_name": screen_name,
+                    screen_name: screen_name,
                 }),
                 headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
             }
-        }).then(() => {
-            const twitterUserListButton = document.querySelectorAll('.twitter_user-lists_button')
+
+            const data = await response.text()
+
+            log(data)
+            const keyname = 'twitter_userScreen_name'
+            const twitterUserListButton = document.querySelectorAll(
+                '.twitter_user-lists_button'
+            )
             for (let index = 0; index < twitterUserListButton.length; index++) {
-                const element = twitterUserListButton[index];
-                if (element.dataset['twitter_userScreen_name'] === screen_name) {
+                const element = twitterUserListButton[index]
+                if (element.dataset[keyname] === screen_name) {
                     element.disabled = false
-                    var usercheck = '<i class="fas fa-user-check"></i>'
-                    while (element.firstChild) element.removeChild(element.firstChild)
-                    element.insertAdjacentHTML('beforeend', usercheck)
+                    const i = document.createElement('i')
+                    i.classList.add('fas', 'fa-user-check')
+                    utils.emptyNode(element)
+                    element.appendChild(i)
                     element.dataset['twitter_userLists_status'] = 'tracked'
                 }
             }
-        }).catch(err => {
-            console.error(err)
-        })
+        } catch (err) {
+            error(err)
+        }
     }
 
-    function listsMembersDestroy(screen_name) {
-        fetch(
-            '/twitter/lists/members/destroy', {
+    async function listsMembersDestroy(screen_name) {
+        const href = '/twitter/lists/members/destroy'
+        try {
+            const fetching = fetch(href, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
                 body: JSON.stringify({
-                    "screen_name": screen_name,
+                    screen_name: screen_name,
                 }),
                 headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
             }
-        }).then(() => {
-            const twitterUserListButton = document.querySelectorAll('.twitter_user-lists_button')
+
+            const data = await response.text()
+
+            log(data)
+            const keyname = 'twitter_userScreen_name'
+            const twitterUserListButton = document.querySelectorAll(
+                '.twitter_user-lists_button'
+            )
             for (let index = 0; index < twitterUserListButton.length; index++) {
-                const element = twitterUserListButton[index];
-                if (element.dataset['twitter_userScreen_name'] === screen_name) {
+                const element = twitterUserListButton[index]
+                if (element.dataset[keyname] === screen_name) {
                     element.disabled = false
-                    var userplus = '<i class="fas fa-user-plus"></i>'
-                    while (element.firstChild) element.removeChild(element.firstChild)
-                    element.insertAdjacentHTML('beforeend', userplus)
+                    const i = document.createElement('i')
+                    i.classList.add('fas', 'fa-user-plus')
+                    utils.emptyNode(element)
+                    element.appendChild(i)
                     element.dataset['twitter_userLists_status'] = 'untracked'
                 }
             }
-        }).catch(err => {
-            console.error(err)
-        })
+        } catch (err) {
+            error(err)
+        }
     }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_user-follow_button')) {
-            const target = findParents(e.target, 'twitter_user-follow_button')
-            let follow_status = false
-            if (target.dataset['twitter_userFollow_status'] === 'true') follow_status = true
-            const screen_name = target.dataset['twitter_userScreen_name']
-            var friendships = ''
-            if (follow_status === true) friendships = 'destroy'
-            else if (follow_status === false) friendships = 'create'
-
-            const twitterUserFollowButton = document.querySelectorAll('.twitter_user-follow_button')
-            for (let index = 0; index < twitterUserFollowButton.length; index++) {
-                const element = twitterUserFollowButton[index];
-                if (element.dataset['twitter_userScreen_name'] === screen_name) {
-                    element.disabled = true
-                }
-            }
-
-            fetch(
-                '/twitter/friendships/' + friendships, {
-                    method: 'POST',
-                    mode: 'cors',
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        "screen_name": screen_name,
-                    }),
-                    headers: {
-                        "X-CSRFToken": getCookie('csrftoken')
-                    }
-                },
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                }
-            }).then(() => {
-                if (follow_status === true) {
-                    const tufb = document.querySelectorAll('.twitter_user-follow_button')
-                    for (let index = 0; index < tufb.length; index++) {
-                        const element = tufb[index];
-                        if (element.dataset['twitter_userScreen_name'] === screen_name) {
-                            if (element.classList && element.classList.contains('btn-primary')) {
-                                element.classList.remove('btn-primary')
-                            }
-                            element.classList.add('btn-outline-primary')
-                            element.innerHTML = 'Follow'
-                            element.dataset['twitter_userFollow_status'] = false
-                            element.disabled = false
-                        }
-                    }
-                } else if (follow_status === false) {
-                    const tufb = document.querySelectorAll('.twitter_user-follow_button')
-                    for (let index = 0; index < tufb.length; index++) {
-                        const element = tufb[index];
-                        if (element.dataset['twitter_userScreen_name'] === screen_name) {
-                            if (element.classList && element.classList.contains('btn-outline-primary')) {
-                                element.classList.remove('btn-outline-primary')
-                            }
-                            element.classList.add('btn-primary')
-                            element.innerHTML = 'Following'
-                            element.dataset['twitter_userFollow_status'] = true
-                            element.disabled = false
-                        }
-                    }
-                }
-            }).catch(err => {
-                console.error(err)
-            })
+            twitterUserFollowButtonClick(e)
         }
     })
+
+    function twitterUserFollowButtonClick(e) {
+        const target = findParents(e.target, 'twitter_user-follow_button')
+        const keyname = 'twitter_userFollow_status'
+        const follow_status = target.dataset[keyname] === 'true'
+        const screen_name = target.dataset['twitter_userScreen_name']
+
+        const twitterUserFollowButton = document.querySelectorAll(
+            '.twitter_user-follow_button'
+        )
+        for (let index = 0; index < twitterUserFollowButton.length; index++) {
+            const element = twitterUserFollowButton[index]
+            if (element.dataset['twitter_userScreen_name'] === screen_name) {
+                element.disabled = true
+            }
+        }
+
+        !follow_status && friendshipsCreate(screen_name)
+        follow_status && friendshipsDestroy(screen_name)
+    }
+
+    async function friendshipsCreate(screen_name) {
+        const href = '/twitter/friendships/create'
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    screen_name: screen_name,
+                }),
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+            }
+            await response.text()
+
+            const tufb = document.querySelectorAll(
+                '.twitter_user-follow_button'
+            )
+            const keyname = 'twitter_userScreen_name'
+            for (let index = 0; index < tufb.length; index++) {
+                const element = tufb[index]
+                if (element.dataset[keyname] === screen_name) {
+                    utils.removeClass(element, 'btn-outline-primary')
+                    element.classList.add('btn-primary')
+                    element.innerHTML = 'Following'
+                    element.dataset['twitter_userFollow_status'] = true
+                    element.disabled = false
+                }
+            }
+        } catch (err) {
+            error(err)
+        }
+    }
+
+    async function friendshipsDestroy(screen_name) {
+        const href = '/twitter/friendships/destroy'
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    screen_name: screen_name,
+                }),
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+            }
+            await response.text()
+
+            const tufb = document.querySelectorAll(
+                '.twitter_user-follow_button'
+            )
+            const keyname = 'twitter_userScreen_name'
+            for (let index = 0; index < tufb.length; index++) {
+                const element = tufb[index]
+                if (element.dataset[keyname] === screen_name) {
+                    utils.removeClass(element, 'btn-primary')
+                    element.classList.add('btn-outline-primary')
+                    element.innerHTML = 'Follow'
+                    element.dataset['twitter_userFollow_status'] = false
+                    element.disabled = false
+                }
+            }
+        } catch (err) {
+            error(err)
+        }
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_favorite')) {
-            const target = findParents(e.target, 'tweet-twitter_favorite')
-            const tweet_favorited = target.dataset['tweet_favorited']
-            const tweet_id = target.dataset['tweet_id']
-            const tweetTwitterFavorite = document.querySelectorAll('.tweet-twitter_favorite')
-            for (let index = 0; index < tweetTwitterFavorite.length; index++) {
-                const element = tweetTwitterFavorite[index];
-                if (parseInt(element.dataset['tweet_id']) === tweet_id) {
-                    element.disabled = true
-                }
-            }
-            if (tweet_favorited === 'true' || tweet_favorited === 'True') {
-                favoritesDestroy(tweet_id)
-            } else {
-                favoritesCreate(tweet_id)
-            }
+            tweetTwitterFavoriteClick(e)
         }
     })
 
-    function favoritesCreate(tweet_id) {
-        fetch(
-            '/twitter/favorites/create', {
-                method: 'POST',
-                mode: 'cors',
-                credentials: 'include',
-                body: JSON.stringify({
-                    "tweet_id": tweet_id,
-                }),
-                headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+    function tweetTwitterFavoriteClick(e) {
+        const target = findParents(e.target, 'tweet-twitter_favorite')
+        const keyname = 'tweet_favorited'
+        const tweet_favorited = target.dataset[keyname] === 'true'
+        const tweet_id = target.dataset['tweet_id']
+        const tweetTwitterFavorite = document.querySelectorAll(
+            '.tweet-twitter_favorite'
+        )
+        for (let index = 0; index < tweetTwitterFavorite.length; index++) {
+            const element = tweetTwitterFavorite[index]
+            if (parseInt(element.dataset['tweet_id']) === tweet_id) {
+                element.disabled = true
             }
-        }).then(data => {
-            const responseNode = document.createRange().createContextualFragment(data)
-            const resTweetTwitterSocial = responseNode.querySelectorAll('.tweet-twitter_social')
-            const docTweetTwitterFavorite = document.querySelectorAll('.tweet-twitter_favorite')
-            for (let index = 0; index < docTweetTwitterFavorite.length; index++) {
-                const element = docTweetTwitterFavorite[index];
-                const docTweetTwitterSocial = findParents(element, 'tweet-twitter_social')
-                if (element.dataset['tweet_id'] === tweet_id) {
-                    for (let index = 0; index < resTweetTwitterSocial.length; index++) {
-                        const resElement = resTweetTwitterSocial[index];
-                        const resTweetId = resElement.querySelector('.tweet-twitter_favorite')
-                            .dataset['tweet_id']
-                        if (resTweetId === tweet_id) {
-                            docTweetTwitterSocial.insertAdjacentElement('afterend', resElement)
-                            docTweetTwitterSocial.remove()
-                        }
-                    }
-                }
-            }
-        }).catch(err => {
-            console.error(err)
-        })
+        }
+        tweet_favorited && favoritesDestroy(tweet_id)
+        !tweet_favorited && favoritesCreate(tweet_id)
     }
 
-    function favoritesDestroy(tweet_id) {
-        fetch(
-            '/twitter/favorites/destroy', {
+    async function favoritesCreate(tweet_id) {
+        const href = '/twitter/favorites/create'
+        try {
+            const fetching = fetch(href, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
                 body: JSON.stringify({
-                    "tweet_id": tweet_id,
+                    tweet_id: tweet_id,
                 }),
                 headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
             }
-        }).then(data => {
-            const responseNode = document.createRange().createContextualFragment(data)
-            const resTweetTwitterSocial = responseNode.querySelectorAll('.tweet-twitter_social')
-            const docTweetTwitterFavorite = document.querySelectorAll('.tweet-twitter_favorite')
-            for (let index = 0; index < docTweetTwitterFavorite.length; index++) {
-                const element = docTweetTwitterFavorite[index];
-                const docTweetTwitterSocial = findParents(element, 'tweet-twitter_social')
-                if (element.dataset['tweet_id'] === tweet_id) {
-                    for (let index = 0; index < resTweetTwitterSocial.length; index++) {
-                        const resElement = resTweetTwitterSocial[index];
-                        const resTweetId = resElement.querySelector('.tweet-twitter_favorite')
-                            .dataset['tweet_id']
-                        if (resTweetId === tweet_id) {
-                            docTweetTwitterSocial.insertAdjacentElement('afterend', resElement)
-                            docTweetTwitterSocial.remove()
-                        }
-                    }
-                }
+            const data = await response.text()
+
+            utils.saveApCache(href, data)
+            const selectors = '.tweet-twitter_favorite'
+            updateTweetSocial(tweet_id, href, selectors)
+        } catch (err) {
+            error(err)
+        }
+    }
+
+    async function favoritesDestroy(tweet_id) {
+        const href = '/twitter/favorites/destroy'
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    tweet_id: tweet_id,
+                }),
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
             }
-        }).catch(err => {
-            console.error(err)
-        })
+            const data = await response.text()
+
+            utils.saveApCache(href, data)
+            const selectors = '.tweet-twitter_favorite'
+            updateTweetSocial(tweet_id, href, selectors)
+        } catch (err) {
+            error(err)
+        }
     }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_retweet')) {
-            const target = findParents(e.target, 'tweet-twitter_retweet')
-            const tweet_retweet = target.dataset['tweet_retweeted']
-            const tweet_id = target.dataset['tweet_id']
-            const tweetTwitterRetweet = document.querySelectorAll('.tweet-twitter_retweet')
-            for (let index = 0; index < tweetTwitterRetweet.length; index++) {
-                const element = tweetTwitterRetweet[index];
-                if (parseInt(element.dataset['tweet_id']) === tweet_id) {
-                    element.disabled = true
-                }
-            }
-            if (tweet_retweet === 'true' || tweet_retweet === 'True') {
-                statusesUnretweet(tweet_id)
-            } else {
-                statusesRetweet(tweet_id)
-            }
+            tweetTwitterRetweetClick(e)
         }
     })
 
-    function statusesRetweet(tweet_id) {
-        fetch(
-            '/twitter/statuses/retweet', {
-                method: 'POST',
-                mode: 'cors',
-                credentials: 'include',
-                body: JSON.stringify({
-                    "tweet_id": tweet_id,
-                }),
-                headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+    function tweetTwitterRetweetClick(e) {
+        const target = findParents(e.target, 'tweet-twitter_retweet')
+        const keyname = 'tweet_retweeted'
+        const tweet_retweet = target.dataset[keyname] === 'true'
+        const tweet_id = target.dataset['tweet_id']
+        const tweetTwitterRetweet = document.querySelectorAll(
+            '.tweet-twitter_retweet'
+        )
+        for (let index = 0; index < tweetTwitterRetweet.length; index++) {
+            const element = tweetTwitterRetweet[index]
+            if (parseInt(element.dataset['tweet_id']) === tweet_id) {
+                element.disabled = true
             }
-        }).then(data => {
-            const responseNode = document.createRange().createContextualFragment(data)
-            const resTweetTwitterSocial = responseNode.querySelectorAll('.tweet-twitter_social')
-            const docTweetTwitterRetweet = document.querySelectorAll('.tweet-twitter_retweet')
-            for (let index = 0; index < docTweetTwitterRetweet.length; index++) {
-                const element = docTweetTwitterRetweet[index];
-                const docTweetTwitterSocial = findParents(element, 'tweet-twitter_social')
-                if (element.dataset['tweet_id'] === tweet_id) {
-                    for (let index = 0; index < resTweetTwitterSocial.length; index++) {
-                        const resElement = resTweetTwitterSocial[index];
-                        const resTweetId = resElement.querySelector('.tweet-twitter_retweet')
-                            .dataset['tweet_id']
-                        if (resTweetId === tweet_id) {
-                            docTweetTwitterSocial.insertAdjacentElement('afterend', resElement)
-                            docTweetTwitterSocial.remove()
-                        }
-                    }
-                }
-            }
-        }).catch(err => {
-            console.error(err)
-        })
+        }
+        tweet_retweet && statusesUnretweet(tweet_id)
+        !tweet_retweet && statusesRetweet(tweet_id)
     }
 
-    function statusesUnretweet(tweet_id) {
-        fetch(
-            '/twitter/statuses/unretweet', {
+    async function statusesRetweet(tweet_id) {
+        const href = '/twitter/statuses/retweet'
+        try {
+            const fetching = fetch(href, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include',
                 body: JSON.stringify({
-                    "tweet_id": tweet_id,
+                    tweet_id: tweet_id,
                 }),
                 headers: {
-                    "X-CSRFToken": getCookie('csrftoken')
-                }
-            },
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
             }
-        }).then(data => {
-            const responseNode = document.createRange().createContextualFragment(data)
-            const resTweetTwitterSocial = responseNode.querySelectorAll('.tweet-twitter_social')
-            const docTweetTwitterRetweet = document.querySelectorAll('.tweet-twitter_retweet')
-            for (let index = 0; index < docTweetTwitterRetweet.length; index++) {
-                const element = docTweetTwitterRetweet[index];
-                const docTweetTwitterSocial = findParents(element, 'tweet-twitter_social')
-                if (element.dataset['tweet_id'] === tweet_id) {
-                    for (let index = 0; index < resTweetTwitterSocial.length; index++) {
-                        const resElement = resTweetTwitterSocial[index];
-                        const resTweetId = resElement.querySelector('.tweet-twitter_retweet')
-                            .dataset['tweet_id']
-                        if (resTweetId === tweet_id) {
-                            docTweetTwitterSocial.insertAdjacentElement('afterend', resElement)
-                            docTweetTwitterSocial.remove()
-                        }
-                    }
+            const data = await response.text()
+
+            utils.saveApCache(href, data)
+            const selectors = '.tweet-twitter_retweet'
+            updateTweetSocial(tweet_id, href, selectors)
+        } catch (err) {
+            error(err)
+        }
+    }
+
+    async function statusesUnretweet(tweet_id) {
+        const href = '/twitter/statuses/unretweet'
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify({
+                    tweet_id: tweet_id,
+                }),
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+            }
+            const data = await response.text()
+
+            utils.saveApCache(href, data)
+            const selectors = '.tweet-twitter_retweet'
+            updateTweetSocial(tweet_id, href, selectors)
+        } catch (err) {
+            error(err)
+        }
+    }
+
+    function updateTweetSocial(tweet_id, href, selectors) {
+        try {
+            const ttsCache = utils.getApCache(href).querySelectorAll(selectors)
+            const tts = document.querySelectorAll(selectors)
+            const keyname = 'tweet_id'
+            for (let index = 0; index < tts.length; index++) {
+                const element = tts[index]
+                if (element.dataset[keyname] === tweet_id) {
+                    const social = findParents(element, 'tweet-twitter_social')
+                    const socialCache = findParents(
+                        Array.from(ttsCache).find(element => {
+                            return element.dataset[keyname] === tweet_id
+                        }),
+                        'tweet-twitter_social'
+                    )
+                    social.parentNode.insertBefore(socialCache, social)
+                    social.remove()
                 }
             }
-        }).catch(err => {
-            console.error(err)
-        })
+        } catch (err) {
+            error(err)
+        }
     }
 
     document.addEventListener('click', e => {
-        if (findParents(e.target, 'twitter_user-profile_timelines_navigation-item')) {
-            const target = findParents(e.target, 'twitter_user-profile_timelines_navigation-item')
-            var href = target.querySelector('a').href
-            twitterUserProfileTimelineNavigationSelected(target)
-            twitterUserProfileTimelineNavigationPushState(href)
-            twitterUserProfileTimelineNavigationLoader()
-            window.scrollTo(0, 0)
-            twitterUserProfileTimelineNavigationFetch(href.replace(location.origin, ''), true)
+        const selectors = 'twitter_user-profile_timelines_navigation-item'
+        if (findParents(e.target, selectors)) {
+            twitterUserProfileTimelineNavigationItemClick(e)
             e.preventDefault()
         }
     })
 
+    function twitterUserProfileTimelineNavigationItemClick(e) {
+        const selectors = 'twitter_user-profile_timelines_navigation-item'
+        const target = findParents(e.target, selectors)
+        const href = target.querySelector('a').href.replace(location.origin, '')
+        twitterUserProfileTimelineNavigationSelected(target)
+        twitterUserProfileTimelineNavigationPushState(href)
+        twitterUserProfileTimelineNavigationLoader()
+        window.scrollTo(0, 0)
+        twitterUserProfileTimelineNavigationFetch(href)
+    }
+
     function twitterUserProfileTimelineNavigationSelected(element) {
-        var twitterUserProfileTimelinesNavigationItem =
-            document.querySelectorAll('.twitter_user-profile_timelines_navigation-item')
+        const selectors = '.twitter_user-profile_timelines_navigation-item'
+        const tuptni = document.querySelectorAll(selectors)
 
-        for (let index = 0; index < twitterUserProfileTimelinesNavigationItem.length; index++) {
-            twitterUserProfileTimelinesNavigationItem[index].classList.remove(
-                'twitter_user-profile_timeline_navigation-selected'
-            )
+        const tuptnsClassName =
+            'twitter_user-profile_timeline_navigation-selected'
+
+        for (let index = 0; index < tuptni.length; index++) {
+            const element = tuptni[index]
+            utils.removeClass(element, tuptnsClassName)
         }
-
-        element.classList.add('twitter_user-profile_timeline_navigation-selected')
+        element.classList.add(tuptnsClassName)
     }
 
     function twitterUserProfileTimelineNavigationPushState(href) {
-        var targetPage = href
-        targetPage = targetPage.replace(location.origin, '')
-        var currentPage = location.href;
-        currentPage = currentPage.replace(location.origin, '')
-        var state = {
-            'targetPage': targetPage,
-            'currentPage': currentPage,
-            'changeLocation': '#main'
-        };
-        var replaceState = Object.assign({}, history.state)
+        const targetPage = href
+        const currentPage = utils.getCurrentPage()
+        const replaceState = Object.assign({}, history.state)
         replaceState['scrollTop'] = window.scrollY
         history.replaceState(replaceState, null, currentPage)
-        history.pushState(state, null, targetPage);
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        history.pushState({ targetPage, currentPage }, null, targetPage)
+        document.title = `Aqua Projects - ${location.pathname.substring(1)}`
     }
 
     function twitterUserProfileTimelineNavigationLoader() {
         const formatTimeline = document.querySelector('.format_timeline')
-        if (formatTimeline) {
-            Array.from(formatTimeline.children).forEach(element => {
-                element.remove()
-            })
-        }
+        formatTimeline && utils.emptyNode(formatTimeline)
         const loader = document.createElement('div')
         loader.className = 'loader'
         document.querySelector('.format_timeline').appendChild(loader)
     }
 
-    function twitterUserProfileTimelineNavigationFetch(href, useCache = true) {
+    async function twitterUserProfileTimelineNavigationFetch(href) {
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-        if (ajaxProgressBar.classList && ajaxProgressBar.classList.contains('bg-danger')) {
-            ajaxProgressBar.classList.remove('bg-danger')
-        }
-        ajaxProgressBar.parentNode.style.visibility = ''
+        !(() => {
+            utils.removeClass(ajaxProgressBar, 'bg-danger')
+            ajaxProgressBar.parentNode.style.visibility = ''
+            ajaxProgressBar.style.width = '80%'
+        })()
 
         // Cache exsists.
-        if (AquaProjectsCache[href]) {
-            var changeLocation = document.querySelector('#main')
-            var changeLocationCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector('#main')
-            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-            Array.from(changeLocationCloneNode.children).forEach(element => {
-                changeLocation.appendChild(element)
-            });
+        if (window.AquaProjectsCache[href]) {
+            utils.repaintNode(href, '#main', true)
+
             ajaxProgressBar.style.width = '100%'
 
-            window.dispatchEvent(new Event('aquaprojects_popstate'));
-
-            if (useCache === true) {
-                ajaxProgressBar.style.width = '100%'
-                ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
-
-                setTimeout(() => {
-                    ajaxProgressBar.parentNode.style.visibility = 'hidden'
-                    ajaxProgressBar.style.width = '0%'
-                    ajaxProgressBar.style.transition = ''
-                }, 200)
-                return false
-            }
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
         }
 
-        ajaxProgressBar.style.width = '80%'
-
-        fetch(
-            href, {
+        try {
+            const fetching = fetch(href, {
                 method: 'GET',
                 mode: 'cors',
-                credentials: 'include'
-            }
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
-                showError()
-            }
-        }).then(data => {
-            // Save Cache.
-            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
-            if (href != location.href.replace(location.origin, '')) {
-                console.log('It seems that you moved to a different page first.')
-                return false
-            }
-            var changeLocation = document.querySelector('#main')
-            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-            var changeLocationCloneNode = AquaProjectsCache[href].cloneNode(true).querySelector('#main')
-            Array.from(changeLocationCloneNode.children).forEach(element => {
-                changeLocation.appendChild(element)
+                credentials: 'include',
             })
 
-            window.dispatchEvent(new Event('aquaprojects_popstate'));
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                showError()
+                return
+            }
+            const data = await response.text()
+
+            // Save Cache.
+            utils.saveApCache(href, data)
+            if (href != location.href.replace(location.origin, '')) {
+                log('It seems that you moved to a different page first.')
+                return false
+            }
+            utils.repaintNode(href, '#main')
+
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
 
             ajaxProgressBar.style.width = '100%'
             ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
@@ -2304,252 +2499,297 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 ajaxProgressBar.style.width = '0%'
                 ajaxProgressBar.style.transition = ''
             }, 200)
-        }).catch(err => {
-            console.error(err)
+        } catch (err) {
+            error(err)
             showError()
-        })
+        }
     }
 
-    document.addEventListener('focus', e => {
-        if (e.target.classList.contains('twitter-search_box-input')) {
-            const tsb = findParents(e.target, 'twitter-search_box')
-            const twitterSearchBoxBorder = tsb.querySelector('.twitter-search_box-border')
-            const twitterSearchBoxIcon = tsb.querySelector('.twitter-search_box-icon')
-            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
-            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
-
-            twitterSearchBoxBorder.style.borderColor = '#1da1f2'
-            twitterSearchBoxIcon.style.color = '#1da1f2'
-            if (twitterSearchBoxInput.value !== '') {
-                twitterSearchBoxClose.style.display = 'flex'
+    document.addEventListener(
+        'focus',
+        e => {
+            if (e.target.classList.contains('twitter-search_box-input')) {
+                twitterSearachBoxInputFocus(e)
             }
+        },
+        true
+    )
+
+    function twitterSearachBoxInputFocus(e) {
+        const tsb = findParents(e.target, 'twitter-search_box')
+        const border = tsb.querySelector('.twitter-search_box-border')
+        const icon = tsb.querySelector('.twitter-search_box-icon')
+        const input = tsb.querySelector('.twitter-search_box-input')
+        const close = tsb.querySelector('.twitter-search_box-close')
+
+        border.style.borderColor = '#1da1f2'
+        icon.style.color = '#1da1f2'
+        if (input.value !== '') {
+            close.style.display = 'flex'
         }
-    }, true)
+    }
 
-    document.addEventListener('blur', e => {
-        if (e.target.classList.contains('twitter-search_box-input')) {
-            const tsb = findParents(e.target, 'twitter-search_box')
-            const twitterSearchBoxBorder = tsb.querySelector('.twitter-search_box-border')
-            const twitterSearchBoxIcon = tsb.querySelector('.twitter-search_box-icon')
-            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
-            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
-
-            twitterSearchBoxBorder.style.borderColor = ''
-            twitterSearchBoxIcon.style.color = '#657786'
-            twitterSearchBoxClose.style.display = 'none'
-
-            if (twitterSearchBoxInput.dataset['cleared'] === 'true') {
-                twitterSearchBoxInput.focus()
-                twitterSearchBoxInput.dataset['cleared'] = false
+    document.addEventListener(
+        'blur',
+        e => {
+            if (e.target.classList.contains('twitter-search_box-input')) {
+                twitterSearachBoxInputBlur(e)
             }
+        },
+        true
+    )
+
+    function twitterSearachBoxInputBlur(e) {
+        const tsb = findParents(e.target, 'twitter-search_box')
+        const border = tsb.querySelector('.twitter-search_box-border')
+        const icon = tsb.querySelector('.twitter-search_box-icon')
+        const input = tsb.querySelector('.twitter-search_box-input')
+        const close = tsb.querySelector('.twitter-search_box-close')
+
+        border.style.borderColor = ''
+        icon.style.color = '#657786'
+        close.style.display = 'none'
+
+        if (input.dataset['cleared'] === 'true') {
+            input.focus()
+            input.dataset['cleared'] = false
         }
-    }, true)
+    }
 
     document.addEventListener('mousedown', e => {
         if (findParents(e.target, 'twitter-search_box-close')) {
-            const tsb = findParents(e.target, 'twitter-search_box')
-            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
-            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
-
-            twitterSearchBoxInput.value = ''
-            twitterSearchBoxInput.dataset['cleared'] = true
-            twitterSearchBoxClose.style.display = 'none'
+            twitterSearchBoxCloseMousedown(e)
         }
     })
+
+    function twitterSearchBoxCloseMousedown(e) {
+        const tsb = findParents(e.target, 'twitter-search_box')
+        const input = tsb.querySelector('.twitter-search_box-input')
+        const close = tsb.querySelector('.twitter-search_box-close')
+
+        input.value = ''
+        input.dataset['cleared'] = true
+        close.style.display = 'none'
+    }
 
     document.addEventListener('input', e => {
         if (e.target.classList.contains('twitter-search_box-input')) {
-            const tsb = findParents(e.target, 'twitter-search_box')
-            const twitterSearchBoxInput = tsb.querySelector('.twitter-search_box-input')
-            const twitterSearchBoxClose = tsb.querySelector('.twitter-search_box-close')
-
-            if (twitterSearchBoxInput.value !== '') {
-                twitterSearchBoxClose.style.display = 'flex'
-            } else {
-                twitterSearchBoxClose.style.display = 'none'
-            }
+            twitterSearchBoxInputInput(e)
         }
     })
+
+    function twitterSearchBoxInputInput(e) {
+        const tsb = findParents(e.target, 'twitter-search_box')
+        const input = tsb.querySelector('.twitter-search_box-input')
+        const close = tsb.querySelector('.twitter-search_box-close')
+
+        if (input.value !== '') {
+            close.style.display = 'flex'
+        } else {
+            close.style.display = 'none'
+        }
+    }
 
     document.addEventListener('keydown', e => {
         const keyCode = e.keyCode
         if (keyCode !== 13) return false
-        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/twitter') {
-            if (e.target.classList.contains('twitter-search_box-input') && e.target.value !== '') {
-                var query = e.target.value
-                var href = `/twitter/search?q=${query}`
-                twitterUserProfileTimelineNavigationPushState(href)
-                twitterSearchLoader()
-                window.scrollTo(0, 0)
-                twitterUserProfileTimelineNavigationFetch(href, true)
-                document.querySelector('.twitter-search_box-input').blur()
-                document.querySelector('.twitter_title-home-text').innerHTML = query
-            }
+        if (utils.locationMatch('/twitter')) {
+            e.target.value !== '' &&
+                e.target.classList.contains('twitter-search_box-input') &&
+                twitterSearchBoxInputKeydown(e)
         }
     })
 
+    function twitterSearchBoxInputKeydown(e) {
+        const query = e.target.value
+        const href = `/twitter/search?q=${query}`
+        twitterUserProfileTimelineNavigationPushState(href)
+        twitterSearchLoader()
+        window.scrollTo(0, 0)
+        twitterUserProfileTimelineNavigationFetch(href)
+        document.querySelector('.twitter-search_box-input').blur()
+        document.querySelector('.twitter_title-home-text').innerHTML = query
+    }
+
     function twitterSearchLoader() {
+        const twitterUser = document.querySelector('#twitter_user')
+        twitterUser !== null && twitterUser.remove()
 
-        function removeElement(selector) {
-            if (document.querySelector(selector) !== null) {
-                document.querySelector(selector).remove()
-            }
-        }
-
-        removeElement('#twitter_user')
-
-        var tweets = document.querySelectorAll('.tweet')
+        const tweets = document.querySelectorAll('.tweet')
         for (let index = 0; index < tweets.length; index++) {
             tweets[index].remove()
         }
 
-        document.querySelector('.format_timeline').insertAdjacentHTML(
-            'afterbegin', '<div class="loader"></div>'
-        )
+        const formatTimeline = document.querySelector('.format_timeline')
+        const loader = document.createElement('div')
+        loader.classList.add('loader')
+        formatTimeline.appendChild(loader)
     }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_title-home-search')) {
-            const tthb = findParents(e.target, 'twitter_title-home-block')
-            const titleBack = tthb.querySelector('.twitter-back')
-            const titleText = tthb.querySelector('.twitter_title-home-text')
-            const titleSearch = tthb.querySelector('.twitter_title-home-search')
-            const titleRefresh = tthb.querySelector('.twitter-refresh')
-            const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
-            const titleSearchBox = tthb.querySelector('.twitter-search_box')
-            const titleSearchBoxInput = tthb.querySelector('.twitter-search_box-input')
-
-            tthb.style.gridTemplateColumns = '1fr'
-            titleBack.style.display = 'none'
-            titleText.style.display = 'none'
-            titleSearch.style.display = 'none'
-            titleRefresh.style.display = 'none'
-            titleTwitterProfile.style.display = 'none'
-            titleSearchBox.style.display = ''
-            titleSearchBoxInput.value = ''
-            titleSearchBoxInput.focus()
+            twitterTitleHomeSearchClick(e)
         }
     })
+
+    function twitterTitleHomeSearchClick(e) {
+        const tthb = findParents(e.target, 'twitter_title-home-block')
+        const tthbChildren = tthb.children
+        const titleSearchBox = tthb.querySelector('.twitter-search_box')
+        const titleSearchBoxInput = tthb.querySelector(
+            '.twitter-search_box-input'
+        )
+
+        tthb.style.grid = 'auto / auto'
+        tthb.style.padding = '0'
+        Array.from(tthbChildren).forEach(
+            element => (element.style.display = 'none')
+        )
+        titleSearchBox.style.display = ''
+        titleSearchBoxInput.value = ''
+        titleSearchBoxInput.focus()
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter-search_box-back')) {
-            const tthb = findParents(e.target, 'twitter_title-home-block')
-            const titleBack = tthb.querySelector('.twitter-back')
-            const titleText = tthb.querySelector('.twitter_title-home-text')
-            const titleSearch = tthb.querySelector('.twitter_title-home-search')
-            const titleRefresh = tthb.querySelector('.twitter-refresh')
-            const titleTwitterProfile = tthb.querySelector('.twitter_title-home-twitter-profile')
-            const titleSearchBox = tthb.querySelector('.twitter-search_box')
-
-            tthb.style.gridTemplateColumns = location.pathname === '/twitter' ?
-                '1fr 3rem 3rem 3rem' : '3rem 1fr 3rem 3rem 3rem'
-            titleBack.style.display = ''
-            titleText.style.display = ''
-            titleSearch.style.display = ''
-            titleRefresh.style.display = ''
-            titleTwitterProfile.style.display = ''
-            titleSearchBox.style.display = 'none'
-            titleSearchBox.blur()
+            twitterSearchBoxBackClick(e)
         }
     })
 
-    document.addEventListener('blur', e => {
-        if (e.target.classList.contains('twitter-search_box-input')) {
-            if (findParents(e.target, 'twitter_title-home-block')) {
-                const twitterTitleHome = findParents(e.target, 'twitter_title-home-block')
-                twitterTitleHome.querySelector('.twitter-search_box-back').click()
+    function twitterSearchBoxBackClick(e) {
+        const tthb = findParents(e.target, 'twitter_title-home-block')
+        const tthbChildren = tthb.children
+        const titleSearchBox = tthb.querySelector('.twitter-search_box')
+
+        tthb.style.grid =
+            location.pathname === '/twitter'
+                ? 'auto auto / 1fr 3rem 3rem 3rem'
+                : 'auto auto / 3rem 1fr 3rem 3rem 3rem'
+        tthb.style.padding = '0.3rem'
+        Array.from(tthbChildren).forEach(
+            element => (element.style.display = '')
+        )
+        titleSearchBox.style.display = 'none'
+        titleSearchBox.blur()
+    }
+
+    document.addEventListener(
+        'blur',
+        e => {
+            if (e.target.classList.contains('twitter-search_box-input')) {
+                if (findParents(e.target, 'twitter_title-home-block')) {
+                    twitterSearchBoxInputBlur(e)
+                }
             }
-        }
-    }, true)
+        },
+        true
+    )
+
+    function twitterSearchBoxInputBlur(e) {
+        const className = 'twitter_title-home-block'
+        const twitterTitleHome = findParents(e.target, className)
+        twitterTitleHome.querySelector('.twitter-search_box-back').click()
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_title-home-twitter-profile')) {
-            const href = '/twitter/profile'
-            const twitterProfileArea = document.querySelector('.twitter-profile')
-            if (AquaProjectsCache[href]) {
-                if (!twitterProfileArea.firstElementChild) {
-                    while (twitterProfileArea.firstChild) {
-                        twitterProfileArea.removeChild(twitterProfileArea.firstChild)
-                    }
-                    twitterProfileArea.insertAdjacentElement(
-                        'afterbegin',
-                        AquaProjectsCache[href].querySelector('.twitter-profile').cloneNode(true)
-                    )
-                }
-                twitterProfileArea.querySelector('a').click()
-            } else {
-                refreshtwitterProfile(href).then(() => {
-                    twitterProfileArea.querySelector('a').click()
-                })
-            }
-            const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-            ajaxProgressBar.style.width = '80%'
+            twitterTitleHomeTwitterProfileClick()
         }
     })
+
+    async function twitterTitleHomeTwitterProfileClick() {
+        const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+        const href = '/twitter/profile'
+        const selectors = '.twitter-profile'
+        const twitterProfileArea = document.querySelector(selectors)
+
+        if (window.AquaProjectsCache[href]) {
+            utils.repaintNode(href, selectors)
+        } else {
+            await refreshtwitterProfile(href)
+        }
+
+        twitterProfileArea.querySelector('a').click()
+        ajaxProgressBar.style.width = '80%'
+    }
 
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter-back')) {
-            const targetPage = '/twitter'
-            const currentPage = location.href.replace(location.origin, '')
-            if (history.state['currentPage'] === currentPage) {
-                easyPushState(targetPage, currentPage)
-                changeContent(targetPage)
-            } else {
-                history.back()
-            }
-
-            function easyPushState(targetPage, currentPage) {
-                const state = {
-                    'targetPage': targetPage,
-                    'currentPage': currentPage
-                }
-                history.pushState(state, null, targetPage)
-            }
+            twitterBackClick(e)
         }
     })
 
+    function twitterBackClick() {
+        const targetPage = '/twitter'
+        const currentPage = utils.getCurrentPage()
+        if (history.state['currentPage'] === currentPage) {
+            history.pushState({ targetPage, currentPage }, null, targetPage)
+            changeContent(targetPage)
+        } else {
+            history.back()
+        }
+    }
+
     function averageColorByImage(src) {
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext('2d');
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
         return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = "Anonymous"
+            const img = new Image()
+            img.crossOrigin = 'anonymous'
             img.onload = () => {
-                canvas.height = img.height;
-                canvas.width = img.width;
+                canvas.height = img.height
+                canvas.width = img.width
                 const scale = '0.05'
                 const dWidth = img.width * scale
                 const dHeight = img.height * scale
-                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, dWidth, dHeight);
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    img.width,
+                    img.height,
+                    0,
+                    0,
+                    dWidth,
+                    dHeight
+                )
                 const imageData = ctx.getImageData(0, 0, dWidth, dHeight)
 
-                var worker = new Worker('/webworker.js')
+                const worker = new Worker('/webworker.js')
                 worker.addEventListener('message', e => {
                     switch (e.data['name']) {
-                        case 'averageColor':
+                        case 'averageColor': {
                             const rgb = e.data['msg']
                             resolve(rgb)
-                            break;
-                        default:
-                            console.error(e)
+                            break
+                        }
+                        default: {
+                            error(e)
+                        }
                     }
                     worker.terminate()
                 })
                 worker.postMessage({
-                    'cmd': 'averageColor',
-                    'msg': [imageData, dWidth, dHeight]
+                    cmd: 'averageColor',
+                    msg: [imageData, dWidth, dHeight],
                 })
-            };
-            img.onerror = (e) => reject(e)
-            img.src = src;
-        });
+            }
+            img.onerror = e => reject(e)
+            img.src = src
+        })
     }
 
     function showError() {
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-        console.error('fail. something happen.')
         ajaxProgressBar.classList.add('bg-danger')
         ajaxProgressBar.style.width = '100%'
-        document.querySelector('#main').innerHTML = '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+        error('fail. something happen.')
+        const e = document.createElement('div')
+        e.innerText = 'Looks like you lost your connection. '
+        e.innerText += 'Please check it and try again.'
+        const i = document.createElement('i')
+        i.classList.add('fas', 'fa-exclamation-circle')
+        document.querySelector('#main').innerHTML =
+            '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
     }
 })()
