@@ -55,10 +55,10 @@ import * as utils from './utils.js'
         function handleIntersect(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
-                    return false
+                    return
                 }
                 if (!localStorage.getItem('twitter-view_pictures')) {
-                    return false
+                    return
                 }
                 const ttp = element.target
                 ttp.src = ttp.dataset.src
@@ -91,10 +91,10 @@ import * as utils from './utils.js'
         function handleIntersect(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
-                    return false
+                    return
                 }
                 if (!localStorage.getItem('twitter-view_clear_icon')) {
-                    return false
+                    return
                 }
                 const ttui = element.target
                 const ttuiSrc = ttui.src
@@ -479,7 +479,7 @@ import * as utils from './utils.js'
         function handleIntersect(entries, observer) {
             entries.forEach(element => {
                 if (!element.isIntersecting) {
-                    return false
+                    return
                 }
                 const maxId = formatTimeline.dataset['max_id']
                 downloadMoreTweet('', maxId)
@@ -533,7 +533,7 @@ import * as utils from './utils.js'
             utils.saveApCache(saveCacheAdress, data)
             if (href !== location.href.replace(location.origin, '')) {
                 log('It seems that you moved to a different page first.')
-                return false
+                return
             }
 
             // Insert tweets to main.
@@ -707,7 +707,7 @@ import * as utils from './utils.js'
                     ajaxProgressBar.style.width = '0%'
                     ajaxProgressBar.style.transition = ''
                 }, 200)
-                return false
+                return
             }
 
             const response = await fetching
@@ -863,7 +863,7 @@ import * as utils from './utils.js'
 
         ttpz.style.display = 'flex'
 
-        const apThemeDark = localStorage.getItem('ap-theme') === 'dark'
+        const apThemeDark = utils.getApTheme() === 'dark'
         const mediaQueryString = '(prefers-color-scheme: dark)'
         const prefersColorSchemeDark = window.matchMedia(mediaQueryString)
 
@@ -1163,7 +1163,7 @@ import * as utils from './utils.js'
             const tx = `${elementIndex * elementWidth * -1}px`
             const transformFunction = `translate3d(${tx}, 0px, 0px)`
             container.style.transform = transformFunction
-            return false
+            return
         }
 
         const tx = `${(elementIndex - 1) * elementWidth * -1}px`
@@ -1195,7 +1195,7 @@ import * as utils from './utils.js'
             const tx = `${elementIndex * elementWidth * -1}px`
             const transformFunction = `translate3d(${tx}, 0px, 0px)`
             container.style.transform = transformFunction
-            return false
+            return
         }
 
         const tx = `${(elementIndex + 1) * elementWidth * -1}px`
@@ -1508,18 +1508,14 @@ import * as utils from './utils.js'
     async function changeContent(href, anchorMode, anchorContext) {
         document.title = 'Aqua Projects - ' + location.pathname.substring(1)
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
-        if (anchorMode === 'twitter_user') {
-            changeContentTwitterUser(anchorContext)
-        } else if (anchorMode === 'tweet') {
-            changeContentTweet(anchorContext)
-        } else {
-            const changeLocation = document.querySelector('#main')
-            while (changeLocation.firstChild) {
-                changeLocation.removeChild(changeLocation.firstChild)
-            }
+        anchorMode === 'twitter_user' && changeContentTwitterUser(anchorContext)
+        anchorMode === 'tweet' && changeContentTweet(anchorContext)
+        if (anchorMode !== 'twitter_user' && anchorMode !== 'tweet') {
+            const main = document.querySelector('#main')
+            utils.emptyNode(main)
             const loader = document.createElement('div')
             loader.className = 'loader'
-            changeLocation.append(loader)
+            main.append(loader)
         }
 
         !(() => {
@@ -1556,7 +1552,7 @@ import * as utils from './utils.js'
             utils.saveApCache(href, data)
             if (href != location.href.replace(location.origin, '')) {
                 log('It seems that you moved to a different page first.')
-                return false
+                return
             }
             utils.repaintNode(href, '#main')
 
@@ -2485,7 +2481,7 @@ import * as utils from './utils.js'
             utils.saveApCache(href, data)
             if (href != location.href.replace(location.origin, '')) {
                 log('It seems that you moved to a different page first.')
-                return false
+                return
             }
             utils.repaintNode(href, '#main')
 
@@ -2592,7 +2588,7 @@ import * as utils from './utils.js'
 
     document.addEventListener('keydown', e => {
         const keyCode = e.keyCode
-        if (keyCode !== 13) return false
+        if (keyCode !== 13) return
         if (utils.locationMatch('/twitter')) {
             e.target.value !== '' &&
                 e.target.classList.contains('twitter-search_box-input') &&
