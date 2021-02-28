@@ -1,35 +1,24 @@
-import { changeTheme, findParents } from './utils.js'
-(() => {
+import { changeTheme, findParents, log, error } from './utils.js'
+import * as utils from './utils.js'
+!(() => {
     let currentSlideNumber = 0
 
     window.addEventListener('aquaprojects_popstate', () => {
-        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/newsplus') {
-            const _currentSlideNumber =
-                location.href.replace(location.origin, '') === '/newsplus' ?
-                0 : Array.from(document.querySelectorAll('.box_anchor')).findIndex(
-                    item =>
-                    item.href.replace(location.origin, '') ===
-                    location.href.replace(location.origin, '')
-                )
+        if (utils.locationMatch('/newsplus')) {
+            const _currentSlideNumber = getSlideNumber(location.href)
             jumpToSlide(_currentSlideNumber)
             activateAnchor(_currentSlideNumber)
             translateAnchors(_currentSlideNumber)
             changeTheme()
         }
     })
-    if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-        window.dispatchEvent(new Event('aquaprojects_popstate'));
+    if (utils.locationMatch('/newsplus')) {
+        window.dispatchEvent(new Event('aquaprojects_popstate'))
     }
 
     window.addEventListener('resize', () => {
-        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/newsplus') {
-            const _currentSlideNumber =
-                location.href.replace(location.origin, '') === '/newsplus' ?
-                0 : Array.from(document.querySelectorAll('.box_anchor')).findIndex(
-                    item =>
-                    item.href.replace(location.origin, '') ===
-                    location.href.replace(location.origin, '')
-                )
+        if (utils.locationMatch('/newsplus')) {
+            const _currentSlideNumber = getSlideNumber(location.href)
             jumpToSlide(_currentSlideNumber)
             translateAnchors(_currentSlideNumber)
         }
@@ -38,87 +27,94 @@ import { changeTheme, findParents } from './utils.js'
     // box_anchor
     document.addEventListener('click', e => {
         if (findParents(e.target, 'box_anchor')) {
-            const target = findParents(e.target, 'box_anchor')
-            const boxAnchorContainer = document.querySelector('.box_anchor_container')
-            const boxAnchorSibling = boxAnchorContainer.querySelectorAll('.box_anchor')
-
-            const container = document.querySelector('.box_container')
-            const elementIndex = Array.from(boxAnchorSibling).findIndex(item => item === target)
-            const elementWidth = document.querySelector('.box_element').offsetWidth
-
-            container.addEventListener('transitionend', () =>
-                container.style.transition = 'all 0ms ease 0s')
-            container.style.transition = 'all 300ms ease 0s'
-
-            container.style.transform =
-                `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
-
-            const targetPage = target.href.replace(location.origin, '')
-            const currentPage = location.href.replace(location.origin, '')
-            easyPushState(targetPage, currentPage)
-            changeContent(targetPage)
+            boxAnchorClick(e)
             e.preventDefault()
         }
     })
 
-    function changeContent(href) {
-        const ajaxProgressBar = document.querySelector('#ajax-progress-bar');
+    function boxAnchorClick(e) {
+        const target = findParents(e.target, 'box_anchor')
+        const ac = document.querySelector('.box_anchor_container')
+        const anchor = ac.querySelectorAll('.box_anchor')
 
-        activateAnchor(
-            Array.from(document.querySelectorAll('.box_anchor')).findIndex(
-                item =>
-                item.href.replace(location.origin, '') === href.replace(location.origin, '')
-            )
+        const container = document.querySelector('.box_container')
+        const elementIndex = Array.from(anchor).findIndex(
+            item => item === target
         )
-        translateAnchors(
-            Array.from(document.querySelectorAll('.box_anchor')).findIndex(
-                item =>
-                item.href.replace(location.origin, '') === href.replace(location.origin, '')
-            )
-        )
+        const element = document.querySelector('.box_element')
+        const elementWidth = element.offsetWidth
 
-        ajaxProgressBar.classList ? ajaxProgressBar.classList.remove('bg-danger') : false
-        ajaxProgressBar.parentNode.style.visibility = '';
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
+        container.style.transition = 'all 300ms ease 0s'
+
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
+
+        const targetPage = target.href.replace(location.origin, '')
+        const currentPage = utils.getCurrentPage()
+        history.pushState({ targetPage, currentPage }, null, targetPage)
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        changeContent(targetPage)
+    }
+
+    async function changeContent(href) {
+        const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+        const slideNumber = getSlideNumber(href)
+        activateAnchor(slideNumber)
+        translateAnchors(slideNumber)
+
+        utils.removeClass(ajaxProgressBar, 'bg-danger')
+        ajaxProgressBar.parentNode.style.visibility = ''
         ajaxProgressBar.style.width = '80%'
 
-        fetch(
-            href, {
+        // Cache exsists.
+        if (window.AquaProjectsCache[href]) {
+            utils.repaintNode(href, '#main', true)
+
+            ajaxProgressBar.style.width = '100%'
+
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
+        }
+
+        try {
+            const fetching = fetch(href, {
                 method: 'GET',
                 mode: 'cors',
-                credentials: 'include'
-            }
-        ).then(response => {
-            if (response.ok) {
-                return response.text()
-            } else {
-                console.error(response)
-            }
-        }).then(data => {
-            AquaProjectsCache[href] = document.createRange().createContextualFragment(data)
-            if (href !== location.href.replace(location.origin, '')) {
-                console.log('It seems that you moved to a different page first.')
-                return false
-            }
-            const changeLocation = document.querySelector('#main')
-            while (changeLocation.firstChild) changeLocation.removeChild(changeLocation.firstChild)
-            const changeLocationCloneNode =
-                AquaProjectsCache[href].cloneNode(true).querySelector('#main')
-            Array.from(changeLocationCloneNode.children).forEach(element => {
-                changeLocation.appendChild(element)
+                credentials: 'include',
             })
 
-            window.dispatchEvent(new Event('aquaprojects_popstate'));
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
+            }
+            const data = await response.text()
 
-            ajaxProgressBar.style.width = '100%';
-            ajaxProgressBar.style.transition = 'width 0.1s ease';
+            // Save Cache.
+            utils.saveApCache(href, data)
+            if (href != location.href.replace(location.origin, '')) {
+                log('It seems that you moved to a different page first.')
+                return
+            }
+            utils.repaintNode(href, '#main')
+
+            window.dispatchEvent(new Event('aquaprojects_popstate'))
+
+            ajaxProgressBar.style.width = '100%'
+            ajaxProgressBar.style.transition = 'width 0.1s ease 0s'
+
             setTimeout(() => {
-                ajaxProgressBar.parentNode.style.visibility = 'hidden';
-                ajaxProgressBar.style.width = '0%';
-                ajaxProgressBar.style.transition = '';
-            }, 200);
-        }).catch(err => {
-            console.error(err)
-        })
+                ajaxProgressBar.parentNode.style.visibility = 'hidden'
+                ajaxProgressBar.style.width = '0%'
+                ajaxProgressBar.style.transition = ''
+            }, 200)
+        } catch (err) {
+            error(err)
+        }
     }
 
     function activateAnchor(slideNumber) {
@@ -126,7 +122,7 @@ import { changeTheme, findParents } from './utils.js'
             '.box_anchor_container .box_anchor'
         )
         for (let index = 0; index < boxAnchorSibling.length; index++) {
-            const element = boxAnchorSibling[index];
+            const element = boxAnchorSibling[index]
             element.style.borderBottom = ''
             element.style.color = ''
             if (index === slideNumber) {
@@ -141,18 +137,18 @@ import { changeTheme, findParents } from './utils.js'
         const windowWidth = window.innerWidth
         if (windowWidth > 768) {
             container.style.transform = 'translate3d(0px, 0px, 0px)'
-            return false
+            return
         }
         let elementIndex = 0
         const elementWidth = document.querySelector('.box_anchor').offsetWidth
 
-        newsplusAnchorSlideNumber === 0 ||
-            newsplusAnchorSlideNumber === document.querySelectorAll('.box_anchor').length ?
-            elementIndex = newsplusAnchorSlideNumber :
-            elementIndex = newsplusAnchorSlideNumber - 1
+        const sn = newsplusAnchorSlideNumber
+        const al = document.querySelectorAll('.box_anchor').length
+        sn === 0 || sn === al ? (elementIndex = sn) : (elementIndex = sn - 1)
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
     }
 
     // box_container touchstart
@@ -194,15 +190,16 @@ import { changeTheme, findParents } from './utils.js'
 
     function boxContainerTouchStart(e, container) {
         touchingPositionPageX = e.changedTouches[0].pageX
-        touchStartScrollLeft = container.style.transform ?
-            analyzeTransform(container.style.transform) : [0, 0, 0]
+        touchStartScrollLeft = container.style.transform
+            ? analyzeTransform(container.style.transform)
+            : [0, 0, 0]
     }
 
     function boxContainerTouchMove(e, container) {
-        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
-        const translate3dX = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
-        container.style.transform = `translate3d(${translate3dX}px, 0px, 0px)`
-
+        const pageX = e.changedTouches[0].pageX
+        const amountOfMovement = touchingPositionPageX - pageX
+        const tx = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
+        container.style.transform = `translate3d(${tx}px, 0px, 0px)`
     }
 
     function boxContainerTouchEnd(e, container) {
@@ -210,64 +207,84 @@ import { changeTheme, findParents } from './utils.js'
         const elementIndex = Array.from(elements).findIndex(
             item => item === findParents(e.target, 'box_element')
         )
+        const pageX = e.changedTouches[0].pageX
         const elementWidth = elements[0].offsetWidth
-        const amountOfMovement = touchingPositionPageX - e.changedTouches[0].pageX
-
-        container.addEventListener('transitionend', () =>
-            container.style.transition = 'all 0ms ease 0s')
+        const amountOfMovement = touchingPositionPageX - pageX
+        container.addEventListener(
+            'transitionend',
+            () => (container.style.transition = 'all 0ms ease 0s')
+        )
         container.style.transition = 'all 300ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
+
         touchingPositionPageX = 0
         touchStartScrollLeft = 0
 
         let havetoChange = true
 
         if (amountOfMovement > container.offsetWidth / 6) {
-            if (elements.length - 1 < currentSlideNumber + 1) return false
-            container.style.transform =
-                `translate3d(${(elementIndex + 1) * elementWidth * -1}px, 0px, 0px)`
+            if (elements.length - 1 < currentSlideNumber + 1) {
+                return
+            }
+            const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumber += 1
         } else if (amountOfMovement < -(container.offsetWidth / 6)) {
-            if (currentSlideNumber - 1 < 0) return false
-            container.style.transform =
-                `translate3d(${(elementIndex - 1) * elementWidth * -1}px, 0px, 0px)`
+            if (currentSlideNumber - 1 < 0) {
+                return
+            }
+            const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
             currentSlideNumber -= 1
         } else {
             havetoChange = false
         }
 
-        havetoChange === true ? (() => {
-            const targetPage =
-                document.querySelectorAll('.box_anchor')[currentSlideNumber].href
-                .replace(location.origin, '')
+        havetoChange === true && havetoChangeContent()
+
+        function havetoChangeContent() {
+            const anchor = document.querySelectorAll('.box_anchor')
+            const anchorHref = anchor[currentSlideNumber].href
+            const targetPage = anchorHref.replace(location.origin, '')
             const currentPage = location.href.replace(location.origin, '')
-            easyPushState(targetPage, currentPage)
+            history.pushState({ targetPage, currentPage }, null, targetPage)
+            document.title = 'Aqua Projects - ' + location.pathname.substring(1)
             changeContent(targetPage)
-        })() : false
+        }
     }
 
     function jumpToSlide(jumpToSlideNumber) {
         const container = document.querySelector('.box_container')
-        const elements = document.querySelectorAll(`.box_element`)
+        const elements = document.querySelectorAll('.box_element')
         const elementWidth = elements[0].offsetWidth
         const elementIndex = jumpToSlideNumber
 
         container.style.transition = 'all 0ms ease 0s'
 
-        container.style.transform =
-            `translate3d(${elementIndex * elementWidth * -1}px, 0px, 0px)`
+        const tx = `${elementIndex * elementWidth * -1}px`
+        const transformFunction = `translate3d(${tx}, 0px, 0px)`
+        container.style.transform = transformFunction
 
         currentSlideNumber = jumpToSlideNumber
     }
 
-    function easyPushState(targetPage, currentPage) {
-        const state = {
-            'targetPage': targetPage,
-            'currentPage': currentPage
+    function getSlideNumber(href) {
+        if (utils.getCurrentPage() === '/newsplus') {
+            return 0
         }
-        history.pushState(state, null, targetPage)
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+
+        const anchor = document.querySelectorAll('.box_anchor')
+        return Array.from(anchor).findIndex(
+            item => removeOrigin(item.href) === removeOrigin(href)
+        )
+    }
+
+    function removeOrigin(href) {
+        return href.replace(location.origin, '')
     }
 })()
