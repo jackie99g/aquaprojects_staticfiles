@@ -1,121 +1,160 @@
 import { changeTheme, findParents } from './utils.js'
-(() => {
+import * as utils from './utils.js'
+!(() => {
     window.addEventListener('aquaprojects_popstate', () => {
-        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/weather') {
+        if (utils.locationMatch('/weather')) {
             drawWeather()
             adjustWeatherContentSize()
             changeTheme()
         }
     })
 
-    if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/weather') {
-        window.dispatchEvent(new Event('aquaprojects_popstate'));
+    if (utils.locationMatch('/weather')) {
+        window.dispatchEvent(new Event('aquaprojects_popstate'))
     }
 
     // daily-weather-left-btn
     document.addEventListener('click', e => {
         if (findParents(e.target, 'daily-weather-left-btn')) {
-            const weatherDay = document.querySelector('.weather-day')
-            scrollContentLeft(
-                document.querySelectorAll('.daily-weather')[0],
-                -weatherDay.clientWidth - weatherDay.offsetWidth,
-                200
-            )
+            dailyWeatherLeftBtnClick()
         }
     })
+
+    function dailyWeatherLeftBtnClick() {
+        const weatherDay = document.querySelector('.weather-day')
+        scrollContentLeft(
+            document.querySelectorAll('.daily-weather')[0],
+            -weatherDay.clientWidth - weatherDay.offsetWidth,
+            200
+        )
+    }
 
     // daily-weather-right-btn
     document.addEventListener('click', e => {
         if (findParents(e.target, 'daily-weather-right-btn')) {
-            const weatherDay = document.querySelector('.weather-day')
-            scrollContentLeft(
-                document.querySelectorAll('.daily-weather')[0],
-                weatherDay.clientWidth + weatherDay.offsetWidth,
-                200
-            )
+            dailyWeatherRightBtnClick()
         }
     })
+
+    function dailyWeatherRightBtnClick() {
+        const weatherDay = document.querySelector('.weather-day')
+        scrollContentLeft(
+            document.querySelectorAll('.daily-weather')[0],
+            weatherDay.clientWidth + weatherDay.offsetWidth,
+            200
+        )
+    }
 
     // hourly-weather-left-btn
     document.addEventListener('click', e => {
         if (findParents(e.target, 'hourly-weather-left-btn')) {
-            const weatherHourly = document.querySelector('.weather-hourly')
-            scrollContentLeft(
-                document.querySelectorAll('.hourly-weather')[0],
-                -weatherHourly.clientWidth - weatherHourly.offsetWidth,
-                200
-            )
-            scrollContentLeft(
-                document.querySelectorAll('.hourly-weather-chart-block')[0],
-                -weatherHourly.clientWidth - weatherHourly.offsetWidth,
-                200
-            )
+            hourlyWeatherLeftBtnClick()
         }
     })
+
+    function hourlyWeatherLeftBtnClick() {
+        const weatherHourly = document.querySelector('.weather-hourly')
+        scrollContentLeft(
+            document.querySelectorAll('.hourly-weather')[0],
+            -weatherHourly.clientWidth - weatherHourly.offsetWidth,
+            200
+        )
+        scrollContentLeft(
+            document.querySelectorAll('.hourly-weather-chart-block')[0],
+            -weatherHourly.clientWidth - weatherHourly.offsetWidth,
+            200
+        )
+    }
 
     // hourly-weather-right-btn
     document.addEventListener('click', e => {
         if (findParents(e.target, 'hourly-weather-right-btn')) {
-            const weatherHourly = document.querySelector('.weather-hourly')
-            scrollContentLeft(
-                document.querySelectorAll('.hourly-weather')[0],
-                weatherHourly.clientWidth + weatherHourly.offsetWidth,
-                200
-            )
-            scrollContentLeft(
-                document.querySelectorAll('.hourly-weather-chart-block')[0],
-                weatherHourly.clientWidth + weatherHourly.offsetWidth,
-                200
-            )
+            hourlyWeatherRightBtnClick()
         }
     })
 
+    function hourlyWeatherRightBtnClick() {
+        const weatherHourly = document.querySelector('.weather-hourly')
+        scrollContentLeft(
+            document.querySelectorAll('.hourly-weather')[0],
+            weatherHourly.clientWidth + weatherHourly.offsetWidth,
+            200
+        )
+        scrollContentLeft(
+            document.querySelectorAll('.hourly-weather-chart-block')[0],
+            weatherHourly.clientWidth + weatherHourly.offsetWidth,
+            200
+        )
+    }
 
     function drawWeather() {
-        var hourlyWeather = document.getElementsByClassName('weather-temp-hourly')
-        var hourlyWeatherDate = document.getElementsByClassName('weather-date-hourly')
-        var hourlyWeatherlist = []
-        var hourlyWeatherDatelist = []
-        var hourlyWeatherWidth = 100
-        Array.prototype.forEach.call(hourlyWeather, function (element) {
-            var weatherTemp = parseFloat(element.innerText.replace('℃', ''))
+        const hourlyWeather = document.querySelectorAll('.weather-temp-hourly')
+        const hourlyWeatherDate = document.querySelectorAll(
+            '.weather-date-hourly'
+        )
+        const hourlyWeatherlist = []
+        const hourlyWeatherDatelist = []
+        const hourlyWeatherWidth = 100
+        Array.from(hourlyWeather).forEach(element => {
+            const weatherTemp = parseFloat(element.innerText.replace('℃', ''))
             hourlyWeatherlist.push(weatherTemp)
         })
-        Array.prototype.forEach.call(hourlyWeatherDate, function (element) {
-            var weatherDate = element.innerText.split(' ')[1] + ' ' + element.innerText.split(' ')[2]
+        Array.from(hourlyWeatherDate).forEach(element => {
+            const weatherDate =
+                element.innerText.split(' ')[1] +
+                ' ' +
+                element.innerText.split(' ')[2]
             hourlyWeatherDatelist.push(weatherDate)
         })
-        var ctx = document.getElementById('weather-hourly-chart').getContext('2d')
+        const selectors = '.weather-hourly-chart'
+        const weatherHourlyChart = document.querySelector(selectors)
+        const ctx = weatherHourlyChart.getContext('2d')
         ctx.canvas.height = 100
         ctx.canvas.width = hourlyWeatherlist.length * hourlyWeatherWidth
 
-        const getScript = (n, t, i = false, r = false, p = "text/javascript") => new Promise((u, f) => {
-            function s(n, t) {
-                (t || !e.readyState || /loaded|complete/.test(e.readyState)) && (e.onload = null, e.onreadystatechange = null, e = undefined, t ? f() : u())
-            }
-            let e = document.createElement("script");
-            const o = t || document.getElementsByTagName("script")[0];
-            e.type = p;
-            e.async = i;
-            e.defer = r;
-            e.onload = s;
-            e.onreadystatechange = s;
-            e.src = n;
-            o.parentNode.insertBefore(e, o.nextSibling);
-        })
-        getScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js').then(() => drawChart())
+        function getScript(source) {
+            return new Promise((resolve, reject) => {
+                let script = document.createElement('script')
+                const prior = document.getElementsByTagName('script')[0]
+                script.async = 1
+
+                script.onload = script.onreadystatechange = (_, isAbort) => {
+                    if (
+                        isAbort ||
+                        !script.readyState ||
+                        /loaded|complete/.test(script.readyState)
+                    ) {
+                        script.onload = script.onreadystatechange = null
+                        script = undefined
+
+                        !isAbort && resolve()
+                        isAbort && reject()
+                    }
+                }
+
+                script.src = source
+                prior.parentNode.insertBefore(script, prior)
+            })
+        }
+
+        getScript(
+            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js'
+        ).then(() => drawChart())
 
         function drawChart() {
-            var myChart = new Chart(ctx, {
+            /* eslint-disable */
+            const myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: hourlyWeatherDatelist,
-                    datasets: [{
-                        data: hourlyWeatherlist,
-                        backgroundColor: 'rgba(29, 161, 242, 0.2)',
-                        borderColor: 'rgba(29, 161, 242, 1)',
-                        borderWidth: 1
-                    }]
+                    datasets: [
+                        {
+                            data: hourlyWeatherlist,
+                            backgroundColor: 'rgba(29, 161, 242, 0.2)',
+                            borderColor: 'rgba(29, 161, 242, 1)',
+                            borderWidth: 1,
+                        },
+                    ],
                 },
                 options: {
                     legend: {
@@ -123,36 +162,43 @@ import { changeTheme, findParents } from './utils.js'
                     },
                     responsive: false,
                     scales: {
-                        xAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                            }
-                        }],
-                        yAxes: [{
-                            ticks: {
-                                display: false,
+                        xAxes: [
+                            {
+                                ticks: {
+                                    beginAtZero: true,
+                                },
                             },
-                            gridLines: {
-                                display: false,
-                            }
-                        }],
-                    }
-                }
+                        ],
+                        yAxes: [
+                            {
+                                ticks: {
+                                    display: false,
+                                },
+                                gridLines: {
+                                    display: false,
+                                },
+                            },
+                        ],
+                    },
+                },
             })
+            /* eslint-enable */
         }
     }
 
     window.addEventListener('resize', () => {
-        if ('/' + location.pathname.replace(location.origin, '').split('/')[1] === '/weather') {
+        if (utils.locationMatch('/weather')) {
             adjustWeatherContentSize()
         }
     })
 
     function adjustWeatherContentSize() {
-        var windowWidth = window.innerWidth;
-        var dailyWeather = document.querySelector('.daily-weather')
-        var hourlyWeather = document.querySelector('.hourly-weather')
-        var hourlyWeatherChartBlock = document.querySelector('.hourly-weather-chart-block')
+        const windowWidth = window.innerWidth
+        const dailyWeather = document.querySelector('.daily-weather')
+        const hourlyWeather = document.querySelector('.hourly-weather')
+        const hourlyWeatherChartBlock = document.querySelector(
+            '.hourly-weather-chart-block'
+        )
         if (windowWidth < 768) {
             dailyWeather.style.overflowX = 'auto'
             hourlyWeather.style.overflowX = 'auto'
@@ -165,11 +211,11 @@ import { changeTheme, findParents } from './utils.js'
     }
 
     function scrollContentLeft(n, t, i) {
-        var r = new Date,
+        const r = new Date(),
             u = n.scrollLeft,
             f = setInterval(() => {
-                var e = new Date - r;
-                e > i && (clearInterval(f), e = i);
+                let e = new Date() - r
+                e > i && (clearInterval(f), (e = i))
                 n.scrollLeft = u + t * (e / i)
             }, 10)
     }
