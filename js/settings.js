@@ -1,294 +1,343 @@
-import { changeTheme, findParents, getCookie } from './utils.js'
-(() => {
+import { changeTheme, findParents, getCookie, error } from './utils.js'
+import * as utils from './utils.js'
+!(() => {
     window.addEventListener('aquaprojects_popstate', () => {
-        if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
+        if (utils.locationMatch('/settings')) {
             initReduceAnimation()
             initSelectTheme()
             initSidebarPosition()
             changeTheme()
         }
     })
-    if (`/${location.pathname.replace(location.origin, '').split('/')[1]}` === '/settings') {
-        window.dispatchEvent(new Event('aquaprojects_popstate'));
+    if (utils.locationMatch('/settings')) {
+        window.dispatchEvent(new Event('aquaprojects_popstate'))
     }
 
     // seamless_configuration-view
     document.addEventListener('click', e => {
         if (findParents(e.target, 'seamless_configuration-view')) {
-            const target = findParents(e.target, 'seamless_configuration-view')
-            const seamlessConfiguration = findParents(e.target, 'seamless_configuration')
-            if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
-                const targetPage = target.href.replace(location.origin, '')
-                const currentPage = location.href.replace(location.origin, '')
-                history.pushState({ targetPage, currentPage }, null, targetPage)
-            }
-
-            const configurationGroup = findParents(target, 'seamless_configuration-group')
-
-            const configurationSiblings = configurationGroup.children
-            const configuration = findParents(target, 'seamless_configuration')
-
-            const configurationViewSiblings = configuration.children
-            const configurationView = findParents(target, 'seamless_configuration-view')
-
-            // Switch from viewing to editing.
-            for (let index = 0; index < configurationViewSiblings.length; index++) {
-                const element = configurationViewSiblings[index];
-                element.style.display = ''
-            }
-            configurationView.style.display = 'none'
-
-            // All view change into display none.
-            for (let index = 0; index < configurationSiblings.length; index++) {
-                const element = configurationSiblings[index];
-                const elementView = element.querySelector('.seamless_configuration-view')
-                elementView.style.display = 'none'
-            }
-
-            if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
-                AquaProjectsCache[location.href.replace(location.origin, '')] =
-                    document.cloneNode(true)
-            }
-
-            document.title = 'Aqua Projects - ' + location.pathname.substring(1)
-            e.preventDefault()
+            seamlessConfigurationViewClick(e)
         }
     })
+
+    function seamlessConfigurationViewClick(e) {
+        const target = findParents(e.target, 'seamless_configuration-view')
+        const sc = findParents(e.target, 'seamless_configuration')
+        if (!sc.className.includes('seamless_configuration-not_tracking')) {
+            const targetPage = target.href.replace(location.origin, '')
+            const currentPage = location.href.replace(location.origin, '')
+            history.pushState({ targetPage, currentPage }, null, targetPage)
+        }
+
+        const cg = findParents(target, 'seamless_configuration-group')
+
+        const cgChildren = cg.children
+        const configuration = findParents(target, 'seamless_configuration')
+
+        const configurationViewSiblings = configuration.children
+        const cv = findParents(target, 'seamless_configuration-view')
+
+        // Switch from viewing to editing.
+        for (let index = 0; index < configurationViewSiblings.length; index++) {
+            const element = configurationViewSiblings[index]
+            element.style.display = ''
+        }
+        cv.style.display = 'none'
+
+        // All view change into display none.
+        for (let index = 0; index < cgChildren.length; index++) {
+            const element = cgChildren[index]
+            const view = element.querySelector('.seamless_configuration-view')
+            view.style.display = 'none'
+        }
+
+        if (!sc.className.includes('seamless_configuration-not_tracking')) {
+            const cacheName = location.href.replace(location.origin, '')
+            window.AquaProjectsCache[cacheName] = document.cloneNode(true)
+        }
+
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        e.preventDefault()
+    }
 
     // seamless_configuration-back_button
     document.addEventListener('click', e => {
         if (findParents(e.target, 'seamless_configuration-back_button')) {
-            const target = findParents(e.target, 'seamless_configuration-back_button')
-            const seamlessConfiguration = findParents(e.target, 'seamless_configuration')
-            if (!seamlessConfiguration.className.includes('seamless_configuration-not_tracking')) {
-                const targetPage = '/settings'
-                const currentPage = location.href.replace(location.origin, '')
-                history.state['currentPage'] === targetPage
-                    ? history.back() : history.pushState({ targetPage, currentPage }, null, targetPage)
-            }
-
-            const configurationGroup = findParents(target, 'seamless_configuration-group')
-
-            const configurationSiblings = configurationGroup.children
-            const configuration = findParents(target, 'seamless_configuration')
-
-            const configurationEditSiblings = configuration.children
-            const configurationEdit = findParents(target, 'seamless_configuration-edit')
-
-            // Switch from editing to view.
-            for (let index = 0; index < configurationEditSiblings.length; index++) {
-                const element = configurationEditSiblings[index];
-                element.style.display = 'flex'
-            }
-            configurationEdit.style.display = 'none'
-
-            // All view change into display flex.
-            for (let index = 0; index < configurationSiblings.length; index++) {
-                const element = configurationSiblings[index];
-                const elementView = element.querySelector('.seamless_configuration-view')
-                elementView.style.display = 'flex'
-            }
-
-            document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+            semalessConfigurationBackButtonClick(e)
         }
     })
+
+    function semalessConfigurationBackButtonClick(e) {
+        const target = findParents(
+            e.target,
+            'seamless_configuration-back_button'
+        )
+        const sc = findParents(e.target, 'seamless_configuration')
+        if (!sc.className.includes('seamless_configuration-not_tracking')) {
+            const targetPage = '/settings'
+            const currentPage = location.href.replace(location.origin, '')
+            const data = { targetPage, currentPage }
+            history.state['currentPage'] === targetPage
+                ? history.back()
+                : history.pushState(data, null, targetPage)
+        }
+
+        const cg = findParents(target, 'seamless_configuration-group')
+
+        const cgChildren = cg.children
+        const configuration = findParents(target, 'seamless_configuration')
+
+        const configurationEditSiblings = configuration.children
+        const ce = findParents(target, 'seamless_configuration-edit')
+
+        // Switch from editing to view.
+        for (let index = 0; index < configurationEditSiblings.length; index++) {
+            const element = configurationEditSiblings[index]
+            element.style.display = 'flex'
+        }
+        ce.style.display = 'none'
+
+        // All view change into display flex.
+        for (let index = 0; index < cgChildren.length; index++) {
+            const element = cgChildren[index]
+            const view = element.querySelector('.seamless_configuration-view')
+            view.style.display = 'flex'
+        }
+
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+    }
 
     // seamless_configuration-save_button
     document.addEventListener('click', e => {
         if (findParents(e.target, 'seamless_configuration-save_button')) {
-            const configuration = findParents(e.target, 'seamless_configuration')
-            const configurationInput = configuration.querySelector('input')
-            const configurationInputText = configurationInput.value
-            configurationInputText === undefined ? '' : configurationInputText
-
-            configuration.querySelector('.status').innerHTML = 'Sending...'
-
-            let jsondata = {
-                user_metadata: {
-                    timeline_background: configurationInputText
-                }
-            }
-            const category = location.href.replace(location.origin, '').split('/')[2]
-            if (category !== 'background') {
-                jsondata = {
-                    [category]: configurationInputText
-                }
-            }
-
-            const href = location.href.replace(location.origin, '')
-            fetch(
-                href, {
-                    method: 'POST',
-                    mode: 'cors',
-                    credentials: 'include',
-                    body: JSON.stringify(jsondata),
-                    headers: {
-                        "X-CSRFToken": getCookie('csrftoken')
-                    },
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                }
-            }).then(data => {
-                configuration.querySelector('.status').innerHTML = `Success!: ${data}`
-            }).catch(err => {
-                console.error(err)
-                configuration.querySelector('.status').innerHTML = `Fail...: ${err}`
-            })
+            seamlessConfigurationSaveButtonClick(e)
         }
     })
 
+    async function seamlessConfigurationSaveButtonClick(e) {
+        const configuration = findParents(e.target, 'seamless_configuration')
+        const configurationInput = configuration.querySelector('input')
+        const configurationInputText = configurationInput.value
+        configurationInputText === undefined ? '' : configurationInputText
+
+        const cStatus = configuration.querySelector('.status')
+        cStatus.innerHTML = 'Sending...'
+
+        let jsondata = {
+            user_metadata: {
+                timeline_background: configurationInputText,
+            },
+        }
+        const category = utils.getCurrentPage().split('/')[2]
+        if (category !== 'background') {
+            jsondata = {
+                [category]: configurationInputText,
+            }
+        }
+
+        const href = location.href.replace(location.origin, '')
+
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                body: JSON.stringify(jsondata),
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
+            }
+            const data = await response.text()
+
+            cStatus.innerHTML = `Success!: ${data}`
+        } catch (err) {
+            error(err)
+            cStatus.innerHTML = `Fail...: ${err}`
+        }
+    }
 
     // seamless_configuration-form-radio
     document.addEventListener('click', e => {
         if (findParents(e.target, 'seamless_configuration-form-radio')) {
-            const target = findParents(e.target, 'seamless_configuration-form-radio')
-            target.querySelector('input').click()
+            seamlessConfigurationformRadioClick(e)
         }
     })
+
+    function seamlessConfigurationformRadioClick(e) {
+        const target = findParents(
+            e.target,
+            'seamless_configuration-form-radio'
+        )
+        target.querySelector('input').click()
+    }
 
     // connect-google
     document.addEventListener('click', e => {
         if (findParents(e.target, 'connect-google')) {
-            const googleStatus = e.target.parentNode.querySelector('.google-status')
-            const googleStatusMessage = e.target.parentNode.querySelector('.google-status-message')
-            const href = '/settings/connect/google'
-
-            googleStatus.classList.add('loader')
-            googleStatusMessage.innerHTML = 'Running...'
-
-            fetch(
-                href, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include'
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                    googleStatus.classList.remove('loader')
-                    googleStatusMessage.innerHTML = ''
-                    googleStatus.innerHTML = 'failed...'
-                }
-            }).then(data => {
-                googleStatus.classList.remove('loader')
-                googleStatusMessage.innerHTML = ''
-                googleStatus.innerHTML = `Succeed! ${data}`
-            }).catch(err => {
-                console.error(err)
-            })
+            connectGoogleClick(e)
         }
     })
+
+    async function connectGoogleClick(e) {
+        const gs = e.target.parentNode.querySelector('.google-status')
+        const gsm = e.target.parentNode.querySelector('.google-status-message')
+        const href = '/settings/connect/google'
+
+        gs.classList.add('loader')
+        gsm.innerHTML = 'Running...'
+
+        try {
+            const fetching = fetch(href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
+            }
+            const data = await response.text()
+
+            gs.classList.remove('loader')
+            gsm.innerHTML = ''
+            gs.innerHTML = `Succeed! ${data}`
+        } catch (err) {
+            error(err)
+            gs.classList.remove('loader')
+            gsm.innerHTML = ''
+            gs.innerHTML = 'failed...'
+        }
+    }
 
     // disconnect-google
     document.addEventListener('click', e => {
         if (findParents(e.target, 'disconnect-google')) {
-            const googleStatus = e.target.parentNode.querySelector('.google-status')
-            const googleStatusMessage = e.target.parentNode.querySelector('.google-status-message')
-            const href = '/settings/disconnect/google'
-
-            googleStatus.classList.add('loader')
-            googleStatusMessage.innerHTML = 'Running...'
-
-            fetch(
-                href, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include'
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                    googleStatus.classList.remove('loader')
-                    googleStatusMessage.innerHTML = ''
-                    googleStatus.innerHTML = 'failed...'
-                }
-            }).then(data => {
-                googleStatus.classList.remove('loader')
-                googleStatusMessage.innerHTML = ''
-                googleStatus.innerHTML = `Succeed! ${data}`
-            }).catch(err => {
-                console.error(err)
-            })
+            disconnectGoogleClick(e)
         }
     })
+
+    async function disconnectGoogleClick(e) {
+        const gs = e.target.parentNode.querySelector('.google-status')
+        const gsm = e.target.parentNode.querySelector('.google-status-message')
+        const href = '/settings/disconnect/google'
+
+        gs.classList.add('loader')
+        gsm.innerHTML = 'Running...'
+
+        try {
+            const fetching = fetch(href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
+            }
+            const data = await response.text()
+
+            gs.classList.remove('loader')
+            gsm.innerHTML = ''
+            gs.innerHTML = `Succeed! ${data}`
+        } catch (err) {
+            error(err)
+            gs.classList.remove('loader')
+            gsm.innerHTML = ''
+            gs.innerHTML = 'failed...'
+        }
+    }
 
     // settings-delete_account
     document.addEventListener('click', e => {
         if (findParents(e.target, 'settings-delete_account')) {
-            const href = '/settings/delete/user'
-
-            fetch(
-                href, {
-                    method: 'POST',
-                    mode: 'cors',
-                    credentials: 'include',
-                    headers: {
-                        "X-CSRFToken": getCookie('csrftoken')
-                    }
-                }
-            ).then(response => {
-                if (response.ok) {
-                    return response.text()
-                } else {
-                    console.error(response)
-                }
-            }).then(data => {
-                console.log(data)
-                location.href = '/logout'
-            }).catch(err => {
-                console.error(err)
-            })
+            settingsDeleteAccountClick()
         }
     })
 
-    // sidebar_position changes
-    document.addEventListener('change', e => {
-        if (findParents(e.target, 'sidebar_position')) {
-            const target = findParents(e.target, 'seamless_configuration-form-radio')
-            const seamlessConfigurationFormRadio =
-                target.parentNode.querySelectorAll('.seamless_configuration-form-radio')
-            const radioIndex = Array.from(seamlessConfigurationFormRadio).findIndex(
-                item => item === target
-            )
-            let sidebar_position = 'top'
-            switch (radioIndex) {
-                case 1:
-                    localStorage.setItem('ap_sidebar_position', 'bottom')
-                    sidebar_position = 'bottom'
-                    break
-                case 2:
-                    localStorage.setItem('ap_sidebar_position', 'off')
-                    sidebar_position = 'off'
-                    break
-                default:
-                    localStorage.removeItem('ap_sidebar_position')
-                    const expires = new Date().toUTCString()
-                    document.cookie = `ap_sidebar_position=; path=/; expires=${expires}`
-                    return sidebarPosition()
+    async function settingsDeleteAccountClick() {
+        const href = '/settings/delete/user'
+
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
             }
-            sidebarPosition(sidebar_position)
-            const currentDate = new Date()
-            currentDate.setFullYear(currentDate.getFullYear() + 1)
-            const expires = currentDate.toUTCString()
-            document.cookie = `ap_sidebar_position=${sidebar_position}; path=/; expires=${expires}`
+            await response.text()
+
+            location.href = '/logout'
+        } catch (err) {
+            error(err)
         }
+    }
+
+    function sidebarPositionChange(e) {
+        const target = findParents(
+            e.target,
+            'seamless_configuration-form-radio'
+        )
+        const seamlessConfigurationFormRadio = target.parentNode.querySelectorAll(
+            '.seamless_configuration-form-radio'
+        )
+        const radioIndex = Array.from(seamlessConfigurationFormRadio).findIndex(
+            item => item === target
+        )
+        let sidebar_position = 'top'
+        switch (radioIndex) {
+            case 1: {
+                localStorage.setItem('ap_sidebar_position', 'bottom')
+                sidebar_position = 'bottom'
+                break
+            }
+            case 2: {
+                localStorage.setItem('ap_sidebar_position', 'off')
+                sidebar_position = 'off'
+                break
+            }
+            default: {
+                localStorage.removeItem('ap_sidebar_position')
+                const expires = new Date().toUTCString()
+                document.cookie = `ap_sidebar_position=; path=/; expires=${expires}`
+                return sidebarPosition()
+            }
+        }
+        sidebarPosition(sidebar_position)
+        const currentDate = new Date()
+        currentDate.setFullYear(currentDate.getFullYear() + 1)
+        const expires = currentDate.toUTCString()
+        document.cookie = `ap_sidebar_position=${sidebar_position}; path=/; expires=${expires}`
 
         function sidebarPosition(sidebarPositionNumber) {
             const dashboardPannel =
-                document.querySelector('.dashboard_pannel') !== null ?
-                document.querySelector('.dashboard_pannel') :
-                document.querySelector('.dashboard_pannel_0')
-            var customSidePannelSm = dashboardPannel.querySelector('.custom_side_pannel_sm')
-            var customSidePannelSmParent = customSidePannelSm.parentNode
-            var dashboardAnchorGroup = customSidePannelSmParent.querySelector('.dashboard_anchor_group')
+                document.querySelector('.dashboard_pannel') !== null
+                    ? document.querySelector('.dashboard_pannel')
+                    : document.querySelector('.dashboard_pannel_0')
+            const customSidePannelSm = dashboardPannel.querySelector(
+                '.custom_side_pannel_sm'
+            )
+            const customSidePannelSmParent = customSidePannelSm.parentNode
+            const dashboardAnchorGroup = customSidePannelSmParent.querySelector(
+                '.dashboard_anchor_group'
+            )
             if (sidebarPositionNumber === undefined) {
                 customSidePannelSmParent.style.display = ''
                 customSidePannelSmParent.style.width = '100%'
@@ -303,7 +352,6 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 dashboardAnchorGroup.classList.add('flex_box_sm')
                 dashboardPannel.classList.remove('dashboard_pannel')
                 dashboardPannel.classList.add('dashboard_pannel_0')
-
             } else if (sidebarPositionNumber === 'bottom') {
                 customSidePannelSmParent.style.display = ''
                 customSidePannelSmParent.style.width = ''
@@ -313,91 +361,126 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 dashboardPannel.classList.add('dashboard_pannel_0')
             }
         }
+    }
+    // sidebar_position changes
+    document.addEventListener('change', e => {
+        if (findParents(e.target, 'sidebar_position')) {
+            sidebarPositionChange(e)
+        }
     })
 
     // reduce_animation changes
     document.addEventListener('change', e => {
         if (findParents(e.target, 'reduce_animation')) {
-            findParents(e.target, 'reduce_animation').querySelector('input').checked ?
-                localStorage.setItem('twitter-reduce_animation', true) :
-                localStorage.removeItem('twitter-reduce_animation')
+            reduceAnimationChange(e)
         }
     })
 
+    function reduceAnimationChange(e) {
+        const target = findParents(e.target, 'reduce_animation')
+        if (target.querySelector('input').checked) {
+            localStorage.setItem('twitter-reduce_animation', true)
+        } else {
+            localStorage.removeItem('twitter-reduce_animation')
+        }
+    }
+
     function initReduceAnimation() {
-        const reduceAnimationElement = document.querySelector('.reduce_animation')
-        reduceAnimationElement.style.display = ''
-        localStorage.getItem('twitter-reduce_animation') ?
-            reduceAnimationElement.querySelector('input').checked = 'chekced' :
-            reduceAnimationElement.querySelector('input').checked = ''
+        const reduceAnimation = document.querySelector('.reduce_animation')
+        reduceAnimation.style.display = ''
+        const input = reduceAnimation.querySelector('input')
+        const tra = localStorage.getItem('twitter-reduce_animation')
+        input.checked = tra ? 'chekced' : ''
     }
 
     // .seamless_configuration-form.select_theme
     document.addEventListener('click', e => {
         if (findParents(e.target, 'select_theme')) {
-            const target = findParents(e.target, 'seamless_configuration-form-radio')
-            const seamlessConfigurationFormRadio =
-                target.parentNode.querySelectorAll('.seamless_configuration-form-radio')
-            const radioIndex = Array.from(seamlessConfigurationFormRadio).findIndex(
-                item => item === target
-            )
-            switch (radioIndex) {
-                case 1:
-                    localStorage.setItem('ap-theme', 'dark')
-                    break
-                case 2:
-                    localStorage.setItem('ap-theme', 'light')
-                    break
-                default:
-                    localStorage.removeItem('ap-theme')
-                    const expires = new Date().toUTCString()
-                    document.cookie = `ap_theme=; path=/; expires=${expires}`
-                    return changeTheme()
-                    break
-            }
-            const APTHEME = localStorage.getItem('ap-theme') === 'dark' ? 'dark' : 'light'
-            const currentDate = new Date()
-            currentDate.setFullYear(currentDate.getFullYear() + 1)
-            const expires = currentDate.toUTCString()
-            document.cookie = `ap_theme=${APTHEME}; path=/; expires=${expires}`
-
-            changeTheme()
+            selectThemeClick(e)
         }
     })
 
+    function selectThemeClick(e) {
+        const target = findParents(
+            e.target,
+            'seamless_configuration-form-radio'
+        )
+        const seamlessConfigurationFormRadio = target.parentNode.querySelectorAll(
+            '.seamless_configuration-form-radio'
+        )
+        const radioIndex = Array.from(seamlessConfigurationFormRadio).findIndex(
+            item => item === target
+        )
+        switch (radioIndex) {
+            case 1: {
+                localStorage.setItem('ap-theme', 'dark')
+                break
+            }
+            case 2: {
+                localStorage.setItem('ap-theme', 'light')
+                break
+            }
+            default: {
+                localStorage.removeItem('ap-theme')
+                const expires = new Date().toUTCString()
+                document.cookie = `ap_theme=; path=/; expires=${expires}`
+                return changeTheme()
+            }
+        }
+        const APTHEME = utils.getApTheme()
+        const currentDate = new Date()
+        currentDate.setFullYear(currentDate.getFullYear() + 1)
+        const expires = currentDate.toUTCString()
+        document.cookie = `ap_theme=${APTHEME}; path=/; expires=${expires}`
+
+        changeTheme()
+    }
+
     function initSelectTheme() {
-        const selectTheme = document.querySelector('.seamless_configuration-form.select_theme')
+        const selectTheme = document.querySelector(
+            '.seamless_configuration-form.select_theme'
+        )
         selectTheme.style.display = ''
-        const seamlessConfigurationFormRadio =
-            selectTheme.querySelectorAll('.seamless_configuration-form-radio')
-        switch (localStorage.getItem('ap-theme')) {
-            case 'dark':
+        const seamlessConfigurationFormRadio = selectTheme.querySelectorAll(
+            '.seamless_configuration-form-radio'
+        )
+        switch (utils.getApTheme()) {
+            case 'dark': {
                 seamlessConfigurationFormRadio[1].querySelector('input').click()
                 break
-            case 'light':
+            }
+            case 'light': {
                 seamlessConfigurationFormRadio[2].querySelector('input').click()
                 break
-            default:
+            }
+            default: {
                 seamlessConfigurationFormRadio[0].querySelector('input').click()
                 break
+            }
         }
     }
 
     function initSidebarPosition() {
-        const sidebarPosition = document.querySelector('.seamless_configuration-form.sidebar_position')
+        const sidebarPosition = document.querySelector(
+            '.seamless_configuration-form.sidebar_position'
+        )
         sidebarPosition.style.display = ''
-        const seamlessConfigurationFormRadio =
-            sidebarPosition.querySelectorAll('.seamless_configuration-form-radio')
+        const seamlessConfigurationFormRadio = sidebarPosition.querySelectorAll(
+            '.seamless_configuration-form-radio'
+        )
         switch (localStorage.getItem('ap_sidebar_position')) {
-            case 'bottom':
+            case 'bottom': {
                 seamlessConfigurationFormRadio[1].querySelector('input').click()
                 break
-            case 'off':
+            }
+            case 'off': {
                 seamlessConfigurationFormRadio[2].querySelector('input').click()
                 break
-            default:
+            }
+            default: {
                 seamlessConfigurationFormRadio[0].querySelector('input').click()
                 break
+            }
         }
     }
 })()
