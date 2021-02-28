@@ -1,3 +1,7 @@
+#main {
+    padding: 0;
+}
+
 .btn,
 h1 {
     font-size: inherit;
@@ -481,10 +485,6 @@ a:hover {
     border-right-style: solid;
     border-right-width: 1px;
     padding: 15px;
-}
-
-.main_content {
-    padding: 0;
 }
 
 .content_display {
