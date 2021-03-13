@@ -885,36 +885,28 @@ import * as utils from './utils.js'
         jumpToSlide(currentImgNumber)
         selectedTweetTwitterPicture = currentImg
         tweetTwitterPictureZoomOpen(currentImgNumber)
-    }
-
-    // tweet-twitter_picture_zoom-container
-    document.addEventListener('touchstart', e => {
-        if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
-            const container = findParents(
-                e.target,
-                'tweet-twitter_picture_zoom-container'
-            )
+        const touchstart = e => {
+            const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
+            const container = findParents(e.target, ttpzcClassName)
             boxContainerTouchStart(e, container)
+            e.preventDefault()
         }
-    })
-
-    // tweet-twitter_picture_zoom-container
-    document.addEventListener('touchmove', e => {
-        if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
+        const touchmove = e => {
             const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
             const container = findParents(e.target, ttpzcClassName)
             boxContainerTouchMove(e, container)
+            e.preventDefault()
         }
-    })
-
-    // tweet-twitter_picture_zoom-container
-    document.addEventListener('touchend', e => {
-        if (findParents(e.target, 'tweet-twitter_picture_zoom-container')) {
+        const touchend = e => {
             const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
             const container = findParents(e.target, ttpzcClassName)
             boxContainerTouchEnd(e, container)
+            e.preventDefault()
         }
-    })
+        ttpz.addEventListener('touchstart', touchstart)
+        ttpz.addEventListener('touchmove', touchmove)
+        ttpz.addEventListener('touchend', touchend)
+    }
 
     // // tweet-twitter_picture_zoom-container
     // document.addEventListener('mousedown', e => {
