@@ -1257,10 +1257,6 @@ import * as utils from './utils.js'
         container.style.transform = transformFunction
 
         currentSlideNumberProxy.number = jumpToSlideNumber
-
-        setTimeout(() => {
-            AverageColorByImageOnTweetTwitterPictureZoom()
-        }, 0)
     }
 
     let selectedTweetTwitterPicture = null
@@ -1300,8 +1296,12 @@ import * as utils from './utils.js'
                     const element = ttpze[index]
                     const elementDiv = element.querySelector('div')
                     const elementImg = element.querySelector('img')
+                    const left = Math.abs(index * elementWidth * -1)
                     elementDiv.style.height = '100%'
                     elementDiv.style.width = '100%'
+                    elementDiv.style.top = '0'
+                    elementDiv.style.left = `${left}px`
+                    elementDiv.style.overflow = 'hidden'
                     elementImg.style.height = '100%'
                     elementImg.style.width = '100%'
                 }
@@ -1315,16 +1315,11 @@ import * as utils from './utils.js'
                 targetImg.style.height = '100%'
                 targetImg.style.width = '100%'
             }, 0)
-            const transitionendEvent = () => {
-                setTimeout(() => {
-                    AverageColorByImageOnTweetTwitterPictureZoom()
-                    targetDiv.removeEventListener(
-                        'transitionend',
-                        transitionendEvent
-                    )
-                }, 100)
+            const transitionend = () => {
+                AverageColorByImageOnTweetTwitterPictureZoom()
+                targetDiv.removeEventListener('transitionend', transitionend)
             }
-            targetDiv.addEventListener('transitionend', transitionendEvent)
+            targetDiv.addEventListener('transitionend', transitionend)
         }
         const body = document.querySelector('body')
         body.style.marginRight = `${window.innerWidth - body.offsetWidth}px`
