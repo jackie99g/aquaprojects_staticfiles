@@ -848,12 +848,14 @@ import * as utils from './utils.js'
             const ttpze = document.createElement('div')
             ttpze.className = 'tweet-twitter_picture_zoom-element'
 
+            const div = document.createElement('div')
             const ttpzei = document.createElement('img')
             ttpzei.className = 'tweet-twitter_picture_zoom-element_img'
             ttpzei.src = ImgTable[index]
             ttpzei.crossOrigin = 'anonymous'
 
-            ttpze.appendChild(ttpzei)
+            div.appendChild(ttpzei)
+            ttpze.appendChild(div)
             ttpzc.appendChild(ttpze)
         }
 
@@ -881,6 +883,7 @@ import * as utils from './utils.js'
         }
 
         jumpToSlide(currentImgNumber)
+        selectedTweetTwitterPicture = currentImg
         tweetTwitterPictureZoomOpen(currentImgNumber)
     }
 
@@ -1227,13 +1230,68 @@ import * as utils from './utils.js'
         }, 0)
     }
 
+    let selectedTweetTwitterPicture = null
+
     function tweetTwitterPictureZoomOpen(currentImgNumber) {
         if (localStorage.getItem('twitter-reduce_animation') === null) {
             const ttpzeSelectors = '.tweet-twitter_picture_zoom-element'
             const ttpze = document.querySelectorAll(ttpzeSelectors)
             const targetTtpze = ttpze[currentImgNumber]
-            utils.removeClass(targetTtpze, 'fadeOutUp')
-            targetTtpze.classList.add('animated', 'fadeInUp')
+
+            const elementWidth = window.innerWidth
+            const elementIndex = currentImgNumber
+            const tx = `${Math.abs(elementIndex * elementWidth * -1)}px`
+
+            const targetDiv = targetTtpze.querySelector('div')
+            const DOMRect = selectedTweetTwitterPicture.getBoundingClientRect()
+            const duration = 0.15
+            targetDiv.style.position = 'absolute'
+            targetDiv.style.height = `${DOMRect.height}px`
+            targetDiv.style.top = `${DOMRect.top}px`
+            targetDiv.style.left = `calc(${DOMRect.left}px + ${tx})`
+            targetDiv.style.width = `${DOMRect.width}px`
+            targetDiv.style.overflow = 'hidden'
+            targetDiv.style.transition = `${duration}s`
+
+            const targetImg = targetTtpze.querySelector('img')
+            const targetImgDOMRect = targetImg.getBoundingClientRect()
+            const picWidth = targetImgDOMRect.width
+            const scale = DOMRect.width / picWidth
+            targetImg.style.transform = `scale(${scale})`
+
+            const ttpzc = document.querySelector('.tweet-twitter_picture_zoom')
+            ttpzc.style.transition = `${duration}s`
+            setTimeout(() => {
+                for (let index = 0; index < ttpze.length; index++) {
+                    if (index === currentImgNumber) continue
+                    const element = ttpze[index]
+                    const elementDiv = element.querySelector('div')
+                    const elementImg = element.querySelector('img')
+                    elementDiv.style.height = '100%'
+                    elementDiv.style.width = '100%'
+                    elementImg.style.height = '100%'
+                    elementImg.style.width = '100%'
+                }
+                const left = Math.abs(elementIndex * elementWidth * -1)
+                targetDiv.style.height = '100%'
+                targetDiv.style.width = '100%'
+                targetDiv.style.top = '0'
+                targetDiv.style.left = `${left}px`
+                targetImg.style.transition = `${duration / 8}s`
+                targetImg.style.transform = ''
+                targetImg.style.height = '100%'
+                targetImg.style.width = '100%'
+            }, 0)
+            const transitionendEvent = () => {
+                setTimeout(() => {
+                    AverageColorByImageOnTweetTwitterPictureZoom()
+                    targetDiv.removeEventListener(
+                        'transitionend',
+                        transitionendEvent
+                    )
+                }, 100)
+            }
+            targetDiv.addEventListener('transitionend', transitionendEvent)
         }
         const body = document.querySelector('body')
         body.style.marginRight = `${window.innerWidth - body.offsetWidth}px`
