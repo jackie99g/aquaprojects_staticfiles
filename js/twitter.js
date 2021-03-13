@@ -1330,20 +1330,66 @@ import * as utils from './utils.js'
         const ttpzSelectors = '.tweet-twitter_picture_zoom'
         const ttpz = document.querySelector(ttpzSelectors)
         if (localStorage.getItem('twitter-reduce_animation') === null) {
-            const ttpzeSelectors = '.tweet-twitter_picture_zoom-element'
-            const ttpze = document.querySelectorAll(ttpzeSelectors)
-            for (let index = 0; index < ttpze.length; index++) {
-                const element = ttpze[index]
-                utils.removeClass(element, 'fadeOutUp')
-                element.classList.add('animated', 'fadeOutUp')
-                element.addEventListener('animationend', e => {
-                    if (e.animationName === 'fadeOutUp') {
-                        if (ttpz.style.display === 'flex') {
-                            ttpz.style.display = 'none'
-                        }
-                    }
+            const sttp = selectedTweetTwitterPicture
+            const ttpsClassName = 'tweet-twitter_pictures'
+            const ttpSelectors = '.tweet-twitter_picture'
+            const ttpzeiSelectors = '.tweet-twitter_picture_zoom-element_img'
+            const ttpsElement = findParents(sttp, ttpsClassName)
+            const ttps = ttpsElement.querySelectorAll(ttpSelectors)
+            const ttpzeis = ttpz.querySelectorAll(ttpzeiSelectors)
+
+            const ttpsIndex = Array.from(ttps).findIndex(element => {
+                return element.src === ttpzeis[currentSlideNumber.number].src
+            })
+            const targetTtps = Array.from(ttps).find(element => {
+                return element.src === ttpzeis[currentSlideNumber.number].src
+            })
+            const ttpzeSelectors = '.tweet-twitter_picture_zoom-element > div'
+            const ttpzes = document.querySelectorAll(ttpzeSelectors)
+
+            const elementWidth = window.innerWidth
+            const elementIndex = ttpsIndex
+            const tx = `${Math.abs(elementIndex * elementWidth * -1)}px`
+
+            // Set .tweet-twitter_picture_zoom-element > div's style.
+            const ttpsElementDOMRect = targetTtps.getBoundingClientRect()
+            const ttpze = ttpzes[elementIndex]
+            const duration = 0.15
+            ttpze.style.position = 'absolute'
+            ttpze.style.height = `${ttpsElementDOMRect.height}px`
+            ttpze.style.left = `calc(${ttpsElementDOMRect.left}px + ${tx})`
+            ttpze.style.top = `${ttpsElementDOMRect.top}px`
+            ttpze.style.width = `${ttpsElementDOMRect.width}px`
+            ttpze.style.transition = `${duration}s`
+
+            const containerClassName = 'tweet-twitter_picture_zoom-container'
+            const container = findParents(ttpze, containerClassName)
+            const cst = container.style.transform
+            const ct = analyzeTransform(cst)
+            const transformFunction = `translate3d(${ct[0]}px, 0px, ${ct[2]}px)`
+            container.style.transform = transformFunction
+
+            setTimeout(() => {
+                // Set .tweet-twitter_picture_zoom-element > div > img's style.
+                const ttpzeImg = ttpze.querySelector('img')
+                const ttpsElementHeight = ttpsElementDOMRect.height
+                const ttpsElementWidth = ttpsElementDOMRect.width
+                const ratio = ttpzeImg.naturalHeight / ttpzeImg.naturalWidth
+                const scale = ttpsElementWidth * ratio / ttpsElementHeight
+                ttpzeImg.style.transform = `scale(${scale})`
+                ttpzeImg.style.transition = `${duration}s`
+                ttpz.style.background = ''
+                ttpz.style.transition = `${duration}s`
+                Array.from(ttpz.querySelectorAll('button')).forEach(element => {
+                    element.style.background = ''
+                    element.style.transition = `${duration}s`
                 })
-            }
+                const transitionend = () => {
+                    ttpz.style.display = 'none'
+                    ttpzeImg.removeEventListener('transitionend', transitionend)
+                }
+                ttpzeImg.addEventListener('transitionend', transitionend)
+            }, 0)
         }
         const body = document.querySelector('body')
         body.style.marginRight = ''
