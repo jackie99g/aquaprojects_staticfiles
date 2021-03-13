@@ -962,7 +962,9 @@ import * as utils from './utils.js'
         }
     })
 
+    var isScrollDirectionParallel = undefined
     var touchingPositionPageX = 0
+    var touchingPositionPageY = 0
     var touchStartScrollLeft = 0
     var currentSlideNumber = {
         number: 0,
@@ -987,6 +989,7 @@ import * as utils from './utils.js'
 
     function boxContainerTouchStart(e, container) {
         touchingPositionPageX = e.changedTouches[0].pageX
+        touchingPositionPageY = e.changedTouches[0].pageY
         touchStartScrollLeft = container.style.transform
             ? analyzeTransform(container.style.transform)
             : [0, 0, 0]
@@ -994,9 +997,21 @@ import * as utils from './utils.js'
 
     function boxContainerTouchMove(e, container) {
         const pageX = e.changedTouches[0].pageX
-        const amountOfMovement = touchingPositionPageX - pageX
-        const tx = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
-        container.style.transform = `translate3d(${tx}px, 0px, 0px)`
+        const pageY = e.changedTouches[0].pageY
+        const amountOfMovementX = touchingPositionPageX - pageX
+        const amountOfMovementY = touchingPositionPageY - pageY
+        if (isScrollDirectionParallel === undefined) {
+            isScrollDirectionParallel =
+                Math.abs(amountOfMovementX) > Math.abs(amountOfMovementY)
+        }
+        if (isScrollDirectionParallel) {
+            const tx = (touchStartScrollLeft[0] * -1 + amountOfMovementX) * -1
+            container.style.transform = `translate3d(${tx}px, 0px, 0px)`
+        } else {
+            const tx = touchStartScrollLeft[0]
+            const ty = amountOfMovementY * -1
+            container.style.transform = `translate3d(${tx}px, ${ty}px, 0px)`
+        }
     }
 
     function boxContainerTouchEnd(e, container) {
@@ -1017,8 +1032,6 @@ import * as utils from './utils.js'
         const tx = `${elementIndex * elementWidth * -1}px`
         const transformFunction = `translate3d(${tx}, 0px, 0px)`
         container.style.transform = transformFunction
-        touchingPositionPageX = 0
-        touchStartScrollLeft = 0
 
         if (amountOfMovement > container.offsetWidth / 6) {
             if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
@@ -1041,6 +1054,11 @@ import * as utils from './utils.js'
         setTimeout(() => {
             AverageColorByImageOnTweetTwitterPictureZoom()
         }, 0)
+
+        isScrollDirectionParallel = undefined
+        touchingPositionPageX = 0
+        touchingPositionPageY = 0
+        touchStartScrollLeft = 0
     }
 
     var clickingNow = false
