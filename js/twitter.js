@@ -954,7 +954,7 @@ import * as utils from './utils.js'
         }
     })
 
-    var isScrollDirectionParallel = undefined
+    let scrollingDirection = ''
     var touchingPositionPageX = 0
     var touchingPositionPageY = 0
     var touchStartScrollLeft = 0
@@ -992,14 +992,16 @@ import * as utils from './utils.js'
         const pageY = e.changedTouches[0].pageY
         const amountOfMovementX = touchingPositionPageX - pageX
         const amountOfMovementY = touchingPositionPageY - pageY
-        if (isScrollDirectionParallel === undefined) {
-            isScrollDirectionParallel =
+        if (scrollingDirection === '') {
+            scrollingDirection =
                 Math.abs(amountOfMovementX) > Math.abs(amountOfMovementY)
+                    ? 'parallel'
+                    : 'vertical'
         }
-        if (isScrollDirectionParallel) {
+        if (scrollingDirection === 'parallel') {
             const tx = (touchStartScrollLeft[0] * -1 + amountOfMovementX) * -1
             container.style.transform = `translate3d(${tx}px, 0px, 0px)`
-        } else {
+        } else if (scrollingDirection === 'vertical') {
             const tx = touchStartScrollLeft[0]
             const ty = amountOfMovementY * -1
             container.style.transform = `translate3d(${tx}px, ${ty}px, 0px)`
@@ -1011,43 +1013,64 @@ import * as utils from './utils.js'
         const elementIndex = Array.from(elements).findIndex(
             item => item === e.target
         )
-        const elementWidth = elements[0].offsetWidth
-        const amountOfMovement =
-            touchingPositionPageX - e.changedTouches[0].pageX
+        const elementWidth = window.innerWidth
+        const pageX = e.changedTouches[0].pageX
+        const pageY = e.changedTouches[0].pageY
+        const amountOfMovementX = touchingPositionPageX - pageX
+        const amountOfMovementY = touchingPositionPageY - pageY
 
-        container.addEventListener(
-            'transitionend',
-            () => (container.style.transition = 'all 0ms ease 0s')
-        )
+        const transitionend = () => {
+            container.style.transition = 'all 0ms ease 0s'
+            container.removeEventListener('transitionend', transitionend)
+        }
+        container.addEventListener('transitionend', transitionend)
         container.style.transition = 'all 300ms ease 0s'
 
-        const tx = `${elementIndex * elementWidth * -1}px`
-        const transformFunction = `translate3d(${tx}, 0px, 0px)`
-        container.style.transform = transformFunction
+        if (scrollingDirection === 'parallel') {
+            const tx = `${elementIndex * elementWidth * -1}px`
+            const transformFunction = `translate3d(${tx}, 0px, 0px)`
+            container.style.transform = transformFunction
 
-        if (amountOfMovement > container.offsetWidth / 6) {
-            if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
-                return
+            if (amountOfMovementX > container.offsetWidth / 6) {
+                if (elements.length - 1 < currentSlideNumberProxy.number + 1) {
+                    return
+                }
+                const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+                const transformFunction = `translate3d(${tx}, 0px, 0px)`
+                container.style.transform = transformFunction
+                currentSlideNumberProxy.number += 1
+                setTimeout(() => {
+                    AverageColorByImageOnTweetTwitterPictureZoom()
+                }, 0)
+            } else if (amountOfMovementX < -(container.offsetWidth / 6)) {
+                if (currentSlideNumberProxy.number - 1 < 0) {
+                    return
+                }
+                const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+                const transformFunction = `translate3d(${tx}, 0px, 0px)`
+                container.style.transform = transformFunction
+                currentSlideNumberProxy.number -= 1
+                setTimeout(() => {
+                    AverageColorByImageOnTweetTwitterPictureZoom()
+                }, 0)
             }
-            const tx = `${(elementIndex + 1) * elementWidth * -1}px`
-            const transformFunction = `translate3d(${tx}, 0px, 0px)`
-            container.style.transform = transformFunction
-            currentSlideNumberProxy.number += 1
-        } else if (amountOfMovement < -(container.offsetWidth / 6)) {
-            if (currentSlideNumberProxy.number - 1 < 0) {
-                return
+        } else if (scrollingDirection === 'vertical') {
+            if (Math.abs(amountOfMovementY) > container.offsetHeight / 6) {
+                tweetTwitterPictureZoomClose()
+            } else {
+                const tx = `${elementIndex * elementWidth * -1}px`
+                const transformFunction = `translate3d(${tx}, 0px, 0px)`
+                container.style.transform = transformFunction
             }
-            const tx = `${(elementIndex - 1) * elementWidth * -1}px`
-            const transformFunction = `translate3d(${tx}, 0px, 0px)`
-            container.style.transform = transformFunction
-            currentSlideNumberProxy.number -= 1
         }
 
         setTimeout(() => {
-            AverageColorByImageOnTweetTwitterPictureZoom()
+            if (scrollingDirection === 'parallel') {
+                AverageColorByImageOnTweetTwitterPictureZoom()
+            }
         }, 0)
 
-        isScrollDirectionParallel = undefined
+        scrollingDirection = ''
         touchingPositionPageX = 0
         touchingPositionPageY = 0
         touchStartScrollLeft = 0
