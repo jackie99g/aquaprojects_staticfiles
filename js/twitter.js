@@ -1659,7 +1659,7 @@ import * as utils from './utils.js'
     }
 
     async function changeContent(href, anchorMode, anchorContext) {
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        utils.updateDocumentTitle()
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
         anchorMode === 'twitter_user' && changeContentTwitterUser(anchorContext)
         anchorMode === 'tweet' && changeContentTweet(anchorContext)
@@ -2587,7 +2587,7 @@ import * as utils from './utils.js'
         replaceState['scrollTop'] = window.scrollY
         history.replaceState(replaceState, null, currentPage)
         history.pushState({ targetPage, currentPage }, null, targetPage)
-        document.title = `Aqua Projects - ${location.pathname.substring(1)}`
+        utils.updateDocumentTitle()
     }
 
     function twitterUserProfileTimelineNavigationLoader() {
