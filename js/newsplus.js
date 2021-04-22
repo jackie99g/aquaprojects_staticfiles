@@ -57,7 +57,7 @@ import * as utils from './utils.js'
         const targetPage = target.href.replace(location.origin, '')
         const currentPage = utils.getCurrentPage()
         history.pushState({ targetPage, currentPage }, null, targetPage)
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        utils.updateDocumentTitle()
         changeContent(targetPage)
     }
 
@@ -253,7 +253,7 @@ import * as utils from './utils.js'
             const targetPage = anchorHref.replace(location.origin, '')
             const currentPage = location.href.replace(location.origin, '')
             history.pushState({ targetPage, currentPage }, null, targetPage)
-            document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+            utils.updateDocumentTitle()
             changeContent(targetPage)
         }
     }
