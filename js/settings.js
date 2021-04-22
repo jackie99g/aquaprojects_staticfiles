@@ -56,7 +56,7 @@ import * as utils from './utils.js'
             window.AquaProjectsCache[cacheName] = document.cloneNode(true)
         }
 
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        utils.updateDocumentTitle()
         e.preventDefault()
     }
 
@@ -104,7 +104,7 @@ import * as utils from './utils.js'
             view.style.display = 'flex'
         }
 
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        utils.updateDocumentTitle()
     }
 
     // seamless_configuration-save_button
