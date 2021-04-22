@@ -888,24 +888,45 @@ import * as utils from './utils.js'
         const touchstart = e => {
             const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
             const container = findParents(e.target, ttpzcClassName)
-            boxContainerTouchStart(e, container)
-            e.preventDefault()
+            container && boxContainerTouchStart(e, container)
+            container && e.preventDefault()
         }
         const touchmove = e => {
             const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
             const container = findParents(e.target, ttpzcClassName)
-            boxContainerTouchMove(e, container)
-            e.preventDefault()
+            container && boxContainerTouchMove(e, container)
+            container && e.preventDefault()
         }
         const touchend = e => {
             const ttpzcClassName = 'tweet-twitter_picture_zoom-container'
             const container = findParents(e.target, ttpzcClassName)
-            boxContainerTouchEnd(e, container)
-            e.preventDefault()
+            container && boxContainerTouchEnd(e, container)
+            container && e.preventDefault()
         }
         ttpz.addEventListener('touchstart', touchstart)
         ttpz.addEventListener('touchmove', touchmove)
         ttpz.addEventListener('touchend', touchend)
+
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                const oldValue = mutation.oldValue
+                const isDisplayFlex = oldValue.indexOf('display: flex;') !== -1
+                const isDisplayNone = mutation.target.style.display === 'none'
+                if (isDisplayFlex && isDisplayNone) {
+                    ttpz.removeEventListener('touchstart', touchstart)
+                    ttpz.removeEventListener('touchmove', touchmove)
+                    ttpz.removeEventListener('touchend', touchend)
+                    observer.disconnect()
+                }
+            })
+        })
+        const config = {
+            attributes: true,
+            characterData: true,
+            attributeOldValue: true,
+            characterDataOldValue: true,
+        }
+        observer.observe(ttpz, config)
     }
 
     // // tweet-twitter_picture_zoom-container
