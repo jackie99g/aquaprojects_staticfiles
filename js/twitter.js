@@ -1739,17 +1739,23 @@ import * as utils from './utils.js'
             // .twitter_user-lists_follow_button -> css: padding: ''.
             // .twitter_user-location -> css: display, flexWrap.
             // .twitter_user-main -> css: padding.
-            // .twitter_user-profile_timelines_navigation-block -> css: display: ''.
-            // .twitter_user-profile_timelines_navigation-tweets -> Add .twitter_user-profile_timelines_navigation-selected.
+            // .twitter_user-profile_timeline_navigation-block -> css: display: ''.
+            // .twitter_user-profile_timeline_navigation-tweets -> Add .twitter_user-profile_timeline_navigation-selected.
             // .timeline -> Add loading html.
             // .twitter_user -> call setTweetCreated_at.
-            const tuSelectors = '.twitter_user'
-            const tuElements = document.querySelectorAll(tuSelectors)
-            const tu = Array.from(tuElements).find(element => {
-                const keyname = 'twitter_userScreen_name'
-                return element.dataset[keyname] === screen_name
+            const ttutSelectors = '.tweet-twitter_user_tooltip'
+            const ttutElements = document.querySelectorAll(ttutSelectors)
+            const targetTtut = Array.from(ttutElements).find(element => {
+                return (
+                    JSON.parse(element.dataset['uo'])['screen_name'] ==
+                    screen_name
+                )
             })
+            const tu = createTweetTwitterUserTooltip(
+                JSON.parse(targetTtut.dataset['uo'])
+            )
 
+            const tuSelectors = '.twitter_user'
             const twitterTitle = document.querySelector('.twitter_title-block')
 
             const timeline = document.querySelector('.timeline')
@@ -1821,7 +1827,7 @@ import * as utils from './utils.js'
             timeline.querySelector(tumSelectors).style.padding = '0 1rem'
 
             const tuptnbSelectors =
-                '.twitter_user-profile_timelines_navigation-block'
+                '.twitter_user-profile_timeline_navigation-block'
             timeline.querySelector(tuptnbSelectors).style.display = ''
 
             const tuptntSelectors =
@@ -2071,26 +2077,460 @@ import * as utils from './utils.js'
 
     function tweetTwitterUserNameMouseover(e) {
         const target = findParents(e.target, 'tweet-twitter_user_name')
+
+        const selectors = '.tweet-twitter_user_tooltip'
+        const tweetTwitterUserTooltip = target.querySelector(selectors)
+        if (tweetTwitterUserTooltip.children.length === 0) {
+            tweetTwitterUserTooltip.appendChild(
+                createTweetTwitterUserTooltip(
+                    JSON.parse(tweetTwitterUserTooltip.dataset['uo'])
+                )
+            )
+        } else {
+            return
+        }
+
         const y = target.offsetTop + target.clientHeight
-        const ttutSelectors = '.tweet-twitter_user_tooltip'
-        const ttut = target.querySelector(ttutSelectors)
+        const ttut = target.querySelector(selectors)
         ttut.style.display = 'block'
         ttut.style.top = y
+
+        const mouseleave = e => {
+            const ttutc = 'tweet-twitter_user_tooltip'
+            const ttunc = 'tweet-twitter_user_name'
+            const cc = className => e.target.classList.contains(className)
+            if (e.target.classList) {
+                if (cc(ttutc) || cc(ttunc)) {
+                    const target = findParents(e.target, ttunc)
+                    target.querySelector(selectors).style.display = ''
+
+                    const ttut = target.querySelector(selectors)
+                    utils.emptyNode(ttut)
+                    ttut.removeEventListener('mouseleave', mouseleave)
+                    target.removeEventListener('mouseleave', mouseleave)
+                }
+            }
+        }
+        tweetTwitterUserTooltip.addEventListener('mouseleave', mouseleave)
+        target.addEventListener('mouseleave', mouseleave)
     }
 
-    document.addEventListener(
-        'mouseleave',
-        e => {
-            if (findParents(e.target, 'tweet-twitter_user_name')) {
-                tweetTwitterUserNameMouseleave(e)
-            }
-        },
-        true
-    )
+    function createTweetTwitterUserTooltip(uo) {
+        const dc = tagName => document.createElement(tagName)
+        const ca = styles => `ap_theme-${utils.getApTheme()}-${styles}`
+        const cas = styles => `ap_theme-${utils.getApTheme()}-${styles}-skelton`
+        const twitterUser = dc('div')
+        const twitterUserBackgroundImage = dc('div')
+        const twitterUserProfileImage = dc('div')
+        const twitterUserProfileImageA = dc('a')
+        const twitterUserProfileImageAImg = dc('img')
+        const twitterUserProfileImageDiv = dc('div')
+        const twitterUserListsFollowButton = dc('div')
+        const twitterUserListsButton = dc('button')
+        const twitterUserListsButtonI = dc('i')
+        const twitterUserFollowButton = dc('button')
+        const twitterUserDetails = dc('div')
+        const twitterUserMain = dc('div')
+        const twitterUserNameScreenName = dc('div')
+        const twitterUserNameScreenNameA = dc('a')
+        const twitterUserName = dc('div')
+        const twitterUserNameSpan = dc('span')
+        const twitterUserScreenName = dc('div')
+        const twitterUserDescription = dc('div')
+        const twitterUserLocal = dc('div')
+        const twitterUserLocation = dc('div')
+        const twitterUserLocationI = dc('i')
+        const twitterUserLocationSpan = dc('span')
+        const twitterUserLink = dc('div')
+        const twitterUserLinkI = dc('i')
+        const twitterUserLinkA = dc('a')
+        const twitterUserCreatedAt = dc('div')
+        const twitterUserCreatedAtI = dc('i')
+        const twitterUserCreatedAtSpan = dc('span')
+        const twitterUserCountStatus = dc('div')
+        const twitterUserFavoritesCount = dc('div')
+        const twitterUserFavoritesCountNumber = dc('span')
+        const twitterUserFavoritesCountUnit = dc('span')
+        const twitterUserStatusesCount = dc('div')
+        const twitterUserStatusesCountSpan = dc('span')
+        const twitterUserStatusesCountNumber = dc('span')
+        const twitterUserStatusesCountUnit = dc('span')
+        const twitterUserStatus = dc('div')
+        const twitterUserFollowingCount = dc('div')
+        const twitterUserFollowingCountA = dc('a')
+        const twitterUserFollowingCountNumber = dc('span')
+        const twitterUserFollowingCountUnit = dc('span')
+        const twitterUserFollowersCount = dc('div')
+        const twitterUserFollowersCountSpan = dc('span')
+        const twitterUserFollowersCountA = dc('a')
+        const twitterUserFollowersCountNumber = dc('span')
+        const twitterUserFollowersCountUnit = dc('span')
+        const twitterUserProfileTimelineNavigationBlock = dc('div')
+        const twitterUserProfileTimelineNavigation = dc('div')
+        const twitterUserProfileTimelineNavigationTweets = dc('div')
+        const twitterUserProfileTimelineNavigationTweetsA = dc('a')
+        const twitterUserProfileTimelineNavigationWithReplies = dc('div')
+        const twitterUserProfileTimelineNavigationWithRepliesA = dc('a')
+        const twitterUserProfileTimelineNavigationMedia = dc('div')
+        const twitterUserProfileTimelineNavigationMediaA = dc('a')
+        const twitterUserProfileTimelineNavigationLikes = dc('div')
+        const twitterUserProfileTimelineNavigationLikesA = dc('a')
 
-    function tweetTwitterUserNameMouseleave(e) {
-        const target = findParents(e.target, 'tweet-twitter_user_name')
-        target.querySelector('.tweet-twitter_user_tooltip').style.display = ''
+        const name = uo['name']
+        const screenName = uo['screen_name']
+        const followersCount = uo['followers_count']
+        const followingCount = uo['friends_count']
+        const favoritesCount = uo['favourites_count']
+        const statusesCount = uo['statuses_count']
+        const location = uo['location']
+        const displayUrl =
+            Object.keys(uo['entities']).indexOf('url') !== -1
+                ? uo['entities']['url']['urls'][0]['display_url']
+                : ''
+        const expandedUrl =
+            Object.keys(uo['entities']).indexOf('url') !== -1
+                ? uo['entities']['url']['urls'][0]['expanded_url']
+                : ''
+        const createdAt = uo['created_at']
+        const description = uo['description']
+        const profileImage = uo['profile_image_url_https']
+        const profileBanner = uo['profile_banner_url']
+        const following = uo['following']
+
+        const tac = 'twitter_anchor'
+        const ttfthc = 'tweet-twitter_full_text_hashtags'
+        const ttac = 'tweet-twitter_anchor'
+        const tusnk = 'twitter_userScreen_name'
+        const apts = localStorage.getItem('ap-theme-skelton')
+        const aptc = 'ap_theme'
+        const aptbc = ca('border')
+        // const aptbgc = ca('background')
+        const aptbgsc = apts ? cas('background') : ca('background')
+        const aptcsc = ca('color-sub')
+        const bsbtnc = 'btn'
+        const bsbtnpc = 'btn-primary'
+        const bsbtnoutlinepc = 'btn-outline-primary'
+
+        const tuc = 'twitter_user'
+        twitterUser.classList.add(tuc)
+        twitterUser.dataset[tusnk] = screenName
+
+        const tubic = 'twitter_user-background_image'
+        twitterUserBackgroundImage.classList.add(tubic)
+        twitterUserBackgroundImage.dataset['imgSrc'] = profileBanner
+
+        const tupic = 'twitter_user-profile_image'
+        const ttic = 'tweet-twitter_icon'
+        twitterUserProfileImage.classList.add(tupic, ttic)
+        twitterUserProfileImage.style.display = 'flex'
+        twitterUserProfileImage.style.justifyContent = 'space-between'
+
+        twitterUserProfileImageA.classList.add(tac)
+        twitterUserProfileImageA.style.position = 'relative'
+        twitterUserProfileImageA.dataset[tusnk] = screenName
+
+        const keyname = 'twitter-view_clear_icon'
+        twitterUserProfileImageAImg.src = localStorage.getItem(keyname)
+            ? profileImage.replace('_normal', '_400x400')
+            : profileImage
+        twitterUserProfileImageAImg.crossOrigin = 'anonymous'
+        twitterUserProfileImageAImg.style.position = 'absolute'
+        twitterUserProfileImageAImg.style.height = '100%'
+        twitterUserProfileImageAImg.style.borderRadius = '50%'
+
+        twitterUserProfileImageA.appendChild(twitterUserProfileImageAImg)
+
+        const tulfbc = 'twitter_user-lists_follow_button'
+        twitterUserListsFollowButton.classList.add(tulfbc)
+        twitterUserListsFollowButton.style.padding = '5px 0'
+
+        const tulbc = 'twitter_user-lists_button'
+        twitterUserListsButton.classList.add(bsbtnc, bsbtnoutlinepc, tulbc)
+        twitterUserListsButton.dataset[tusnk] = screenName
+        twitterUserListsButton.dataset['twitter_userLists_status'] = 'unknown'
+        twitterUserListsButton.style.borderRadius = '50%'
+        twitterUserListsButton.style.margin = '0 10px 10px'
+
+        twitterUserListsButtonI.classList.add('far', 'fa-list-alt')
+
+        twitterUserListsButton.appendChild(twitterUserListsButtonI)
+
+        const tufbc = 'twitter_user-follow_button'
+        twitterUserFollowButton.classList.add(bsbtnc, tufbc)
+        following
+            ? twitterUserFollowButton.classList.add(bsbtnpc)
+            : twitterUserFollowButton.classList.add(bsbtnoutlinepc)
+        twitterUserFollowButton.dataset[tusnk] = screenName
+        twitterUserFollowButton.dataset['twitter_userFollow_status'] = following
+        twitterUserFollowButton.style.borderRadius = '24px'
+        twitterUserFollowButton.style.margin = '0 0 10px'
+        twitterUserFollowButton.textContent = following ? 'Following' : 'Follow'
+
+        twitterUserListsFollowButton.appendChild(twitterUserListsButton)
+        twitterUserListsFollowButton.appendChild(twitterUserFollowButton)
+
+        twitterUserProfileImage.appendChild(twitterUserProfileImageA)
+        twitterUserProfileImage.appendChild(twitterUserProfileImageDiv)
+        twitterUserProfileImage.appendChild(twitterUserListsFollowButton)
+
+        const tudc = 'twitter_user-details'
+        twitterUserDetails.classList.add(tudc)
+
+        const tumc = 'twitter_user-main'
+        twitterUserMain.classList.add(tumc)
+        twitterUserMain.style.overflow = 'hidden'
+
+        const tunsnc = 'twitter_user-name_screen_name'
+        twitterUserNameScreenName.classList.add(tunsnc)
+
+        twitterUserNameScreenNameA.classList.add(tac)
+        twitterUserNameScreenNameA.href = `/twitter/${screenName}`
+        twitterUserNameScreenNameA.style.color = 'inherit'
+        twitterUserNameScreenNameA.dataset[tusnk] = screenName
+
+        const tunc = 'twitter_user-name'
+        twitterUserName.classList.add(tunc)
+        twitterUserName.style.overflow = 'hidden'
+        twitterUserName.style.textOverflow = 'ellipsis'
+        twitterUserName.style.whiteSpace = 'nowrap'
+
+        twitterUserNameSpan.textContent = name
+        twitterUserNameSpan.style.fontWeight = 'bold'
+
+        twitterUserName.appendChild(twitterUserNameSpan)
+
+        const tusnc = 'twitter_user-screen_name'
+        twitterUserScreenName.classList.add(tusnc, aptc, aptcsc)
+        twitterUserScreenName.textContent = `@${screenName}`
+
+        twitterUserNameScreenNameA.appendChild(twitterUserName)
+        twitterUserNameScreenNameA.appendChild(twitterUserScreenName)
+        twitterUserNameScreenName.appendChild(twitterUserNameScreenNameA)
+
+        const tudescriptionc = 'twitter_user-description'
+        twitterUserDescription.classList.add(tudescriptionc)
+        for (let index = 0; index < description.length; index++) {
+            const element = description[index]
+            if (Object.keys(element).indexOf('url') !== -1) {
+                const twitterUserDescriptionA = dc('a')
+                twitterUserDescriptionA.classList.add(ttac, ttfthc)
+                twitterUserDescriptionA.target = '_blank'
+                twitterUserDescriptionA.rel = 'noopener'
+                twitterUserDescriptionA.style.whiteSpace = 'pre-line'
+                twitterUserDescriptionA.href = element['url']
+                twitterUserDescriptionA.text = element['text']
+                twitterUserDescription.appendChild(twitterUserDescriptionA)
+            } else {
+                const twitterUserDescriptionSpan = dc('span')
+                twitterUserDescriptionSpan.style.whiteSpace = 'pre-line'
+                twitterUserDescriptionSpan.textContent = element['text']
+                twitterUserDescription.appendChild(twitterUserDescriptionSpan)
+            }
+        }
+
+        const tulocalc = 'twitter_user-local'
+        const tuloc = 'twitter_user-location'
+        const tulic = 'twitter_user-link'
+        const tucac = 'twitter_user-created_at'
+
+        twitterUserLocal.classList.add(tulocalc, aptc, aptcsc)
+        twitterUserLocal.style.display = 'none'
+
+        twitterUserLocation.classList.add(tuloc)
+        if (location) {
+            twitterUserLocation.style.marginRight = '10px'
+            twitterUserLocationI.classList.add('fas', 'fa-map-marker-alt')
+            twitterUserLocationSpan.textContent = location
+            twitterUserLocationSpan.style.paddingLeft = '4px'
+
+            twitterUserLocation.appendChild(twitterUserLocationI)
+            twitterUserLocation.appendChild(twitterUserLocationSpan)
+        }
+
+        twitterUserLink.classList.add(tulic)
+        if (expandedUrl) {
+            twitterUserLink.style.marginRight = '10px'
+            twitterUserLinkI.classList.add('fas', 'fa-link')
+            twitterUserLinkI.style.paddingTop = '4px'
+            twitterUserLinkA.classList.add(ttac, ttfthc)
+            twitterUserLinkA.target = '_blank'
+            twitterUserLinkA.rel = 'noopener'
+            twitterUserLinkA.href = expandedUrl
+            twitterUserLinkA.style.paddingLeft = '4px'
+            twitterUserLinkA.style.whiteSpace = 'pre-line'
+            twitterUserLinkA.textContent = displayUrl
+
+            twitterUserLink.appendChild(twitterUserLinkI)
+            twitterUserLink.appendChild(twitterUserLinkA)
+        }
+
+        twitterUserCreatedAt.classList.add(tucac)
+        twitterUserCreatedAt.title = createdAt
+        twitterUserCreatedAtI.classList.add('far', 'fa-calendar-alt')
+        twitterUserCreatedAtI.style.paddingTop = '4px'
+        twitterUserCreatedAtSpan.style.paddingLeft = '4px'
+        twitterUserCreatedAtSpan.textContent = createdAt
+
+        twitterUserCreatedAt.appendChild(twitterUserCreatedAtI)
+        twitterUserCreatedAt.appendChild(twitterUserCreatedAtSpan)
+
+        twitterUserLocal.appendChild(twitterUserLocation)
+        twitterUserLocal.appendChild(twitterUserLink)
+        twitterUserLocal.appendChild(twitterUserCreatedAt)
+
+        const tucsStr = 'twitter_user-count_status'
+        const tucsc = tucsStr
+        const tucscc = `${tucsStr}-comma`
+
+        const tufavcStr = 'twitter_user-favorites_count'
+        const tustatuscStr = 'twitter_user-statuses_count'
+        const tufavcc = tufavcStr
+        const tustatuscc = tustatuscStr
+        const tufavcnc = `${tufavcStr}-number`
+        const tustatuscnc = `${tustatuscStr}-number`
+        const tufavcuc = `${tufavcStr}-unit`
+        const tustatuscuc = `${tustatuscStr}-unit`
+
+        twitterUserCountStatus.classList.add(tucsc)
+        twitterUserCountStatus.style.display = 'flex'
+
+        twitterUserFavoritesCount.classList.add(tufavcc)
+        twitterUserFavoritesCountNumber.classList.add(tufavcnc)
+        twitterUserFavoritesCountNumber.style.fontWeight = 'bold'
+        twitterUserFavoritesCountNumber.textContent = favoritesCount.toLocaleString()
+        twitterUserFavoritesCountUnit.classList.add(tufavcuc, aptc, aptcsc)
+        twitterUserFavoritesCountUnit.textContent = ' likes'
+
+        twitterUserFavoritesCount.appendChild(twitterUserFavoritesCountNumber)
+        twitterUserFavoritesCount.appendChild(twitterUserFavoritesCountUnit)
+
+        twitterUserStatusesCount.classList.add(tustatuscc)
+        twitterUserStatusesCountSpan.classList.add(tucscc, aptc, aptcsc)
+        twitterUserStatusesCountSpan.textContent = ', '
+        twitterUserStatusesCountNumber.classList.add(tustatuscnc)
+        twitterUserStatusesCountNumber.style.fontWeight = 'bold'
+        twitterUserStatusesCountNumber.textContent = statusesCount.toLocaleString()
+        twitterUserStatusesCountUnit.classList.add(tustatuscuc, aptc, aptcsc)
+        twitterUserStatusesCountUnit.textContent = ' tweets'
+
+        twitterUserStatusesCount.appendChild(twitterUserStatusesCountSpan)
+        twitterUserStatusesCount.appendChild(twitterUserStatusesCountNumber)
+        twitterUserStatusesCount.appendChild(twitterUserStatusesCountUnit)
+
+        twitterUserCountStatus.appendChild(twitterUserFavoritesCount)
+        twitterUserCountStatus.appendChild(twitterUserStatusesCount)
+
+        const tusStr = 'twitter_user-status'
+        const tusc = tusStr
+        const tuscc = `${tusStr}-comma`
+
+        const tufingcStr = 'twitter_user-following_count'
+        const tuferscStr = 'twitter_user-followers_count'
+        const tufingcc = tufingcStr
+        const tuferscc = tuferscStr
+        const tufingcnc = `${tufingcStr}-number`
+        const tuferscnc = `${tuferscStr}-number`
+        const tufingcuc = `${tufingcStr}-unit`
+        const tuferscuc = `${tuferscStr}-unit`
+
+        twitterUserStatus.classList.add(tusc)
+        twitterUserStatus.style.display = 'flex'
+
+        twitterUserFollowingCount.classList.add(tufingcc)
+        twitterUserFollowingCountA.href = `/twitter/${screenName}/following`
+        twitterUserFollowingCountA.classList.add(tac)
+        twitterUserFollowingCountNumber.classList.add(tufingcnc)
+        twitterUserFollowingCountNumber.style.fontWeight = 'bold'
+        twitterUserFollowingCountNumber.textContent = followingCount.toLocaleString()
+        twitterUserFollowingCountUnit.classList.add(tufingcuc, aptc, aptcsc)
+        twitterUserFollowingCountUnit.textContent = ' Following'
+
+        twitterUserFollowingCountA.appendChild(twitterUserFollowingCountNumber)
+        twitterUserFollowingCountA.appendChild(twitterUserFollowingCountUnit)
+        twitterUserFollowingCount.appendChild(twitterUserFollowingCountA)
+
+        twitterUserFollowersCount.classList.add(tuferscc)
+        twitterUserFollowersCountSpan.classList.add(tuscc, aptc, aptcsc)
+        twitterUserFollowersCountSpan.textContent = ', '
+        twitterUserFollowersCountA.href = `/twitter/${screenName}/followers`
+        twitterUserFollowersCountA.classList.add(tac)
+        twitterUserFollowersCountNumber.classList.add(tuferscnc)
+        twitterUserFollowersCountNumber.style.fontWeight = 'bold'
+        twitterUserFollowersCountNumber.textContent = followersCount.toLocaleString()
+        twitterUserFollowersCountUnit.classList.add(tuferscuc, aptc, aptcsc)
+        twitterUserFollowersCountUnit.textContent = ' Followers'
+
+        twitterUserFollowersCountA.appendChild(twitterUserFollowersCountNumber)
+        twitterUserFollowersCountA.appendChild(twitterUserFollowersCountUnit)
+        twitterUserFollowersCount.appendChild(twitterUserFollowersCountSpan)
+        twitterUserFollowersCount.appendChild(twitterUserFollowersCountA)
+
+        twitterUserStatus.appendChild(twitterUserFollowingCount)
+        twitterUserStatus.appendChild(twitterUserFollowersCount)
+
+        twitterUserMain.appendChild(twitterUserNameScreenName)
+        twitterUserMain.appendChild(twitterUserDescription)
+        twitterUserMain.appendChild(twitterUserLocal)
+        twitterUserMain.appendChild(twitterUserCountStatus)
+        twitterUserMain.appendChild(twitterUserStatus)
+
+        const tuptnStr = 'twitter_user-profile_timeline_navigation'
+        const tuptnb = twitterUserProfileTimelineNavigationBlock
+        const tuptnbc = `${tuptnStr}-block`
+        tuptnb.classList.add(tuptnbc, aptc, aptbc)
+        tuptnb.style.display = 'none'
+        tuptnb.style.margin = '12px 0 0'
+        tuptnb.style.borderBottomStyle = 'solid'
+        tuptnb.style.borderBottomWidth = '1px'
+        const tuptn = twitterUserProfileTimelineNavigation
+        const tuptnc = tuptnStr
+        tuptn.classList.add(tuptnc)
+        tuptn.style.display = 'flex'
+        const tuptnt = twitterUserProfileTimelineNavigationTweets
+        const tuptnwr = twitterUserProfileTimelineNavigationWithReplies
+        const tuptnm = twitterUserProfileTimelineNavigationMedia
+        const tuptnl = twitterUserProfileTimelineNavigationLikes
+        const tuptnic = `${tuptnStr}-item`
+        const tuptnsc = `${tuptnStr}-selected`
+        const tuptntc = `${tuptnStr}-tweets`
+        const tuptnwrc = `${tuptnStr}-with_replies`
+        const tuptnmc = `${tuptnStr}-media`
+        const tuptnlc = `${tuptnStr}-likes`
+        tuptnt.classList.add(tuptnic, tuptntc, tuptnsc, aptc, aptbgsc, aptcsc)
+        tuptnwr.classList.add(tuptnic, tuptnwrc, aptc, aptbgsc, aptcsc)
+        tuptnm.classList.add(tuptnic, tuptnmc, aptc, aptbgsc, aptcsc)
+        tuptnl.classList.add(tuptnic, tuptnlc, aptc, aptbgsc, aptcsc)
+        const tuptnta = twitterUserProfileTimelineNavigationTweetsA
+        const tuptnwra = twitterUserProfileTimelineNavigationWithRepliesA
+        const tuptnma = twitterUserProfileTimelineNavigationMediaA
+        const tuptnla = twitterUserProfileTimelineNavigationLikesA
+        tuptnta.href = `/twitter/${screenName}`
+        tuptnwra.href = `/twitter/${screenName}/with_replies`
+        tuptnma.href = `/twitter/${screenName}/media`
+        tuptnla.href = `/twitter/${screenName}/likes`
+        tuptnta.text = 'Tweets'
+        tuptnwra.text = 'Tweets & replies'
+        tuptnma.text = 'Media'
+        tuptnla.text = 'Likes'
+
+        tuptnt.appendChild(tuptnta)
+        tuptnwr.appendChild(tuptnwra)
+        tuptnm.appendChild(tuptnma)
+        tuptnl.appendChild(tuptnla)
+        tuptn.appendChild(tuptnt)
+        tuptn.appendChild(tuptnwr)
+        tuptn.appendChild(tuptnm)
+        tuptn.appendChild(tuptnl)
+        tuptnb.appendChild(tuptn)
+
+        twitterUserDetails.appendChild(twitterUserMain)
+        twitterUserDetails.appendChild(tuptnb)
+
+        twitterUser.appendChild(twitterUserBackgroundImage)
+        twitterUser.appendChild(twitterUserProfileImage)
+        twitterUser.appendChild(twitterUserDetails)
+
+        return twitterUser
     }
 
     document.addEventListener('click', e => {
@@ -2557,16 +2997,16 @@ import * as utils from './utils.js'
     }
 
     document.addEventListener('click', e => {
-        const selectors = 'twitter_user-profile_timelines_navigation-item'
-        if (findParents(e.target, selectors)) {
+        const className = 'twitter_user-profile_timeline_navigation-item'
+        if (findParents(e.target, className)) {
             twitterUserProfileTimelineNavigationItemClick(e)
             e.preventDefault()
         }
     })
 
     function twitterUserProfileTimelineNavigationItemClick(e) {
-        const selectors = 'twitter_user-profile_timelines_navigation-item'
-        const target = findParents(e.target, selectors)
+        const className = 'twitter_user-profile_timeline_navigation-item'
+        const target = findParents(e.target, className)
         const href = target.querySelector('a').href.replace(location.origin, '')
         twitterUserProfileTimelineNavigationSelected(target)
         twitterUserProfileTimelineNavigationPushState(href)
@@ -2576,8 +3016,8 @@ import * as utils from './utils.js'
     }
 
     function twitterUserProfileTimelineNavigationSelected(element) {
-        const selectors = '.twitter_user-profile_timelines_navigation-item'
-        const tuptni = document.querySelectorAll(selectors)
+        const className = '.twitter_user-profile_timeline_navigation-item'
+        const tuptni = document.querySelectorAll(className)
 
         const tuptnsClassName =
             'twitter_user-profile_timeline_navigation-selected'
