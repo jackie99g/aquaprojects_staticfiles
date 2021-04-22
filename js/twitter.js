@@ -1945,7 +1945,11 @@ import * as utils from './utils.js'
             return
         }
         const href = '/twitter/trends'
-        if (window.AquaProjectsCache[href]) {
+        const key = 'twitterTrendsExpireDate'
+        const tted = sessionStorage.getItem(key)
+        const isExpired =
+            tted === null ? true : parseInt(tted) < new Date().getTime()
+        if (window.AquaProjectsCache[href] && !isExpired) {
             utils.repaintNode(href, '.twitter-trends')
         } else {
             refreshTwitterTrends(href)
@@ -1967,6 +1971,11 @@ import * as utils from './utils.js'
 
                 utils.saveApCache(href, data)
                 utils.repaintNode(href, '.twitter-trends')
+
+                const expire = new Date(
+                    new Date().setMinutes(new Date().getMinutes() + 15)
+                ).getTime()
+                sessionStorage.setItem(key, expire)
             } catch (err) {
                 alert(err)
             }
