@@ -1396,7 +1396,7 @@ import * as utils from './utils.js'
                 const ttpsElementHeight = ttpsElementDOMRect.height
                 const ttpsElementWidth = ttpsElementDOMRect.width
                 const ratio = ttpzeImg.naturalHeight / ttpzeImg.naturalWidth
-                const scale = ttpsElementWidth * ratio / ttpsElementHeight
+                const scale = (ttpsElementWidth * ratio) / ttpsElementHeight
                 ttpzeImg.style.transform = `scale(${scale})`
                 ttpzeImg.style.transition = `${duration}s`
                 ttpz.style.background = ''
