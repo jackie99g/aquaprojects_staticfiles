@@ -5,14 +5,14 @@ import * as utils from './utils.js'
         const cacheName = location.href.replace(location.origin, '')
         window.AquaProjectsCache[cacheName] = document.cloneNode(true)
         const currentPage = utils.getCurrentPage()
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
-        if (location.pathname == '/') document.title = 'Aqua Projects'
+        utils.updateDocumentTitle()
         const state = {
             targetPage: currentPage,
             currentPage,
         }
         history.replaceState(state, null, currentPage)
         markDashboardAnchorGroup()
+        updateFilesToCache()
     })()
 
     document.addEventListener('click', e => {
@@ -26,7 +26,7 @@ import * as utils from './utils.js'
         const targetPage = da.getAttribute('href').replace(location.origin, '')
         const currentPage = utils.getCurrentPage()
         history.pushState({ targetPage, currentPage }, null, targetPage)
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        utils.updateDocumentTitle()
         currentPage === targetPage ? scrollPageTop() : window.scrollTo(0, 0)
 
         resetDashboardAnchorGroup()
@@ -55,7 +55,7 @@ import * as utils from './utils.js'
         } else {
             changeContentWithPopstate(history.state['targetPage'])
         }
-        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+        utils.updateDocumentTitle()
         return
     })
 
@@ -488,6 +488,42 @@ import * as utils from './utils.js'
             utils.removeClass(account, element)
         }
         main.style.display = ''
+    }
+
+    function updateFilesToCache() {
+        // Add cache when caches don't exist and location is not logout and login.
+        const CACHE_NAME = 'static-cache-v1'
+        const startUrl = '/?utm_source=homescreen'
+        const offlineUrl = '/offline'
+
+        const cacheExists = async request => {
+            const response = await caches.match(request)
+            return response !== undefined
+        }
+        if (
+            location.href.replace(location.origin, '') !== '/logout' &&
+            location.pathname.replace(location.origin, '') !== '/login/auth0'
+        ) {
+            const offline = async () => {
+                log(`precache offline html --- ${location}`)
+                const openCache = await caches.open(CACHE_NAME)
+                const startRequest = new Request(startUrl)
+                const offlineRequest = new Request(offlineUrl)
+                await openCache.put(startRequest, await fetch(startRequest))
+                await openCache.put(offlineRequest, await fetch(offlineRequest))
+            }
+            cacheExists(startUrl).then(sres => {
+                if (sres === false) {
+                    cacheExists(offlineUrl).then(ores => {
+                        if (ores === false) {
+                            offline().then(() => {
+                                log(`${location} -- to add cached.`)
+                            })
+                        }
+                    })
+                }
+            })
+        }
     }
 
     function scrollPageTop() {
