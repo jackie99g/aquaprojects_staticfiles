@@ -269,16 +269,6 @@ a:hover {
     display: none;
 }
 
-.box {
-    width: 100%;
-    height: 150vh;
-}
-
-.box_bg_pattern {
-    background-color: #e6ecf0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 200 200'%3E%3Cpolygon fill='%23ffffff' points='100 0 0 100 100 100 100 200 200 100 200 0'/%3E%3C/svg%3E");
-}
-
 .header_contents {
     display: flex;
     height: 57px;
@@ -286,7 +276,7 @@ a:hover {
     width: 100%;
     position: fixed;
     border-bottom-style: solid;
-    border-bottom-width: 1px;
+    border-bottom-width: 0.5px;
     z-index: 2;
 }
 
@@ -330,39 +320,50 @@ a:hover {
     visibility: hidden;
 }
 
-.eye_catch {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.openap {
+    box-shadow: 0 8px 15px rgb(0 0 0 / 20%);
 }
 
-.sale_copy {
-    color: black;
-    text-align: center;
-    font-size: xx-large;
+.openapbtn {
+    transition: 0.15s;
 }
 
-.dashboard_button_position {
-    display: flex;
+.openapbtn:hover {
+    transform: scale(0.95);
 }
 
-.dashboard_button {
-    padding: 10px;
-    font: bold;
-    position: absolute;
-    display: inline-block;
-    border: solid 1px #23a0f2;
-    background-color: #23a0f2;
-    text-align: center;
-    margin: 50px auto auto;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 5px;
+.openapdiv {
+    transition: 0.15s;
 }
 
-.dashboard_button > a {
-    color: white;
+@media (min-width: 768px) {
+    .openapdiv:hover {
+        transform: scale(1.05);
+    }
+}
+
+.openapgrid {
+    display: grid;
+    grid-template-columns: auto;
+}
+
+@media (min-width: 768px) {
+    .openapgrid {
+        grid-template-columns: auto auto;
+    }
+}
+
+.openapimg {
+    height: 200px;
+    width: 200px;
+    margin: auto;
+    filter: drop-shadow(0 8px 15px rgb(0 0 0 / 20%));
+}
+
+@media (min-width: 768px) {
+    .openapimg {
+        margin: 3rem;
+    }
 }
 
 .username > a {
@@ -469,8 +470,8 @@ a:hover {
     bottom: 0;
     z-index: 2;
     border-top-style: solid;
-    border-top-width: 1px;
-    box-shadow: 0 0 8px #00000066;
+    border-top-width: 0.5px;
+    /* box-shadow: 0 0 8px #00000066; */
 }
 
 .flex_box_sm_0 {
@@ -478,7 +479,7 @@ a:hover {
     position: relative;
     z-index: 1;
     border-bottom-style: solid;
-    border-bottom-width: 1px;
+    border-bottom-width: 0.5px;
 }
 
 .side_content_sm {
