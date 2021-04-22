@@ -211,3 +211,11 @@ export function emptyNode(target) {
         target.removeChild(target.firstChild)
     }
 }
+
+export function updateDocumentTitle() {
+    if (location.pathname == '/') {
+        document.title = 'Aqua Projects'
+    } else {
+        document.title = 'Aqua Projects - ' + location.pathname.substring(1)
+    }
+}
