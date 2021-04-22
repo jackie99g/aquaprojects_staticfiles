@@ -311,6 +311,7 @@ import * as utils from './utils.js'
 
     function notAccountAndNotUsernameClick() {
         const account = document.querySelector('.account')
+        if (account === null) return
         account.style.visibility = 'hidden'
         const removeClasses = ['animated', 'fadeInUpSmall', 'faster']
         for (let index = 0; index < removeClasses.length; index++) {
