@@ -20,19 +20,19 @@ import * as utils from './utils.js'
             headerContentScrollLevel -= scrollY - startPos
             if (headerContentScrollLevel > 0) {
                 const top = headerContentHeight - headerContentScrollLevel
-                headerContent.style.top = `${-top}px`
+                headerContent.style.transform = `translateY(${-top}px)`
             } else {
                 headerContentScrollLevel = 0
-                headerContent.style.top = `${-headerContentHeight}px`
+                headerContent.style.transform = `translateY(${-headerContentHeight}px)`
             }
         } else {
             headerContentScrollLevel += startPos - scrollY
             if (headerContentHeight > headerContentScrollLevel) {
                 const top = headerContentHeight - headerContentScrollLevel
-                headerContent.style.top = `${-top}px`
+                headerContent.style.transform = `translateY(${-top}px)`
             } else {
                 headerContentScrollLevel = headerContentHeight
-                headerContent.style.top = '0'
+                headerContent.style.transform = 'translateY(0)'
             }
         }
         startPos = scrollY
