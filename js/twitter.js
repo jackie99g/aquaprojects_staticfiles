@@ -61,7 +61,8 @@ import * as utils from './utils.js'
                     return
                 }
                 const ttp = element.target
-                ttp.src = ttp.dataset.src
+                const ttpSrc = ttp.dataset.src
+                ttp.src = ttpSrc
                 ttp.crossOrigin = 'anonymous'
                 observer.unobserve(ttp)
             })
@@ -1405,10 +1406,18 @@ import * as utils from './utils.js'
                     element.style.background = ''
                     element.style.transition = `${duration}s`
                 })
+                let isTransitionend = false
                 const transitionend = () => {
                     ttpz.style.display = 'none'
                     ttpzeImg.removeEventListener('transitionend', transitionend)
+                    isTransitionend = true
                 }
+                setTimeout(() => {
+                    // transitionend does not fire.
+                    if (ttpz.style.display !== 'none' && !isTransitionend) {
+                        transitionend()
+                    }
+                }, duration * 1000 + 500)
                 ttpzeImg.addEventListener('transitionend', transitionend)
             }, 0)
         }
