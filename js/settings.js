@@ -387,7 +387,6 @@ import * as utils from './utils.js'
 
     function initReduceAnimation() {
         const reduceAnimation = document.querySelector('.reduce_animation')
-        reduceAnimation.style.display = ''
         const input = reduceAnimation.querySelector('input')
         const tra = localStorage.getItem('twitter-reduce_animation')
         input.checked = tra ? 'chekced' : ''
@@ -440,7 +439,6 @@ import * as utils from './utils.js'
         const selectTheme = document.querySelector(
             '.seamless_configuration-form.select_theme'
         )
-        selectTheme.style.display = ''
         const seamlessConfigurationFormRadio = selectTheme.querySelectorAll(
             '.seamless_configuration-form-radio'
         )
@@ -464,7 +462,6 @@ import * as utils from './utils.js'
         const sidebarPosition = document.querySelector(
             '.seamless_configuration-form.sidebar_position'
         )
-        sidebarPosition.style.display = ''
         const seamlessConfigurationFormRadio = sidebarPosition.querySelectorAll(
             '.seamless_configuration-form-radio'
         )
