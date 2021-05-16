@@ -825,6 +825,11 @@ import * as utils from './utils.js'
 
             ttpsv.remove()
 
+            const ttpsd = tweetTwitterPictures.querySelector(
+                '.tweet-twitter_video-duration'
+            )
+            ttpsd.style.display = 'none'
+
             return
         }
 
