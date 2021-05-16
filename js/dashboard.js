@@ -28,7 +28,9 @@ import * as utils from './utils.js'
         history.pushState({ targetPage, currentPage }, null, targetPage)
         utils.updateDocumentTitle()
         currentPage === targetPage ? scrollPageTop() : window.scrollTo(0, 0)
-
+        const body = document.querySelector('body')
+        body.style.marginRight = ''
+        body.style.overflowY = ''
         resetDashboardAnchorGroup()
         markDashboardAnchorGroup()
         changeContent(targetPage)
