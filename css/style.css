@@ -318,6 +318,7 @@ a:hover {
     top: 57px;
     background: inherit;
     visibility: hidden;
+    z-index: 2;
 }
 
 .openap {
