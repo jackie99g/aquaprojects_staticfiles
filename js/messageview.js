@@ -110,7 +110,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[request] = data
+            window.AquaProjectsCache[request] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -192,7 +192,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[request] = data
+            window.AquaProjectsCache[request] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -271,7 +271,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[href] = data
+            window.AquaProjectsCache[href] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -474,7 +474,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[request] = data
+            window.AquaProjectsCache[request] = data
             if (href != location.href.replace(location.origin, '')) {
                 console.log('It seems that you moved to a different page first.')
                 return false
@@ -691,7 +691,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[request] = data
+            window.AquaProjectsCache[request] = data
             var sids_list = chooseMessageConversationSids(data)
             notifyMessageHasSended(sids_list, messageItem)
         })
@@ -719,7 +719,7 @@ import { changeTheme, findParents, getCookie } from './utils.js'
                 console.error(response)
             }
         }).then(data => {
-            AquaProjectsCache[request] = data
+            window.AquaProjectsCache[request] = data
         })
     }
 
