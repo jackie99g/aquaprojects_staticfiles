@@ -3,6 +3,7 @@ import * as utils from './utils.js'
 !(() => {
     window.addEventListener('aquaprojects_popstate', () => {
         if (utils.locationMatch('/messenger')) {
+            messengerMessageListScrollToBottom()
             convertLocalTime()
             changeTheme()
         }
@@ -356,5 +357,14 @@ import * as utils from './utils.js'
         const close = form.querySelector('.messenger-message-form-close')
         input.value = ''
         close.style.display = ''
+    }
+
+    function messengerMessageListScrollToBottom() {
+        const list = document.querySelector('.messenger-message-list')
+        if (list) {
+            const scrollHeight = list.scrollHeight
+            const clientHeight = list.clientHeight
+            list.scrollTo(0, scrollHeight - clientHeight)                
+        }
     }
 })()
