@@ -265,6 +265,42 @@ a:hover {
     }
 }
 
+.ap_btn {
+    color: #1da1f2;
+    border-color: #1da1f2;
+}
+
+.ap_btn:hover,
+.ap_btn:active {
+    color: #1da1f2;
+    background-color: #dde9f2;
+    border-color: #1da1f2;
+}
+
+.ap_btn:hover.ap_btn:focus {
+    color: #1da1f2;
+    background-color: #d2ecfc;
+    border-color: #1da1f2;
+}
+
+.ap_btn-fill {
+    color: #fff;
+    background-color: #1da1f2;
+    border-color: #1da1f2;
+}
+
+.ap_btn-fill:hover {
+    color: #fff;
+    background-color: #ca2055;
+    border-color: #ca2055;
+}
+
+.ap_btn-fill:hover.ap_btn-fill:focus {
+    color: #fff;
+    background-color: #b31d4b;
+    border-color: #b31d4b;
+}
+
 .ap_display_none {
     display: none;
 }
