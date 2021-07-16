@@ -1521,11 +1521,14 @@ import * as utils from './utils.js'
         }
 
         function setBackgroundColor(rgb) {
-            const rgbColor = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}`
-            ttpz.style.background = `${rgbColor}, 0.9)`
+            const hslc = rgb2hsl(rgb)
+            const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, ${hslc[2]}%`
+            ttpz.style.background = `${hslColor}, 90%)`
             for (let index = 0; index < ttpzn.length; index++) {
                 const element = ttpzn[index]
-                element.style.background = `${rgbColor})`
+                const l = Number(hslc[2]) - 10
+                const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, ${l}%`
+                element.style.background = `${hslColor}, 90%)`
             }
         }
     }
@@ -3401,8 +3404,8 @@ import * as utils from './utils.js'
         const diff = max - min
 
         const h = calculateH()
-        const l = (max + min) / 2 * 100
-        const s = diff / (1 - Math.abs(max + min - 1)) * 100
+        const l = ((max + min) / 2) * 100
+        const s = (diff / (1 - Math.abs(max + min - 1))) * 100
         return [h, s, l]
 
         function calculateH() {
@@ -3410,11 +3413,11 @@ import * as utils from './utils.js'
                 case max:
                     return 0
                 case r:
-                    return 60 * (b - g) / diff + 180
+                    return (60 * (b - g)) / diff + 180
                 case g:
                     return 60 + (r - b) / diff + 300
                 case b:
-                    return 60 * (g - r) / diff + 60
+                    return (60 * (g - r)) / diff + 60
             }
         }
     }
