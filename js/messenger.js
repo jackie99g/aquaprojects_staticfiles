@@ -29,6 +29,9 @@ import * as utils from './utils.js'
             const form = document.querySelector('.messenger-message-form')
             const input = form.querySelector('input')
             const messageText = input.value
+            if (messageText === '') {
+                throw new Error('The message is empty.')
+            }
             const cData = JSON.parse(await getConversationData())
             cData['conversation_id'] = cData['conversation_id_str']
             const avcData = JSON.parse(await getAccountVerifyCredentials())
