@@ -2141,8 +2141,13 @@ import * as utils from './utils.js'
 
     function createTweetTwitterUserTooltip(uo) {
         const dc = tagName => document.createElement(tagName)
+        const dcns = (uri, tagName) => document.createElementNS(uri, tagName)
         const ca = styles => `ap_theme-${utils.getApTheme()}-${styles}`
         const cas = styles => `ap_theme-${utils.getApTheme()}-${styles}-skelton`
+        const svgns = 'http://www.w3.org/2000/svg'
+        const xlinkns = 'http://www.w3.org/1999/xlink'
+        const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+        const sicon = (e, i) => e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
         const twitterUser = dc('div')
         const twitterUserBackgroundImage = dc('div')
         const twitterUserProfileImage = dc('div')
@@ -2151,7 +2156,8 @@ import * as utils from './utils.js'
         const twitterUserProfileImageDiv = dc('div')
         const twitterUserListsFollowButton = dc('div')
         const twitterUserListsButton = dc('button')
-        const twitterUserListsButtonI = dc('i')
+        const twitterUserListsButtonSvg = dcns(svgns, 'svg')
+        const twitterUserListsButtonSvgUse = dcns(svgns, 'use')
         const twitterUserFollowButton = dc('button')
         const twitterUserDetails = dc('div')
         const twitterUserMain = dc('div')
@@ -2163,13 +2169,16 @@ import * as utils from './utils.js'
         const twitterUserDescription = dc('div')
         const twitterUserLocal = dc('div')
         const twitterUserLocation = dc('div')
-        const twitterUserLocationI = dc('i')
+        const twitterUserLocationSvg = dcns(svgns, 'svg')
+        const twitterUserLocationSvgUse = dcns(svgns, 'use')
         const twitterUserLocationSpan = dc('span')
         const twitterUserLink = dc('div')
-        const twitterUserLinkI = dc('i')
+        const twitterUserLinkSvg = dcns(svgns, 'svg')
+        const twitterUserLinkSvgUse = dcns(svgns, 'use')
         const twitterUserLinkA = dc('a')
         const twitterUserCreatedAt = dc('div')
-        const twitterUserCreatedAtI = dc('i')
+        const twitterUserCreatedAtSvg = dcns(svgns, 'svg')
+        const twitterUserCreatedAtSvgUse = dcns(svgns, 'use')
         const twitterUserCreatedAtSpan = dc('span')
         const twitterUserCountStatus = dc('div')
         const twitterUserFavoritesCount = dc('div')
@@ -2232,8 +2241,8 @@ import * as utils from './utils.js'
         const aptbgsc = apts ? cas('background') : ca('background')
         const aptcsc = ca('color-sub')
         const bsbtnc = 'btn'
-        const bsbtnpc = 'btn-primary'
-        const bsbtnoutlinepc = 'btn-outline-primary'
+        const apbtnc = 'ap_btn'
+        const apbtnfillc = 'ap_btn-fill'
 
         const tuc = 'twitter_user'
         twitterUser.classList.add(tuc)
@@ -2269,25 +2278,32 @@ import * as utils from './utils.js'
         twitterUserListsFollowButton.style.padding = '5px 0'
 
         const tulbc = 'twitter_user-lists_button'
-        twitterUserListsButton.classList.add(bsbtnc, bsbtnoutlinepc, tulbc)
+        twitterUserListsButton.classList.add(bsbtnc, apbtnc, tulbc)
         twitterUserListsButton.dataset[tusnk] = screenName
         twitterUserListsButton.dataset['twitter_userLists_status'] = 'unknown'
-        twitterUserListsButton.style.borderRadius = '50%'
+        twitterUserListsButton.style.borderRadius = '100px'
         twitterUserListsButton.style.margin = '0 10px 10px'
+        twitterUserListsButton.style.height = '2.66rem'
+        twitterUserListsButton.style.width = '2.66rem'
 
-        twitterUserListsButtonI.classList.add('far', 'fa-list-alt')
+        twitterUserListsButtonSvg.classList.add('bi')
+        sicon(twitterUserListsButtonSvgUse, 'three-dots')
+        twitterUserListsButtonSvg.appendChild(twitterUserListsButtonSvgUse)
 
-        twitterUserListsButton.appendChild(twitterUserListsButtonI)
+        twitterUserListsButton.appendChild(twitterUserListsButtonSvg)
 
         const tufbc = 'twitter_user-follow_button'
         twitterUserFollowButton.classList.add(bsbtnc, tufbc)
         following
-            ? twitterUserFollowButton.classList.add(bsbtnpc)
-            : twitterUserFollowButton.classList.add(bsbtnoutlinepc)
+            ? twitterUserFollowButton.classList.add(apbtnfillc)
+            : twitterUserFollowButton.classList.add(apbtnc)
         twitterUserFollowButton.dataset[tusnk] = screenName
         twitterUserFollowButton.dataset['twitter_userFollow_status'] = following
-        twitterUserFollowButton.style.borderRadius = '24px'
+        twitterUserFollowButton.style.borderRadius = '100px'
         twitterUserFollowButton.style.margin = '0 0 10px'
+        twitterUserFollowButton.style.padding = '0 1rem'
+        twitterUserFollowButton.style.height = '2.66rem'
+        twitterUserFollowButton.style.fontWeight = 'bold'
         twitterUserFollowButton.textContent = following ? 'Following' : 'Follow'
 
         twitterUserListsFollowButton.appendChild(twitterUserListsButton)
@@ -2363,19 +2379,32 @@ import * as utils from './utils.js'
         twitterUserLocation.classList.add(tuloc)
         if (location) {
             twitterUserLocation.style.marginRight = '10px'
-            twitterUserLocationI.classList.add('fas', 'fa-map-marker-alt')
+
+            twitterUserLocationSvg.classList.add('bi')
+            twitterUserLocationSvg.style.height = '1.25rem'
+            twitterUserLocationSvg.style.width = '1.25rem'
+            twitterUserLocationSvg.style.verticalAlign = 'sub'
+            sicon(twitterUserLocationSvgUse, 'geo-alt')
+            twitterUserLocation.appendChild(twitterUserLocationSvgUse)
+
             twitterUserLocationSpan.textContent = location
             twitterUserLocationSpan.style.paddingLeft = '4px'
 
-            twitterUserLocation.appendChild(twitterUserLocationI)
+            twitterUserLocation.appendChild(twitterUserLocationSvg)
             twitterUserLocation.appendChild(twitterUserLocationSpan)
         }
 
         twitterUserLink.classList.add(tulic)
         if (expandedUrl) {
             twitterUserLink.style.marginRight = '10px'
-            twitterUserLinkI.classList.add('fas', 'fa-link')
-            twitterUserLinkI.style.paddingTop = '4px'
+
+            twitterUserLinkSvg.classList.add('bi')
+            twitterUserLinkSvg.style.height = '1.25rem'
+            twitterUserLinkSvg.style.width = '1.25rem'
+            twitterUserLinkSvg.style.verticalAlign = 'sub'
+            sicon(twitterUserLinkSvgUse, 'link-45deg')
+            twitterUserLinkSvg.appendChild(twitterUserLinkSvgUse)
+
             twitterUserLinkA.classList.add(ttac, ttfthc)
             twitterUserLinkA.target = '_blank'
             twitterUserLinkA.rel = 'noopener'
@@ -2384,18 +2413,24 @@ import * as utils from './utils.js'
             twitterUserLinkA.style.whiteSpace = 'pre-line'
             twitterUserLinkA.textContent = displayUrl
 
-            twitterUserLink.appendChild(twitterUserLinkI)
+            twitterUserLink.appendChild(twitterUserLinkSvg)
             twitterUserLink.appendChild(twitterUserLinkA)
         }
 
         twitterUserCreatedAt.classList.add(tucac)
         twitterUserCreatedAt.title = createdAt
-        twitterUserCreatedAtI.classList.add('far', 'fa-calendar-alt')
-        twitterUserCreatedAtI.style.paddingTop = '4px'
+
+        twitterUserCreatedAtSvg.classList.add('bi')
+        twitterUserCreatedAtSvg.style.height = '1.25rem'
+        twitterUserCreatedAtSvg.style.width = '1.25rem'
+        twitterUserCreatedAtSvg.style.verticalAlign = 'sub'
+        sicon(twitterUserCreatedAtSvgUse, 'calendar3')
+        twitterUserCreatedAtSvg.appendChild(twitterUserCreatedAtSvgUse)
+
         twitterUserCreatedAtSpan.style.paddingLeft = '4px'
         twitterUserCreatedAtSpan.textContent = createdAt
 
-        twitterUserCreatedAt.appendChild(twitterUserCreatedAtI)
+        twitterUserCreatedAt.appendChild(twitterUserCreatedAtSvg)
         twitterUserCreatedAt.appendChild(twitterUserCreatedAtSpan)
 
         twitterUserLocal.appendChild(twitterUserLocation)
