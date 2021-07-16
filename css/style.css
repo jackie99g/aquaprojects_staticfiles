@@ -1177,11 +1177,7 @@ a:hover {
     border-radius: 50%;
     width: 2.5rem;
     height: 2.5rem;
-    padding: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    padding: 0;
 }
 
 .tweet-twitter_picture_zoom-element_img {
