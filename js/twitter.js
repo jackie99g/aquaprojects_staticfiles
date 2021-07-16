@@ -2041,16 +2041,11 @@ import * as utils from './utils.js'
 
         !(() => {
             const createdat_title = twitterUserPageCreatedAt.title
-            const calendarIcon =
-                '<i class="far fa-calendar-alt" style="padding-top: 4px;"></i>'
-            const created_at_time = new Date(createdat_title).getTime()
-            const currentTime = new Date().getTime()
-            const diffTime = currentTime - created_at_time
-            const displayTime = calculateJoinTime(diffTime, createdat_title)
+            const displayTime = calculateJoinTime(createdat_title)
             const timeBlock = document.createElement('span')
             timeBlock.style.paddingLeft = '4px'
             timeBlock.innerHTML = displayTime
-            twitterUserPageCreatedAt.innerHTML = calendarIcon
+            twitterUserPageCreatedAt.querySelector('span').remove()
             twitterUserPageCreatedAt.appendChild(timeBlock)
         })()
 
@@ -2072,13 +2067,25 @@ import * as utils from './utils.js'
             return displayTime
         }
 
-        function calculateJoinTime(diffTime, createdat_title) {
-            diffTime /= 1000
+        function calculateJoinTime(createdat_title) {
+            const monthList = [
+                'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December',
+            ]
             const displayCreated_at = new Date(createdat_title)
-            const month = month_list[displayCreated_at.getMonth()]
-            const date = displayCreated_at.getDate()
+            const month = monthList[displayCreated_at.getMonth()]
             const year = displayCreated_at.getFullYear()
-            return `${month} ${date}, ${year}`
+            return `Joined ${month} ${year}`
         }
     }
 
