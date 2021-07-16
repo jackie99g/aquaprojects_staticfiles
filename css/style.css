@@ -1153,7 +1153,8 @@ a:hover {
     color: rgb(29, 161, 242);
 }
 
-.twitter_user-background_image > img {
+.twitter_user-background_image > img,
+.twitter_user-background_image > div {
     width: 100%;
     height: 33.3333%;
     min-height: 140px;
@@ -1162,7 +1163,8 @@ a:hover {
 }
 
 @media (min-width: 600px) {
-    .twitter_user-background_image > img {
+    .twitter_user-background_image > img,
+    .twitter_user-background_image > div {
         width: 100%;
         min-height: calc(598px / 3);
         max-height: calc(598px / 3);
