@@ -1528,7 +1528,7 @@ import * as utils from './utils.js'
                 const element = ttpzn[index]
                 const l = Number(hslc[2]) - 10
                 const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, ${l}%`
-                element.style.background = `${hslColor}, 90%)`
+                element.style.background = `${hslColor}, 77%)`
             }
         }
     }
