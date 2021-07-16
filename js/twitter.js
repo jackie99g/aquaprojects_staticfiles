@@ -2867,6 +2867,32 @@ import * as utils from './utils.js'
         }
     }
 
+    document.addEventListener('mouseover', e => {
+        if (findParents(e.target, 'twitter_user-follow_button')) {
+            twitterUserFollowButtonMouseover(e)
+        }
+    })
+
+    function twitterUserFollowButtonMouseover(e) {
+        const target = findParents(e.target, 'twitter_user-follow_button')
+        const fs = target.dataset['twitter_userFollow_status'] === 'true'
+        target.innerText = fs === true ? 'Unfollow' : 'Follow'
+        target.classList.add(fs === true ? 'btn-danger' : '')
+    }
+
+    document.addEventListener('mouseout', e => {
+        if (findParents(e.target, 'twitter_user-follow_button')) {
+            twitterUserFollowButtonMouseout(e)
+        }
+    })
+
+    function twitterUserFollowButtonMouseout(e) {
+        const target = findParents(e.target, 'twitter_user-follow_button')
+        const fs = target.dataset['twitter_userFollow_status'] === 'true'
+        target.innerText = fs === true ? 'Following' : 'Follow'
+        utils.removeClass(target, 'btn-danger')
+    }
+
     document.addEventListener('click', e => {
         if (findParents(e.target, 'tweet-twitter_favorite')) {
             tweetTwitterFavoriteClick(e)
