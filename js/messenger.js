@@ -287,4 +287,74 @@ import * as utils from './utils.js'
             error(err)
         }
     }
+
+    document.addEventListener(
+        'focus',
+        e => {
+            if (findParents(e.target, 'messenger-message-form-input')) {
+                messengerMessageFormInputFocus(e)
+            }
+        },
+        true
+    )
+
+    function messengerMessageFormInputFocus(e) {
+        const form = findParents(e.target, 'messenger-message-form')
+        const input = form.querySelector('.messenger-message-form-input')
+        const close = form.querySelector('.messenger-message-form-close')
+        if (input.value !== '') {
+            close.style.display = 'block'
+        }
+    }
+
+    document.addEventListener(
+        'blur',
+        e => {
+            if (findParents(e.target, 'messenger-message-form-input')) {
+                messengerMessageFormInputBlur(e)
+            }
+        },
+        true
+    )
+
+    function messengerMessageFormInputBlur(e) {
+        const form = findParents(e.target, 'messenger-message-form')
+        const input = form.querySelector('.messenger-message-form-input')
+        const close = form.querySelector('.messenger-message-form-close')
+        close.style.display = ''
+        if (e.relatedTarget === close) {
+            input.focus()
+        }
+    }
+
+    document.addEventListener('input', e => {
+        if (findParents(e.target, 'messenger-message-form-input')) {
+            messengerMessageFormInputInput(e)
+        }
+    })
+
+    function messengerMessageFormInputInput(e) {
+        const form = findParents(e.target, 'messenger-message-form')
+        const input = form.querySelector('.messenger-message-form-input')
+        const close = form.querySelector('.messenger-message-form-close')
+        if (input.value !== '') {
+            close.style.display = 'block'
+        } else {
+            close.style.display = ''
+        }
+    }
+
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'messenger-message-form-close')) {
+            messengerMessageFormCloseClick(e)
+        }
+    })
+
+    function messengerMessageFormCloseClick(e) {
+        const form = findParents(e.target, 'messenger-message-form')
+        const input = form.querySelector('.messenger-message-form-input')
+        const close = form.querySelector('.messenger-message-form-close')
+        input.value = ''
+        close.style.display = ''
+    }
 })()
