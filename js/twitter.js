@@ -3391,6 +3391,34 @@ import * as utils from './utils.js'
         })
     }
 
+    function rgb2hsl(rgb) {
+        const r = rgb[0] / 255
+        const g = rgb[1] / 255
+        const b = rgb[2] / 255
+
+        const max = Math.max(r, g, b)
+        const min = Math.min(r, g, b)
+        const diff = max - min
+
+        const h = calculateH()
+        const l = (max + min) / 2 * 100
+        const s = diff / (1 - Math.abs(max + min - 1)) * 100
+        return [h, s, l]
+
+        function calculateH() {
+            switch (min) {
+                case max:
+                    return 0
+                case r:
+                    return 60 * (b - g) / diff + 180
+                case g:
+                    return 60 + (r - b) / diff + 300
+                case b:
+                    return 60 * (g - r) / diff + 60
+            }
+        }
+    }
+
     function showError() {
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
         ajaxProgressBar.classList.add('bg-danger')
