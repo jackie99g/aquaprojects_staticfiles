@@ -26,9 +26,8 @@ import * as utils from './utils.js'
         const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
 
         try {
-            const q = (target, selector) => target.querySelector(selector)
             const form = document.querySelector('.messenger-message-form')
-            const input = q(form, '.messenger-message-form-input')
+            const input = form.querySelector('input')
             const messageText = input.value
             const cData = JSON.parse(await getConversationData())
             cData['conversation_id'] = cData['conversation_id_str']
