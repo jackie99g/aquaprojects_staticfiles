@@ -951,13 +951,12 @@ a:hover {
 
 .tweet-twitter_main {
     margin-left: 8px;
-    overflow: hidden;
 }
 
 .tweet-twitter_main_header {
-    display: flex;
+    display: grid;
+    grid: auto / minmax(auto, min-content) auto;
     margin-bottom: 2px;
-    white-space: nowrap;
 }
 
 .tweet-twitter_name {
@@ -965,6 +964,7 @@ a:hover {
     margin-right: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .tweet-twitter_screen_name,
@@ -988,7 +988,7 @@ a:hover {
 }
 
 .tweet-twitter_createdat {
-    text-overflow: ellipsis;
+    grid-area: 1/2/2/3;
 }
 
 .tweet-twitter_picture {
