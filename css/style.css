@@ -1065,6 +1065,7 @@ a:hover {
 
 .tweet-twitter_full_text a,
 .tweet-twitter_full_text span {
+    white-space: pre-wrap;
     word-break: break-word;
 }
 
