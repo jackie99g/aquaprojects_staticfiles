@@ -1063,6 +1063,11 @@ a:hover {
     border-top-width: 1px;
 }
 
+.tweet-twitter_full_text a,
+.tweet-twitter_full_text span {
+    word-break: break-word;
+}
+
 .tweet-twitter_full_text_hashtags:hover,
 .tweet-twitter_full_text_user:hover {
     text-decoration: underline;
