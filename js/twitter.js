@@ -3057,6 +3057,30 @@ import * as utils from './utils.js'
         }
     }
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'tweet-twitter_share')) {
+            tweetTwitterShareClick(e)
+        }
+    })
+
+    async function tweetTwitterShareClick(e) {
+        if (!navigator.share) return undefined
+        const target = findParents(e.target, 'twitter_anchor')
+        const targetHref = target.getAttribute('href')
+        const screenName = targetHref.split('/')[2]
+        const url = `${location.origin}/${targetHref}`
+        const text = `@${screenName} tweet on Twitter for Aqua Projects`
+        try {
+            await navigator.share({
+                title: 'Twitter for Aqua Projects',
+                text,
+                url,
+            })
+        } catch (e) {
+            error(e)
+        }
+    }
+
     function updateTweetSocial(tweet_id, href, selectors) {
         try {
             const ttsCache = utils.getApCache(href).querySelectorAll(selectors)
