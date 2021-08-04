@@ -528,6 +528,38 @@ import * as utils from './utils.js'
         }
     }
 
+    document.addEventListener(
+        'focus',
+        e => {
+            if (e.target.tagName === 'INPUT') {
+                inputFocus()
+            }
+        },
+        true
+    )
+
+    function inputFocus() {
+        const dq = selectors => document.querySelector(selectors)
+        const customSidePannelSm = dq('.custom_side_pannel_sm')
+        customSidePannelSm.parentNode.style.display = 'none'
+    }
+
+    document.addEventListener(
+        'blur',
+        e => {
+            if (e.target.tagName === 'INPUT') {
+                inputBlur()
+            }
+        },
+        true
+    )
+
+    function inputBlur() {
+        const dq = selectors => document.querySelector(selectors)
+        const customSidePannelSm = dq('.custom_side_pannel_sm')
+        customSidePannelSm.parentNode.style.display = ''
+    }
+
     function scrollPageTop() {
         scrollTop(500)
 
