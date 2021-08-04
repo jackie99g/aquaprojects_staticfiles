@@ -3068,7 +3068,7 @@ import * as utils from './utils.js'
         const target = findParents(e.target, 'twitter_anchor')
         const targetHref = target.getAttribute('href')
         const screenName = targetHref.split('/')[2]
-        const url = `${location.origin}/${targetHref}`
+        const url = `${location.origin}${targetHref}`
         const text = `@${screenName} tweet on Twitter for Aqua Projects`
         try {
             await navigator.share({
