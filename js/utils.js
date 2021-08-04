@@ -7,6 +7,7 @@ export function changeTheme() {
         'color-sub',
         'ripple',
         'logo',
+        'svg-icon',
     ]
 
     if (localStorage.getItem('ap-theme') === 'dark') {
