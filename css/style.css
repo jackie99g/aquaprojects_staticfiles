@@ -265,6 +265,37 @@ a:hover {
     }
 }
 
+.ap_theme-light-svg-icon {
+    color: transparent;
+    stroke: #657786;
+    stroke-linejoin: round;
+}
+
+.ap_theme-dark-svg-icon {
+    color: transparent;
+    stroke: #8899a6;
+    stroke-linejoin: round;
+}
+
+.ap_theme-default-svg-icon {
+    color: transparent;
+    stroke: #657786;
+    stroke-linejoin: round;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ap_theme-default-svg-icon {
+        color: transparent;
+        stroke: #8899a6;
+        stroke-linejoin: round;
+    }
+}
+
+.select_active_dashboard svg[class*='ap_theme-'] {
+    stroke: none;
+    stroke-linejoin: miter;
+}
+
 .ap_btn {
     color: #1da1f2;
     border-color: #1da1f2;
@@ -1114,14 +1145,35 @@ a:hover {
 
     to {
         opacity: 1;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
     }
 }
 
 .fadeInUp {
     -webkit-animation-name: fadeInUp;
     animation-name: fadeInUp;
+    animation-duration: 1s;
+}
+
+@keyframes fadeOutDown {
+    0% {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0);
+    }
+}
+
+.fadeOutDown {
+    -webkit-animation-name: fadeOutDown;
+    animation-name: fadeOutDown;
+    animation-duration: 1s;
 }
 
 @keyframes fadeOutUp {
