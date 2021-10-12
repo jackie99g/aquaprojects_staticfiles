@@ -2241,7 +2241,7 @@ import * as utils from './utils.js'
         const aptbgsc = apts ? cas('background') : ca('background')
         const aptcsc = ca('color-sub')
         const bsbtnc = 'btn'
-        const apbtnc = 'ap_btn'
+        const apbtnc = ca('btn')
         const apbtnfillc = 'ap_btn-fill'
 
         const tuc = 'twitter_user'
