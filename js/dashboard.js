@@ -585,9 +585,12 @@ import * as utils from './utils.js'
     )
 
     function inputFocus() {
-        const dq = selectors => document.querySelector(selectors)
-        const customSidePannelSm = dq('.custom_side_pannel_sm')
-        customSidePannelSm.parentNode.style.display = 'none'
+        const windowWidth = window.innerWidth
+        if (windowWidth < 768) {
+            const dq = selectors => document.querySelector(selectors)
+            const dashboardHouse = dq('.dashboard-house')
+            dashboardHouse.style.display = 'none'
+        }
     }
 
     document.addEventListener(
@@ -601,9 +604,12 @@ import * as utils from './utils.js'
     )
 
     function inputBlur() {
-        const dq = selectors => document.querySelector(selectors)
-        const customSidePannelSm = dq('.custom_side_pannel_sm')
-        customSidePannelSm.parentNode.style.display = ''
+        const windowWidth = window.innerWidth
+        if (windowWidth < 768) {
+            const dq = selectors => document.querySelector(selectors)
+            const dashboardHouse = dq('.dashboard-house')
+            dashboardHouse.style.display = ''
+        }
     }
 
     function scrollPageTop() {
