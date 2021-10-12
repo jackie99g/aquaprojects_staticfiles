@@ -2650,20 +2650,28 @@ import * as utils from './utils.js'
             )
             for (let index = 0; index < twitterUserListButton.length; index++) {
                 const element = twitterUserListButton[index]
+                const dcns = (uri, tagName) =>
+                    document.createElementNS(uri, tagName)
+                const svgns = 'http://www.w3.org/2000/svg'
+                const xlinkns = 'http://www.w3.org/1999/xlink'
+                const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+                const sicon = (e, i) =>
+                    e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
+                const use = dcns(svgns, 'use')
                 if (element.dataset[keyname] === screen_name) {
                     element.disabled = false
                     const keyname = 'twitter_userLists_status'
                     if (data === 'untracked') {
-                        const i = document.createElement('i')
-                        i.classList.add('fas', 'fa-user-plus')
-                        utils.emptyNode(element)
-                        element.appendChild(i)
+                        sicon(use, 'person-plus')
+                        const svg = element.querySelector('svg')
+                        utils.emptyNode(svg)
+                        svg.appendChild(use)
                         element.dataset[keyname] = 'untracked'
                     } else if (data === 'tracked') {
-                        const i = document.createElement('i')
-                        i.classList.add('fas', 'fa-user-check')
-                        utils.emptyNode(element)
-                        element.appendChild(i)
+                        sicon(use, 'person-check')
+                        const svg = element.querySelector('svg')
+                        utils.emptyNode(svg)
+                        svg.appendChild(use)
                         element.dataset[keyname] = 'tracked'
                     }
                 }
@@ -2703,12 +2711,20 @@ import * as utils from './utils.js'
             )
             for (let index = 0; index < twitterUserListButton.length; index++) {
                 const element = twitterUserListButton[index]
+                const dcns = (uri, tagName) =>
+                    document.createElementNS(uri, tagName)
+                const svgns = 'http://www.w3.org/2000/svg'
+                const xlinkns = 'http://www.w3.org/1999/xlink'
+                const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+                const sicon = (e, i) =>
+                    e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
+                const use = dcns(svgns, 'use')
                 if (element.dataset[keyname] === screen_name) {
                     element.disabled = false
-                    const i = document.createElement('i')
-                    i.classList.add('fas', 'fa-user-check')
-                    utils.emptyNode(element)
-                    element.appendChild(i)
+                    sicon(use, 'person-check')
+                    const svg = element.querySelector('svg')
+                    utils.emptyNode(svg)
+                    svg.appendChild(use)
                     element.dataset['twitter_userLists_status'] = 'tracked'
                 }
             }
@@ -2747,12 +2763,20 @@ import * as utils from './utils.js'
             )
             for (let index = 0; index < twitterUserListButton.length; index++) {
                 const element = twitterUserListButton[index]
+                const dcns = (uri, tagName) =>
+                    document.createElementNS(uri, tagName)
+                const svgns = 'http://www.w3.org/2000/svg'
+                const xlinkns = 'http://www.w3.org/1999/xlink'
+                const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+                const sicon = (e, i) =>
+                    e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
+                const use = dcns(svgns, 'use')
                 if (element.dataset[keyname] === screen_name) {
                     element.disabled = false
-                    const i = document.createElement('i')
-                    i.classList.add('fas', 'fa-user-plus')
-                    utils.emptyNode(element)
-                    element.appendChild(i)
+                    sicon(use, 'person-plus')
+                    const svg = element.querySelector('svg')
+                    utils.emptyNode(svg)
+                    svg.appendChild(use)
                     element.dataset['twitter_userLists_status'] = 'untracked'
                 }
             }
@@ -3525,6 +3549,6 @@ import * as utils from './utils.js'
         const i = document.createElement('i')
         i.classList.add('fas', 'fa-exclamation-circle')
         document.querySelector('#main').innerHTML =
-            '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+            '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
     }
 })()
