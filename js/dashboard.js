@@ -64,7 +64,7 @@ import * as utils from './utils.js'
             ajaxProgressBar.classList.add('bg-danger')
             ajaxProgressBar.style.width = '100%'
             changeContentArea.innerHTML =
-                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
         }
         if (href != location.href.replace(location.origin, '')) {
             console.log('It seems that you moved to a different page first.')
@@ -83,7 +83,7 @@ import * as utils from './utils.js'
         } else {
             const changeContentArea = document.querySelector('#main')
             changeContentArea.innerHTML =
-                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
         }
 
         ajaxProgressBar.style.width = '100%'
@@ -262,7 +262,7 @@ import * as utils from './utils.js'
             ajaxProgressBar.classList.add('bg-danger')
             ajaxProgressBar.style.width = '100%'
             main.innerHTML =
-                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><i class="fas fa-exclamation-circle"></i></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
         }
     }
 
