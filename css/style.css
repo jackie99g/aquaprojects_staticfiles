@@ -186,20 +186,24 @@ a:hover {
     }
 }
 
-.ap_theme-light-color-sub {
+.ap_theme-light-color-sub,
+.ap_theme-light-placeholder::placeholder {
     color: #657786;
 }
 
-.ap_theme-dark-color-sub {
+.ap_theme-dark-color-sub,
+.ap_theme-dark-placeholder::placeholder {
     color: #8899a6;
 }
 
-.ap_theme-default-color-sub {
+.ap_theme-default-color-sub,
+.ap_theme-default-placeholder::placeholder {
     color: #657786;
 }
 
 @media (prefers-color-scheme: dark) {
-    .ap_theme-default-color-sub {
+    .ap_theme-default-color-sub,
+    .ap_theme-default-placeholder::placeholder {
         color: #8899a6;
     }
 }
