@@ -2923,8 +2923,24 @@ import * as utils from './utils.js'
         }
     })
 
-    function tweetTwitterFavoriteClick(e) {
+    async function tweetTwitterFavoriteClick(e) {
         const target = findParents(e.target, 'tweet-twitter_favorite')
+        try {
+            const aor = await acceptOrRejectTweetTwitterSocialMenu(target, [
+                {
+                    icon: '<i class="twittericons-heart"></i>',
+                    text: 'Like',
+                },
+            ])
+            if (aor === 1) {
+                return undefined
+            }
+        } catch (e) {
+            error(e)
+            return undefined
+        } finally {
+            closeTweetTwitterSocialMenu()
+        }
         const keyname = 'tweet_favorited'
         const tweet_favorited = target.dataset[keyname] === 'true'
         const tweet_id = target.dataset['tweet_id']
@@ -3005,8 +3021,28 @@ import * as utils from './utils.js'
         }
     })
 
-    function tweetTwitterRetweetClick(e) {
+    async function tweetTwitterRetweetClick(e) {
         const target = findParents(e.target, 'tweet-twitter_retweet')
+        try {
+            const aor = await acceptOrRejectTweetTwitterSocialMenu(target, [
+                {
+                    icon: '<i class="twittericons-retweet"></i>',
+                    text: 'Retweet',
+                },
+                {
+                    icon: '<i class="twittericons-retweet"></i>',
+                    text: 'Quote Tweet',
+                },
+            ])
+            if (aor === 1) {
+                return undefined
+            }
+        } catch (e) {
+            error(e)
+            return undefined
+        } finally {
+            closeTweetTwitterSocialMenu()
+        }
         const keyname = 'tweet_retweeted'
         const tweet_retweet = target.dataset[keyname] === 'true'
         const tweet_id = target.dataset['tweet_id']
@@ -3088,9 +3124,37 @@ import * as utils from './utils.js'
     })
 
     async function tweetTwitterShareClick(e) {
+        const target = findParents(e.target, 'tweet-twitter_share')
+        try {
+            const aor = await acceptOrRejectTweetTwitterSocialMenu(target, [
+                {
+                    icon: '<i class="twittericons-share"></i>',
+                    text: 'Copy link to Tweet',
+                },
+                {
+                    icon: '<i class="twittericons-share"></i>',
+                    text: 'Share',
+                },
+            ])
+            if (aor === 0) {
+                if (navigator.clipboard) {
+                    const anchor = findParents(e.target, 'twitter_anchor')
+                    const targetHref = anchor.getAttribute('href')
+                    const statusUrl = targetHref.replace('/twitter/', '')
+                    const url = `https://twitter.com/${statusUrl}`
+                    navigator.clipboard.writeText(url)
+                }
+                return undefined
+            }
+        } catch (e) {
+            error(e)
+            return undefined
+        } finally {
+            closeTweetTwitterSocialMenu()
+        }
         if (!navigator.share) return undefined
-        const target = findParents(e.target, 'twitter_anchor')
-        const targetHref = target.getAttribute('href')
+        const anchor = findParents(e.target, 'twitter_anchor')
+        const targetHref = anchor.getAttribute('href')
         const screenName = targetHref.split('/')[2]
         const url = `${location.origin}${targetHref}`
         const text = `@${screenName} tweet on Twitter for Aqua Projects`
