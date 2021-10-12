@@ -1539,8 +1539,11 @@ a:hover {
 }
 
 .seamless_configuration-input {
-    border: 0;
-    border-bottom: 1.5px solid gray;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom-style: solid;
+    border-bottom-width: 1.5px;
     padding: 4px 10px;
     width: 100%;
 }
