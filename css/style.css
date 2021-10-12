@@ -6,6 +6,10 @@
     padding: 0;
 }
 
+#footer {
+    margin: 1rem 0;
+}
+
 .btn,
 h1 {
     font-size: inherit;
