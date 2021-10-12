@@ -295,27 +295,127 @@ a:hover {
     }
 }
 
+.ap_theme-light-btn {
+    color: #1d9bf0;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-light-btn:hover,
+.ap_theme-light-btn:active {
+    color: #1d9bf0;
+    background-color: #e8f5fd;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-light-btn:hover.ap_theme-light-btn:focus {
+    color: #1d9bf0;
+    background-color: #d2ebfc;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-dark-btn {
+    color: #1d9bf0;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-dark-btn:hover,
+.ap_theme-dark-btn:active {
+    color: #1d9bf0;
+    background-color: #162d3f;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-dark-btn:hover.ap_theme-dark-btn:focus {
+    color: #1d9bf0;
+    background-color: #173952;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-default-btn {
+    color: #1d9bf0;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-default-btn:hover,
+.ap_theme-default-btn:active {
+    color: #1d9bf0;
+    background-color: #e8f5fd;
+    border-color: #1d9bf0;
+}
+
+.ap_theme-default-btn:hover.ap_theme-default-btn:focus {
+    color: #1d9bf0;
+    background-color: #d2ebfc;
+    border-color: #1d9bf0;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ap_theme-default-btn {
+        color: #1d9bf0;
+        border-color: #1d9bf0;
+    }
+
+    .ap_theme-default-btn:hover,
+    .ap_theme-default-btn:active {
+        color: #1d9bf0;
+        background-color: #162d3f;
+        border-color: #1d9bf0;
+    }
+
+    .ap_theme-default-btn:hover.ap_theme-default-btn:focus {
+        color: #1d9bf0;
+        background-color: #173952;
+        border-color: #1d9bf0;
+    }
+}
+
+.ap_theme-light-backdrop {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.ap_theme-dark-backdrop {
+    background-color: rgb(21, 32, 43, 0.9);
+}
+
+.ap_theme-default-backdrop {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (prefers-color-scheme: dark) {
+    .ap_theme-default-backdrop {
+        background-color: rgb(21, 32, 43, 0.9);
+    }
+}
+
+@media (min-width: 768px) {
+    @supports (backdrop-filter: blur(20px)) {
+        .ap_theme-light-backdrop {
+            backdrop-filter: blur(20px);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .ap_theme-dark-backdrop {
+            backdrop-filter: blur(20px);
+            background-color: rgb(21, 32, 43, 0.5);
+        }
+
+        .ap_theme-default-backdrop {
+            backdrop-filter: blur(20px);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ap_theme-default-backdrop {
+                backdrop-filter: blur(20px);
+                background-color: rgb(21, 32, 43, 0.5);
+            }
+        }
+    }
+}
+
 .select_active_dashboard svg[class*='ap_theme-'] {
     stroke: none;
     stroke-linejoin: miter;
-}
-
-.ap_btn {
-    color: #1da1f2;
-    border-color: #1da1f2;
-}
-
-.ap_btn:hover,
-.ap_btn:active {
-    color: #1da1f2;
-    background-color: #dde9f2;
-    border-color: #1da1f2;
-}
-
-.ap_btn:hover.ap_btn:focus {
-    color: #1da1f2;
-    background-color: #d2ecfc;
-    border-color: #1da1f2;
 }
 
 .ap_btn-fill {
