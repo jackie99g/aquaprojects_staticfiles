@@ -1081,7 +1081,7 @@ a:hover {
 .fadeInUp {
     -webkit-animation-name: fadeInUp;
     animation-name: fadeInUp;
-    animation-duration: 1s;
+    animation-duration: 0.15s;
 }
 
 .twitter-client {
