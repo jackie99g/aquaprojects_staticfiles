@@ -146,63 +146,30 @@ import * as utils from './utils.js'
 
     function showLeftSidebar() {
         localStorage.setItem('show_left_sidebar', true)
-        const customSidePannelLg = document.querySelector(
-            '.custom_side_pannel_lg'
-        ).parentNode
-        utils.removeClass(customSidePannelLg, 'col-md-1')
-        customSidePannelLg.classList.add('col-md-2')
-        customSidePannelLg.style.visibility = 'visible'
-
-        const customSidePannelMd = document.querySelector(
-            '.custom_side_pannel_md'
-        ).parentNode
-        utils.removeClass(customSidePannelMd, 'col-md-1')
-        customSidePannelMd.classList.add('col-md-2')
-        customSidePannelMd.style.visibility = 'visible'
+        const dashboardHouse = document.querySelector('.dashboard-house')
+        utils.removeClass(dashboardHouse, 'col-md-1')
+        utils.addClass(dashboardHouse, 'col-md-2')
+        dashboardHouse.style.visibility = 'visible'
     }
 
     function hideLeftSidebar() {
         localStorage.removeItem('show_left_sidebar')
-
-        const customSidePannelLg = document.querySelector(
-            '.custom_side_pannel_lg'
-        ).parentNode
-        utils.removeClass(customSidePannelLg, 'col-md-2')
-        customSidePannelLg.classList.add('col-md-1')
-        customSidePannelLg.style.visibility = 'hidden'
-
-        const customSidePannelMd = document.querySelector(
-            '.custom_side_pannel_md'
-        ).parentNode
-        utils.removeClass(customSidePannelMd, 'col-md-2')
-        customSidePannelMd.classList.add('col-md-1')
-        customSidePannelMd.style.visibility = 'hidden'
+        const dashboardHouse = document.querySelector('.dashboard-house')
+        utils.removeClass(dashboardHouse, 'col-md-2')
+        utils.addClass(dashboardHouse, 'col-md-1')
+        dashboardHouse.style.visibility = ''
     }
 
     function headerSummaryButton() {
-        const customSidePannelLg = document.querySelector(
-            '.custom_side_pannel_lg'
-        ).parentNode
-        utils.toggleClass(customSidePannelLg, 'col-md-1')
-        utils.toggleClass(customSidePannelLg, 'col-md-2')
-        if (customSidePannelLg.style.visibility === 'visible') {
-            customSidePannelLg.style.visibility = 'hidden'
-            localStorage.removeItem('show_left_sidebar')
-        } else {
-            customSidePannelLg.style.visibility = 'visible'
-            localStorage.setItem('show_left_sidebar', true)
-        }
+        const dashboardHouse = document.querySelector('.dashboard-house')
+        utils.toggleClass(dashboardHouse, 'col-md-1')
+        utils.toggleClass(dashboardHouse, 'col-md-2')
 
-        const customSidePannelMd = document.querySelector(
-            '.custom_side_pannel_md'
-        ).parentNode
-        utils.toggleClass(customSidePannelMd, 'col-md-1')
-        utils.toggleClass(customSidePannelMd, 'col-md-2')
-        if (customSidePannelMd.style.visibility === 'visible') {
-            customSidePannelMd.style.visibility = 'hidden'
+        if (dashboardHouse.style.visibility === 'visible') {
+            dashboardHouse.style.visibility = ''
             localStorage.removeItem('show_left_sidebar')
         } else {
-            customSidePannelMd.style.visibility = 'visible'
+            dashboardHouse.style.visibility = 'visible'
             localStorage.setItem('show_left_sidebar', true)
         }
     }
