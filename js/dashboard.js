@@ -11,7 +11,7 @@ import * as utils from './utils.js'
             currentPage,
         }
         history.replaceState(state, null, currentPage)
-        markDashboardAnchorGroup()
+        updateDashboardAnchorGroup()
         updateFilesToCache()
     })()
 
@@ -31,8 +31,7 @@ import * as utils from './utils.js'
         const body = document.querySelector('body')
         body.style.marginRight = ''
         body.style.overflowY = ''
-        resetDashboardAnchorGroup()
-        markDashboardAnchorGroup()
+        updateDashboardAnchorGroup()
         changeContent(targetPage)
         e.preventDefault()
     }
@@ -41,15 +40,10 @@ import * as utils from './utils.js'
         // When we access the page at the first time, we don't do nothing.
         if (!history.state) return
         // dashboard anchor settings.
-        resetDashboardAnchorGroup()
-        const selectors = `.dashboard_anchor_${location.pathname.split('/')[1]}`
-        const da = document.querySelector(selectors)
-        da && da.classList.add('select_active_dashboard')
         const body = document.querySelector('body')
         body.style.marginRight = ''
         body.style.overflowY = ''
-        resetDashboardAnchorGroup()
-        markDashboardAnchorGroup()
+        updateDashboardAnchorGroup()
         if (utils.locationMatch('/twitter')) {
             changeTwitterContentOptimized(history.state['targetPage'])
         } else if (utils.locationMatch('/newsplus')) {
@@ -451,12 +445,63 @@ import * as utils from './utils.js'
         }
     })
 
-    function resetDashboardAnchorGroup() {
+    function updateDashboardAnchorGroup() {
+        resetUserPictureAndAccountStyle()
         const daga = document.querySelectorAll('.dashboard_anchor_group a')
-        for (let index = 0; index < daga.length; index++) {
-            const element = daga[index]
-            utils.removeClass(element, 'select_active_dashboard')
+        const sad = Array.from(daga).filter(i =>
+            i.classList.contains('select_active_dashboard')
+        )
+        const selectors = `.dashboard_anchor_${location.pathname.split('/')[1]}`
+        const da = document.querySelectorAll(selectors)
+        const daa = Array.from(da)
+        if (sad.length && sad.every(element => daa.includes(element))) {
+            return undefined
         }
+        sad.forEach(element => {
+            utils.removeClass(element, 'select_active_dashboard')
+            replaceSvg(element.querySelector('svg'), false)
+        })
+        daa.forEach(element => {
+            element.classList.add('select_active_dashboard')
+            replaceSvg(element.querySelector('svg'), true)
+        })
+    }
+
+    function replaceSvg(svg, mark) {
+        const fill = mark === true ? true : false
+        const svgClass = svg.getAttribute('class')
+        const svgStyle = svg.getAttribute('style')
+        if (svgClass && svgClass.indexOf('-svg-icon') !== -1) return undefined
+        const replacedSvg = makeFilledOrUnfilledSvg(svg, fill)
+        svgClass && replacedSvg.setAttribute('class', svgClass)
+        svgStyle && replacedSvg.setAttribute('style', svgStyle)
+    }
+
+    function makeFilledOrUnfilledSvg(targetSvg, fill) {
+        const dcns = (uri, tagName) => document.createElementNS(uri, tagName)
+        const svgns = 'http://www.w3.org/2000/svg'
+        const xlinkns = 'http://www.w3.org/1999/xlink'
+        const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+        const sicon = (e, i) => e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
+        const use = dcns(svgns, 'use')
+        const href = targetSvg.querySelector('use').getAttribute('href')
+        const makeHref = href => {
+            const iconId = href.replace(`${bi}#`, '')
+            if (fill === true) {
+                if (iconId.indexOf('-fill') === -1) {
+                    return `${iconId}-fill`
+                }
+                return iconId
+            }
+            return iconId.replace('-fill', '')
+        }
+        targetSvg.querySelector('use').remove()
+        sicon(use, makeHref(href))
+        targetSvg.appendChild(use)
+        return targetSvg
+    }
+
+    function resetUserPictureAndAccountStyle() {
         const userPicture = document.querySelector('.user_picture')
         userPicture.style.background = ''
         const account = document.querySelector('.account')
@@ -467,16 +512,6 @@ import * as utils from './utils.js'
             if (account.classList && account.classList.contains(element)) {
                 account.classList.remove(element)
             }
-        }
-    }
-
-    function markDashboardAnchorGroup() {
-        const selectors = `.dashboard_anchor_${location.pathname.split('/')[1]}`
-        const da = document.querySelectorAll(selectors)
-        if (da) {
-            Array.from(da).forEach(element =>
-                element.classList.add('select_active_dashboard')
-            )
         }
     }
 
