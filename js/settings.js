@@ -1,4 +1,4 @@
-import { changeTheme, findParents, getCookie, error } from './utils.js'
+import { changeTheme, findParents, getCookie, log, error } from './utils.js'
 import * as utils from './utils.js'
 !(() => {
     window.addEventListener('aquaprojects_popstate', () => {
@@ -175,6 +175,45 @@ import * as utils from './utils.js'
             'seamless_configuration-form-radio'
         )
         target.querySelector('input').click()
+    }
+
+    document.addEventListener('click', e => {
+        const scifsb = 'seamless_configuration-input-file-save_button'
+        if (findParents(e.target, scifsb)) {
+            seamlessConfigurationInputFileSaveButtonClick(e)
+        }
+    })
+
+    async function seamlessConfigurationInputFileSaveButtonClick(e) {
+        const form = findParents(e.target, 'seamless_configuration-form')
+        const input = form.querySelector('input')
+        const file = input.files[0]
+        const formData = new FormData()
+        formData.append('picture', file)
+
+        const href = '/api/account/update_profile_image/'
+        try {
+            const fetching = fetch(href, {
+                method: 'POST',
+                body: formData,
+                mode: 'cors',
+                credentials: 'include',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                error(response)
+                return
+            }
+            const data = await response.text()
+
+            log(data)
+        } catch (err) {
+            error(err)
+        }
     }
 
     // connect-google
