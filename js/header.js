@@ -183,6 +183,7 @@ import * as utils from './utils.js'
     function userPictureClick(e) {
         const userPicture = findParents(e.target, 'user_picture')
         const account = document.querySelector('.account')
+        const footer = document.querySelector('#footer')
         const visibleState = account.style.visibility
             ? account.style.visibility
             : 'hidden'
@@ -197,6 +198,7 @@ import * as utils from './utils.js'
             }
             userPicture.style.background = ''
         }
+        if (window.innerWidth < 768) utils.addClass(footer, 'ap_display_none')
         account.scrollTo(0, 0)
         const apSidebarPosition = localStorage.getItem('ap_sidebar_position')
         const needsPadding = apSidebarPosition === 'bottom'
@@ -289,8 +291,11 @@ import * as utils from './utils.js'
         }
         const main = document.querySelector('#main')
         const userPicture = document.querySelector('.user_picture')
+        const footer = document.querySelector('#footer')
+        const windowWidth = window.innerWidth
         main.style.display = ''
         userPicture.style.background = ''
+        if (windowWidth < 768) utils.removeClass(footer, 'ap_display_none')
     }
 
     document.addEventListener('change', e => {

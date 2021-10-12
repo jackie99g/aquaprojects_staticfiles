@@ -370,6 +370,10 @@ import * as utils from './utils.js'
 
                     utils.repaintNode(href, '#main')
 
+                    const footer = document.querySelector('#footer')
+                    utils.removeClass(footer, 'footer-bottom')
+                    utils.removeClass(footer, 'ap_display_none')
+
                     window.dispatchEvent(new Event('aquaprojects_popstate'))
 
                     ajaxProgressBar.style.width = '100%'
@@ -403,6 +407,12 @@ import * as utils from './utils.js'
         const loader = document.createElement('div')
         loader.classList.add('loader')
         main.appendChild(loader)
+        const footer = document.querySelector('#footer')
+        if (window.AquaProjectsCache[href]) {
+            utils.addClass(footer, 'ap_display_none')
+        } else {
+            utils.addClass(footer, 'footer-bottom')
+        }
 
         // Cache exsists.
         if (window.AquaProjectsCache[href]) {
