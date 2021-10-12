@@ -487,7 +487,6 @@ a:hover {
 .account {
     position: fixed;
     top: 57px;
-    background: inherit;
     visibility: hidden;
     z-index: 2;
 }
