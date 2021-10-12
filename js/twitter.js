@@ -3129,6 +3129,231 @@ import * as utils from './utils.js'
         }
     }
 
+    function acceptOrRejectTweetTwitterSocialMenu(target, icons) {
+        const windowWidth = window.innerWidth
+        if (windowWidth < 768) {
+            return proceedWithAcceptingOrRejectingTweetTwitterSocialMenu(icons)
+        } else {
+            const f = proceedWithAcceptingOrRejectingTweetTwitterSocialDropdown
+            return f(target, icons)
+        }
+    }
+
+    function proceedWithAcceptingOrRejectingTweetTwitterSocialDropdown(t, ic) {
+        return new Promise((resolve, reject) => {
+            const target = t
+            const icons = ic
+            removeTweetTwitterSocialDropdown()
+            const pes = prepareTweetTwitterSocialMenu(icons)
+            const elements = roundedCornersToTweetTwitterSocialDropdown(pes)
+            const div = document.createElement('div')
+            div.classList.add('tweet-twitter_social-dropdown')
+            div.classList.add(`ap_theme-${utils.getApTheme()}-backdrop`)
+            elements.forEach(element =>
+                utils.addClass(element, 'ap_only_hover')
+            )
+            elements.forEach(element => div.appendChild(element))
+            target.appendChild(div)
+            const click = e => {
+                const elementc = 'tweet-twitter_social_menu-element'
+                const dropdownc = 'tweet-twitter_social-dropdown'
+                if (findParents(e.target, elementc)) {
+                    const target = findParents(e.target, elementc)
+                    const dropdown = findParents(e.target, dropdownc)
+                    const children = dropdown.querySelectorAll(`.${elementc}`)
+                    const index = Array.from(children).findIndex(
+                        element => element === target
+                    )
+                    hideTweetTwitterSocialDropdown()
+                    document.removeEventListener('click', click)
+                    resolve(index)
+                } else {
+                    div.remove()
+                    document.removeEventListener('click', click)
+                    reject(0)
+                }
+            }
+            document.addEventListener('click', click)
+        })
+    }
+
+    function removeTweetTwitterSocialDropdown() {
+        const dq = selectors => document.querySelector(selectors)
+        const dropdown = dq('.tweet-twitter_social-dropdown')
+        dropdown && dropdown.remove()
+    }
+
+    function hideTweetTwitterSocialDropdown() {
+        const dq = selectors => document.querySelector(selectors)
+        const dropdown = dq('.tweet-twitter_social-dropdown')
+        if (dropdown) {
+            dropdown.style.display = 'none'
+        }
+    }
+
+    function roundedCornersToTweetTwitterSocialDropdown(elements) {
+        if (elements.length === 1) {
+            elements[0].style.borderRadius = '1rem'
+            return elements
+        }
+        elements[0].style.borderRadius = '1rem 1rem 0 0'
+        elements[elements.length - 1].style.borderRadius = '0 0 1rem 1rem'
+        return elements
+    }
+
+    function proceedWithAcceptingOrRejectingTweetTwitterSocialMenu(icons) {
+        return new Promise((resolve, reject) => {
+            showTweetTwitterSocialMenu(icons)
+            const ttsmeSelectors = '.tweet-twitter_social_menu-element'
+            const ttsmcSelectors = '.tweet-twitter_social_menu-container'
+            const ttsme = document.querySelectorAll(ttsmeSelectors)
+            const ttsmc = document.querySelector(ttsmcSelectors)
+            const ttsmRemoveEventListener = () => {
+                ttsme.forEach(element =>
+                    element.removeEventListener('click', click)
+                )
+            }
+            const click = e => {
+                ttsmRemoveEventListener()
+                const af = iterable => Array.from(iterable)
+                const elementc = 'tweet-twitter_social_menu-element'
+                const containerc = 'tweet-twitter_social_menu-container'
+                const container = findParents(e.target, containerc)
+                const target = findParents(e.target, elementc)
+                const elements = container.querySelectorAll(ttsmeSelectors)
+                const index = af(elements).findIndex(item => item === target)
+                resolve(index)
+            }
+            ttsme.forEach(element => element.addEventListener('click', click))
+            ttsmc.addEventListener('click', e => e.stopPropagation())
+            ttsmc.parentNode.addEventListener('click', e => reject(e))
+            const touchstart = e => {
+                const containerc = 'tweet-twitter_social_menu-container'
+                const container = findParents(e.target, containerc)
+                    ? findParents(e.target, containerc)
+                    : e.target.querySelector(`.${containerc}`)
+                if (container === false) return undefined
+                tweetTwitterSocialMenuContainerTouchstart(e)
+            }
+            const touchmove = e => {
+                const containerc = 'tweet-twitter_social_menu-container'
+                const container = findParents(e.target, containerc)
+                    ? findParents(e.target, containerc)
+                    : e.target.querySelector(`.${containerc}`)
+                if (container === false) return undefined
+                tweetTwitterSocialMenuContainerTouchmove(e, container)
+                e.preventDefault()
+            }
+            const touchend = e => {
+                const containerc = 'tweet-twitter_social_menu-container'
+                const container = findParents(e.target, containerc)
+                    ? findParents(e.target, containerc)
+                    : e.target.querySelector(`.${containerc}`)
+                if (container === false) return undefined
+                tweetTwitterSocialMenuContainerTouchend(e, container)
+            }
+            ttsmc.addEventListener('touchstart', touchstart)
+            ttsmc.addEventListener('touchmove', touchmove)
+            ttsmc.addEventListener('touchend', touchend)
+            ttsmc.parentNode.addEventListener('touchstart', touchstart)
+            ttsmc.parentNode.addEventListener('touchmove', touchmove)
+            ttsmc.parentNode.addEventListener('touchend', touchend)
+        })
+    }
+
+    function showTweetTwitterSocialMenu(icons) {
+        const q = (parentNode, selectors) => parentNode.querySelector(selectors)
+        const container = q(document, '.tweet-twitter_social_menu-container')
+        utils.emptyNode(container)
+
+        const ttsmb = document.createElement('div')
+        ttsmb.classList.add('tweet-twitter_social_menu-bar')
+        container.appendChild(ttsmb)
+
+        const elements = prepareTweetTwitterSocialMenu(icons)
+        elements.forEach(element => container.appendChild(element))
+        container.parentNode.style.display = ''
+        const animationend = () => {
+            utils.removeClass(container, 'fadeInUp')
+            container.removeEventListener('animationend', animationend)
+        }
+        container.addEventListener('animationend', animationend)
+        container.classList.add('fadeInUp')
+    }
+
+    function prepareTweetTwitterSocialMenu(icons) {
+        const elements = []
+        for (let index = 0; index < icons.length; index++) {
+            const element = icons[index]
+
+            const ttsme = document.createElement('div')
+            const icon = document.createElement('div')
+            const text = document.createElement('div')
+
+            ttsme.classList.add('tweet-twitter_social_menu-element')
+            ttsme.classList.add(`ap_theme-${utils.getApTheme()}-background`)
+            icon.innerHTML = element['icon']
+            icon.style.display = 'flex'
+            icon.style.alignItems = 'center'
+            text.innerHTML = element['text']
+            text.style.marginLeft = '1rem'
+
+            ttsme.appendChild(icon)
+            ttsme.appendChild(text)
+            elements.push(ttsme)
+        }
+        return elements
+    }
+
+    function closeTweetTwitterSocialMenu() {
+        const windowWidth = window.innerWidth
+        if (windowWidth >= 768) return undefined
+        const q = (parentNode, selectors) => parentNode.querySelector(selectors)
+        const container = q(document, '.tweet-twitter_social_menu-container')
+        const transitionend = () => {
+            const transformFunction = 'translate3d(0px, 0px, 0px)'
+            container.parentNode.style.display = 'none'
+            container.style.transform = transformFunction
+            container.style.transition = 'all 0ms ease 0s'
+            container.removeEventListener('transitionend', transitionend)
+        }
+        const ty = container.offsetHeight
+        const transformFunction = `translate3d(0px, ${ty}px, 0px)`
+        container.style.transform = transformFunction
+        container.style.transition = 'all 300ms ease 0s'
+        container.addEventListener('transitionend', transitionend)
+    }
+
+    function tweetTwitterSocialMenuContainerTouchstart(e) {
+        touchingPositionPageY = e.changedTouches[0].pageY
+    }
+
+    function tweetTwitterSocialMenuContainerTouchmove(e, container) {
+        const pageY = e.changedTouches[0].pageY
+        const amountOfMovementY = touchingPositionPageY - pageY
+        const ty = amountOfMovementY * -1 > 0 ? amountOfMovementY * -1 : 0
+        container.style.transform = `translate3d(0px, ${ty}px, 0px)`
+    }
+
+    function tweetTwitterSocialMenuContainerTouchend(e, container) {
+        const pageY = e.changedTouches[0].pageY
+        const amountOfMovementY = touchingPositionPageY - pageY
+
+        const transitionend = () => {
+            container.style.transition = 'all 0ms ease 0s'
+            container.removeEventListener('transitionend', transitionend)
+        }
+        container.addEventListener('transitionend', transitionend)
+        container.style.transition = 'all 300ms ease 0s'
+
+        if (amountOfMovementY * -1 > container.offsetHeight / 2) {
+            closeTweetTwitterSocialMenu()
+        } else {
+            const transformFunction = 'translate3d(0, 0px, 0px)'
+            container.style.transform = transformFunction
+        }
+    }
+
     document.addEventListener('click', e => {
         const className = 'twitter_user-profile_timeline_navigation-item'
         if (findParents(e.target, className)) {
