@@ -327,38 +327,26 @@ import * as utils from './utils.js'
         document.cookie = `ap_sidebar_position=${sidebar_position}; path=/; expires=${expires}`
 
         function sidebarPosition(sidebarPositionNumber) {
-            const dashboardPannel =
-                document.querySelector('.dashboard_pannel') !== null
-                    ? document.querySelector('.dashboard_pannel')
-                    : document.querySelector('.dashboard_pannel_0')
-            const customSidePannelSm = dashboardPannel.querySelector(
-                '.custom_side_pannel_sm'
-            )
-            const customSidePannelSmParent = customSidePannelSm.parentNode
-            const dashboardAnchorGroup = customSidePannelSmParent.querySelector(
-                '.dashboard_anchor_group'
-            )
+            const dashboardHouse = document.querySelector('.dashboard-house')
+            const dashboardBox = document.querySelector('.dashboard-box')
             if (sidebarPositionNumber === undefined) {
-                customSidePannelSmParent.style.display = ''
-                customSidePannelSmParent.style.width = '100%'
-                dashboardAnchorGroup.classList.remove('flex_box_sm')
-                dashboardAnchorGroup.classList.add('flex_box_sm_0')
-                dashboardPannel.classList.remove('dashboard_pannel_0')
-                dashboardPannel.classList.add('dashboard_pannel')
+                utils.removeClass(dashboardHouse, 'dashboard-position_bottom')
+                utils.removeClass(dashboardHouse, 'dashboard-position_off')
+                utils.addClass(dashboardHouse, 'dashboard-position_top')
+                utils.removeClass(dashboardBox, 'flex_box_sm')
+                utils.addClass(dashboardBox, 'flex_box_sm_0')
             } else if (sidebarPositionNumber === 'off') {
-                customSidePannelSmParent.style.display = 'none'
-                customSidePannelSmParent.style.width = ''
-                dashboardAnchorGroup.classList.remove('flex_box_sm_0')
-                dashboardAnchorGroup.classList.add('flex_box_sm')
-                dashboardPannel.classList.remove('dashboard_pannel')
-                dashboardPannel.classList.add('dashboard_pannel_0')
+                utils.removeClass(dashboardHouse, 'dashboard-position_bottom')
+                utils.removeClass(dashboardHouse, 'dashboard-position_top')
+                utils.addClass(dashboardHouse, 'dashboard-position_off')
+                utils.removeClass(dashboardBox, 'flex_box_sm_0')
+                utils.addClass(dashboardBox, 'flex_box_sm')
             } else if (sidebarPositionNumber === 'bottom') {
-                customSidePannelSmParent.style.display = ''
-                customSidePannelSmParent.style.width = ''
-                dashboardAnchorGroup.classList.remove('flex_box_sm_0')
-                dashboardAnchorGroup.classList.add('flex_box_sm')
-                dashboardPannel.classList.remove('dashboard_pannel')
-                dashboardPannel.classList.add('dashboard_pannel_0')
+                utils.removeClass(dashboardHouse, 'dashboard-position_off')
+                utils.removeClass(dashboardHouse, 'dashboard-position_top')
+                utils.addClass(dashboardHouse, 'dashboard-position_bottom')
+                utils.removeClass(dashboardBox, 'flex_box_sm_0')
+                utils.addClass(dashboardBox, 'flex_box_sm')
             }
         }
     }
