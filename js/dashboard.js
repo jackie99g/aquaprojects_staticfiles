@@ -503,6 +503,7 @@ import * as utils from './utils.js'
 
     function resetUserPictureAndAccountStyle() {
         const userPicture = document.querySelector('.user_picture')
+        if (userPicture === null) return undefined
         userPicture.style.background = ''
         const account = document.querySelector('.account')
         account.style.visibility = 'hidden'
