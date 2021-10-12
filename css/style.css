@@ -1409,9 +1409,13 @@ a:hover {
 }
 
 .seamless_configuration-view {
-    margin: 0 0 0 12px;
-    padding: 12px 12px 12px 0;
+    padding: 1rem;
     cursor: pointer;
+}
+
+.seamless_configuration-view:hover {
+    color: inherit;
+    text-decoration: none;
 }
 
 .seamless_configuration-edit {
@@ -1419,7 +1423,16 @@ a:hover {
 }
 
 .seamless_configuration-back_button {
-    cursor: pointer;
+    color: inherit;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 50%;
+    padding: 0.5rem;
+    grid-area: 1/1/2/2;
+}
+
+.seamless_configuration-back_button:hover {
+    color: inherit;
 }
 
 .seamless_configuration-input {
