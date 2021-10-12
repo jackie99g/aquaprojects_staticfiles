@@ -5,6 +5,7 @@ import * as utils from './utils.js'
         if (utils.locationMatch('/weather')) {
             drawWeather()
             adjustWeatherContentSize()
+            applyTimeZone()
             changeTheme()
         }
     })
@@ -100,11 +101,11 @@ import * as utils from './utils.js'
             hourlyWeatherlist.push(weatherTemp)
         })
         Array.from(hourlyWeatherDate).forEach(element => {
-            const weatherDate =
-                element.innerText.split(' ')[1] +
-                ' ' +
-                element.innerText.split(' ')[2]
-            hourlyWeatherDatelist.push(weatherDate)
+            hourlyWeatherDatelist.push(
+                utils
+                    .getLocalDateByUTC(parseInt(element.innerText))
+                    .getUTCHours()
+            )
         })
         const selectors = '.weather-hourly-chart'
         const weatherHourlyChart = document.querySelector(selectors)
@@ -208,6 +209,38 @@ import * as utils from './utils.js'
             hourlyWeather.style.overflowX = 'hidden'
             hourlyWeatherChartBlock.overflowX = 'hidden'
         }
+    }
+
+    function applyTimeZone() {
+        const weatherTime = document.querySelector('.weather-time span')
+        const dailyWeatherDate = document.querySelectorAll(
+            '.daily-weather .weather-date'
+        )
+        const hourlyWeatherDate = document.querySelectorAll(
+            '.hourly-weather .weather-date'
+        )
+        const detailsSunrise = document.querySelector('.details-sunrise span')
+        const detailsSunset = document.querySelector('.details-sunset span')
+        const weatherTimeDate = utils.getLocalDateByUTC(
+            parseInt(weatherTime.innerText)
+        )
+        weatherTime.innerText = weatherTimeDate.toISOString()
+        dailyWeatherDate.forEach(element => {
+            element.innerText = utils
+                .getLocalDateByUTC(parseInt(element.innerText))
+                .getUTCDate()
+        })
+        hourlyWeatherDate.forEach(element => {
+            element.innerText = utils
+                .getLocalDateByUTC(parseInt(element.innerText))
+                .getUTCHours()
+        })
+        detailsSunrise.innerText = utils
+            .getLocalDateByUTC(parseInt(detailsSunrise.innerText))
+            .toISOString()
+        detailsSunset.innerText = utils
+            .getLocalDateByUTC(parseInt(detailsSunset.innerText))
+            .toISOString()
     }
 
     function scrollContentLeft(n, t, i) {
