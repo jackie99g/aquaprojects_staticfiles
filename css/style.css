@@ -970,7 +970,9 @@ a:hover {
     color: #e0245e;
 }
 
-.tweet-twitter_favorite:hover.tweet-twitter_favorite > div > div {
+.tweet-twitter_favorite:hover.tweet-twitter_favorite
+    > div
+    > div:not(.tweet-twitter_social_menu-element) {
     background-color: rgba(224, 36, 94, 0.1);
 }
 
@@ -978,7 +980,9 @@ a:hover {
     color: #17bf63;
 }
 
-.tweet-twitter_retweet:hover.tweet-twitter_retweet > div > div {
+.tweet-twitter_retweet:hover.tweet-twitter_retweet
+    > div
+    > div:not(.tweet-twitter_social_menu-element) {
     background-color: rgba(23, 191, 99, 0.1);
 }
 
@@ -986,7 +990,9 @@ a:hover {
     color: #1da1f2;
 }
 
-.tweet-twitter_share:hover.tweet-twitter_share > div > div {
+.tweet-twitter_share:hover.tweet-twitter_share
+    > div
+    > div:not(.tweet-twitter_social_menu-element) {
     background-color: rgba(29, 161, 242, 0.1);
 }
 
@@ -1085,6 +1091,44 @@ a:hover {
 
 .twitter_title-home-text {
     font-weight: 700;
+}
+
+.tweet-twitter_social_menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.tweet-twitter_social_menu-container {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    border-radius: 1rem 1rem 0 0;
+    padding: 0 0 10px;
+}
+
+.tweet-twitter_social_menu-bar {
+    border: 2px solid #dee2e6;
+    width: 10%;
+    margin: 0.6rem auto 0.3rem;
+    border-radius: 100px;
+}
+
+.tweet-twitter_social_menu-element {
+    display: grid;
+    grid: auto / auto 1fr;
+    padding: 1rem;
+}
+
+.tweet-twitter_social-dropdown {
+    position: absolute;
+    box-shadow: 8px 8px 8px 8px rgb(6 134 255 / 15%);
+    margin: -1rem;
+    border-radius: 1rem;
 }
 
 .tweet-twitter_picture_zoom {
