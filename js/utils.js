@@ -233,3 +233,89 @@ export function updateDocumentTitle() {
         document.title = 'Aqua Projects - ' + location.pathname.substring(1)
     }
 }
+
+const storageItem = ['ap_font_size', 'ap_time_zone', 'ap_language', 'ap_region']
+
+export function getStorageItem(keyName) {
+    return {
+        localStorage: {
+            [keyName]: localStorage.getItem(keyName),
+        },
+        cookie: {
+            [keyName]: getCookie(keyName),
+        },
+    }
+}
+
+export function setStorageItem(keyName, keyValue, syncCookie) {
+    localStorage.setItem(keyName, keyValue)
+    if (syncCookie) {
+        const now = new Date()
+        now.setFullYear(now.getFullYear() + 1)
+        const expires = now.toUTCString()
+        document.cookie = `${keyName}=${keyValue}; path=/; expires=${expires}`
+    }
+    return getStorageItem(keyName)
+}
+
+export function removeStorageItem(keyName, syncCookie) {
+    localStorage.removeItem(keyName)
+    if (syncCookie) {
+        const expires = new Date().toUTCString()
+        document.cookie = `${keyName}=; path=/; expires=${expires}`
+    }
+    return undefined
+}
+
+export function clearStorageItem(syncCookie) {
+    localStorage.clear()
+    if (syncCookie) {
+        const expires = new Date().toUTCString()
+        document.cookie.split(';').forEach(c => {
+            document.cookie = c
+                .replace(/^ +/, '')
+                .replace(/=.*/, `=; path=/; expires=${expires}`)
+        })
+    }
+}
+
+export function listStorageItem() {
+    const localStorages = {}
+    Array.from({ length: localStorage.length }, (x, i) => i).forEach(i => {
+        localStorages[localStorage.key(i)] = localStorage.getItem(
+            localStorage.key(i)
+        )
+    })
+    const cookies = document.cookie.split(';').reduce((cookies, cookie) => {
+        const [name, value] = cookie.split('=').map(c => c.trim())
+        cookies[name] = value
+        return cookies
+    }, {})
+    return {
+        localStorage: localStorages,
+        cookie: cookies,
+    }
+}
+
+export function getObjectValue(obj, keyName, defaultValue) {
+    return obj[keyName] === undefined || obj[keyName] === null
+        ? defaultValue
+        : obj[keyName]
+}
+
+export function getLocalDateByUTC(utcUnixTimeSecond) {
+    const apTimeZone = getObjectValue(
+        getStorageItem(storageItem[1])['localStorage'],
+        storageItem[1],
+        'UTC+09:00'
+    )
+    const timeZoneData = apTimeZone
+    const timeZoneOffsetHours = parseInt(timeZoneData.slice(3, 6))
+    const timeZoneOffsetMinutes = parseInt(timeZoneData.slice(7, 9))
+    const timeZoneOffsetSeconds =
+        timeZoneOffsetHours * 3600 + timeZoneOffsetMinutes * 60
+    const localDate = new Date(
+        (utcUnixTimeSecond + timeZoneOffsetSeconds) * 1000
+    )
+    return localDate
+}
