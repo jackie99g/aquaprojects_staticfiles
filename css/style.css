@@ -130,7 +130,7 @@ a:hover {
     }
 }
 
-.ap_theme-light-background {
+.ap_theme-light-background:not(.ap_only_hover) {
     background-color: rgb(255, 255, 255);
 }
 
@@ -142,7 +142,7 @@ a:hover {
     background-color: rgb(245, 248, 250, 0.5);
 }
 
-.ap_theme-dark-background {
+.ap_theme-dark-background:not(.ap_only_hover) {
     background-color: rgb(21, 32, 43);
 }
 
@@ -154,7 +154,7 @@ a:hover {
     background-color: rgb(25, 39, 52, 0.5);
 }
 
-.ap_theme-default-background {
+.ap_theme-default-background:not(.ap_only_hover) {
     background-color: rgb(255, 255, 255);
 }
 
@@ -173,7 +173,7 @@ a:hover {
 }
 
 @media (prefers-color-scheme: dark) {
-    .ap_theme-default-background {
+    .ap_theme-default-background:not(.ap_only_hover) {
         background-color: rgb(21, 32, 43);
     }
 
