@@ -1078,43 +1078,6 @@ a:hover {
     animation-duration: 1s;
 }
 
-@keyframes fadeOutDown {
-    0% {
-        opacity: 1;
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
-    }
-
-    to {
-        opacity: 0;
-        -webkit-transform: translate3d(0, 100%, 0);
-        transform: translate3d(0, 100%, 0);
-    }
-}
-
-.fadeOutDown {
-    -webkit-animation-name: fadeOutDown;
-    animation-name: fadeOutDown;
-    animation-duration: 1s;
-}
-
-@keyframes fadeOutUp {
-    0% {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-        -webkit-transform: translate3d(0, -100%, 0);
-        transform: translate3d(0, -100%, 0);
-    }
-}
-
-.fadeOutUp {
-    -webkit-animation-name: fadeOutUp;
-    animation-name: fadeOutUp;
-}
-
 .twitter-client {
     display: flex;
     justify-content: center;
