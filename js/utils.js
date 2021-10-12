@@ -193,6 +193,17 @@ export function getApCache(cacheName) {
     return window.AquaProjectsCache[cacheName]
 }
 
+export function addClass(target, className) {
+    if (
+        target &&
+        typeof className === 'string' &&
+        target.classList &&
+        target.classList.contains(className) === false
+    ) {
+        target.classList.add(className)
+    }
+}
+
 export function removeClass(target, className) {
     if (target.classList && target.classList.contains(className)) {
         target.classList.remove(className)
