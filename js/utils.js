@@ -8,6 +8,8 @@ export function changeTheme() {
         'ripple',
         'logo',
         'svg-icon',
+        'btn',
+        'backdrop',
     ]
 
     if (localStorage.getItem('ap-theme') === 'dark') {
