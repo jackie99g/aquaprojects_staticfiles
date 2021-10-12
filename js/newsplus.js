@@ -9,6 +9,7 @@ import * as utils from './utils.js'
             jumpToSlide(_currentSlideNumber)
             activateAnchor(_currentSlideNumber)
             translateAnchors(_currentSlideNumber)
+            applyTimeZone()
             changeTheme()
         }
     })
@@ -286,5 +287,16 @@ import * as utils from './utils.js'
 
     function removeOrigin(href) {
         return href.replace(location.origin, '')
+    }
+
+    function applyTimeZone() {
+        const newsContentPublishedat = document.querySelectorAll(
+            '.news_content-publishedat'
+        )
+        newsContentPublishedat.forEach(element => {
+            element.innerText = utils
+                .getLocalDateByUTC(new Date(element.innerText).getTime() / 1000)
+                .toISOString()
+        })
     }
 })()
