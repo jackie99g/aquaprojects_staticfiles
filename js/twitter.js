@@ -3586,7 +3586,7 @@ import * as utils from './utils.js'
         const close = tsb.querySelector('.twitter-search_box-close')
 
         border.style.borderColor = ''
-        icon.style.color = '#657786'
+        icon.style.color = ''
         close.style.display = 'none'
 
         if (input.dataset['cleared'] === 'true') {
