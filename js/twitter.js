@@ -2901,7 +2901,6 @@ import * as utils from './utils.js'
         const target = findParents(e.target, 'twitter_user-follow_button')
         const fs = target.dataset['twitter_userFollow_status'] === 'true'
         target.innerText = fs === true ? 'Unfollow' : 'Follow'
-        target.classList.add(fs === true ? 'btn-danger' : '')
     }
 
     document.addEventListener('mouseout', e => {
@@ -2914,7 +2913,6 @@ import * as utils from './utils.js'
         const target = findParents(e.target, 'twitter_user-follow_button')
         const fs = target.dataset['twitter_userFollow_status'] === 'true'
         target.innerText = fs === true ? 'Following' : 'Follow'
-        utils.removeClass(target, 'btn-danger')
     }
 
     document.addEventListener('click', e => {
