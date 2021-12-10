@@ -491,6 +491,12 @@ a:hover {
     margin: 0.25rem;
 }
 
+.ap_list_divider {
+    margin: 0.25rem 0;
+    border-top-style: solid;
+    border-top-width: 1px;
+}
+
 .header_contents {
     display: flex;
     height: 57px;
