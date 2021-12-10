@@ -1405,7 +1405,15 @@ a:hover {
 .tweet-twitter_social_menu-element {
     display: grid;
     grid: auto / auto 1fr;
-    padding: 1rem;
+}
+
+/*  - 767px */
+@media (max-width: 767px) {
+    .tweet-twitter_social_menu-element {
+        display: grid;
+        grid: auto / auto 1fr;
+        padding: 1rem;
+    }
 }
 
 .tweet-twitter_social-dropdown {
@@ -1413,6 +1421,11 @@ a:hover {
     box-shadow: 8px 8px 8px 8px rgb(6 134 255 / 15%);
     margin: -1rem;
     border-radius: 1rem;
+}
+
+.tweet-twitter_social-dropdown-bottom > .tweet-twitter_social-dropdown {
+    top: 2rem;
+    right: 2rem;
 }
 
 .tweet-twitter_picture_zoom {
