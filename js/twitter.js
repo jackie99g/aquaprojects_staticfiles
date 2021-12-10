@@ -1636,6 +1636,27 @@ import * as utils from './utils.js'
         }
     }
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'tweet-twitter_user_tooltip')) {
+            tweetTwitterUserTooltipClick(e)
+        }
+    })
+
+    function tweetTwitterUserTooltipClick(e) {
+        const ttuti = e.path.findIndex(e => {
+            return (
+                e.classList &&
+                e.classList.contains('tweet-twitter_user_tooltip')
+            )
+        })
+        const tai = e.path.findIndex(e => {
+            return e.classList && e.classList.contains('twitter_anchor')
+        })
+        if (ttuti < tai) {
+            isTweetTwitterPictureClick = true
+        }
+    }
+
     // twitter_anchor
     document.addEventListener('click', e => {
         if (findParents(e.target, 'twitter_anchor')) {
