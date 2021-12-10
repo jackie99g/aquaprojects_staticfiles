@@ -1211,11 +1211,15 @@ a:hover {
     background-color: rgba(23, 191, 99, 0.1);
 }
 
-.tweet-twitter_share:hover {
+.tweet-twitter_share:hover,
+.twitter-whthpng-option:hover {
     color: #1da1f2;
 }
 
 .tweet-twitter_share:hover.tweet-twitter_share
+    > div
+    > div:not(.tweet-twitter_social_menu-element),
+.twitter-whthpng-option:hover.twitter-whthpng-option
     > div
     > div:not(.tweet-twitter_social_menu-element) {
     background-color: rgba(29, 161, 242, 0.1);
