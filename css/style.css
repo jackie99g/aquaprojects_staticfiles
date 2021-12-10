@@ -1646,8 +1646,7 @@ a:hover {
     flex-shrink: 0;
 }
 
-.account svg,
-.custom_side_pannel_sm svg {
+.account svg {
     margin-right: 1rem;
     width: 1.5rem;
     height: 1.4rem;
