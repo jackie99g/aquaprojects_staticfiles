@@ -479,6 +479,18 @@ a:hover {
     display: none;
 }
 
+.ap_list_space {
+    border-radius: 1rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem;
+}
+
+.ap_list_space_large {
+    border-radius: 1rem;
+    padding: 0.8rem 0.75rem;
+    margin: 0.25rem;
+}
+
 .header_contents {
     display: flex;
     height: 57px;
