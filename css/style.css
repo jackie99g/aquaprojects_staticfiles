@@ -1642,7 +1642,6 @@ a:hover {
 
 .box_container {
     display: flex;
-    cursor: pointer;
 }
 
 .box_element {
