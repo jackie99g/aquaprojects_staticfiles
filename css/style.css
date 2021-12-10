@@ -1127,6 +1127,10 @@ a:hover {
     grid-column: 1/2;
 }
 
+.tweet-twitter_icon > a > div:hover {
+    background-color: rgba(26, 26, 26, 0.15);
+}
+
 .tweet-twitter_main {
     margin-left: 8px;
 }
