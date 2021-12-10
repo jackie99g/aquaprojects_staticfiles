@@ -1522,12 +1522,12 @@ import * as utils from './utils.js'
 
         function setBackgroundColor(rgb) {
             const hslc = rgb2hsl(rgb)
-            const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, ${hslc[2]}%`
+            const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, 25%`
             ttpz.style.background = `${hslColor}, 90%)`
             for (let index = 0; index < ttpzn.length; index++) {
                 const element = ttpzn[index]
-                const l = Number(hslc[2]) - 10
-                const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, ${l}%`
+                // const l = Number(hslc[2]) - 10
+                const hslColor = `hsla(${hslc[0]}, ${hslc[1]}%, 15%`
                 element.style.background = `${hslColor}, 77%)`
             }
         }
