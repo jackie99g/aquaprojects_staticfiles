@@ -199,6 +199,7 @@ export function addClass(target, className) {
     if (
         target &&
         typeof className === 'string' &&
+        className !== '' &&
         target.classList &&
         target.classList.contains(className) === false
     ) {
@@ -207,16 +208,22 @@ export function addClass(target, className) {
 }
 
 export function removeClass(target, className) {
-    if (target.classList && target.classList.contains(className)) {
+    if (
+        target &&
+        typeof className === 'string' &&
+        className !== '' &&
+        target.classList &&
+        target.classList.contains(className)
+    ) {
         target.classList.remove(className)
     }
 }
 
 export function toggleClass(target, className) {
     if (target.classList && target.classList.contains(className)) {
-        target.classList.remove(className)
+        removeClass(target, className)
     } else if (target.classList && !target.classList.contains(className)) {
-        target.classList.add(className)
+        addClass(target, className)
     }
 }
 
