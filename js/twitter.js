@@ -1811,7 +1811,8 @@ import * as utils from './utils.js'
             document.querySelector('.twitter-back').style.display = 'block'
             const tthbSelectors = '.twitter_title-home-block'
             const tthb = document.querySelector(tthbSelectors)
-            tthb.style.grid = 'auto auto / 3rem 1fr 3rem 3rem 3rem'
+            tthb.style.display = 'grid'
+            tthb.style.grid = 'auto auto / 3rem 1fr 3rem'
             const tthdSelectors = '.twitter_title-home-description'
             const tthd = document.querySelector(tthdSelectors)
             const tuscount = tu.querySelector('.twitter_user-statuses_count')
@@ -1842,7 +1843,10 @@ import * as utils from './utils.js'
             tupimg.insertBefore(tupimgimg, tupimg.firstChild)
             tupimg.querySelector('a').remove()
             const tulfbSelectors = '.twitter_user-lists_follow_button'
-            tupimg.querySelector(tulfbSelectors).style.padding = ''
+            const tupimgtulfb = tupimg.querySelector(tulfbSelectors)
+            if (tupimgtulfb) {
+                tupimgtulfb.style.padding = ''
+            }
 
             const tunsnSelectors = '.twitter_user-name_screen_name'
             const tunsn = timeline.querySelector(tunsnSelectors)
@@ -1903,6 +1907,7 @@ import * as utils from './utils.js'
             document.querySelector('.twitter-back').style.display = 'block'
             const tthbSelectors = '.twitter_title-home-block'
             const tthb = document.querySelector(tthbSelectors)
+            tthb.style.display = 'grid'
             tthb.style.grid = 'auto auto / 3rem 1fr 3rem 3rem 3rem'
 
             timeline.insertAdjacentHTML(
@@ -2174,6 +2179,7 @@ import * as utils from './utils.js'
         const twitterUserBackgroundImage = dc('div')
         const twitterUserProfileImage = dc('div')
         const twitterUserProfileImageA = dc('a')
+        const twitterUserProfileImageADiv = dc('div')
         const twitterUserProfileImageAImg = dc('img')
         const twitterUserProfileImageDiv = dc('div')
         const twitterUserListsFollowButton = dc('div')
@@ -2181,6 +2187,7 @@ import * as utils from './utils.js'
         const twitterUserListsButtonSvg = dcns(svgns, 'svg')
         const twitterUserListsButtonSvgUse = dcns(svgns, 'use')
         const twitterUserFollowButton = dc('button')
+        const twitterUserEditProfileButton = dc('button')
         const twitterUserDetails = dc('div')
         const twitterUserMain = dc('div')
         const twitterUserNameScreenName = dc('div')
@@ -2284,15 +2291,20 @@ import * as utils from './utils.js'
         twitterUserProfileImageA.style.position = 'relative'
         twitterUserProfileImageA.dataset[tusnk] = screenName
 
+        twitterUserProfileImageADiv.style.position = 'absolute'
+        twitterUserProfileImageADiv.style.height = '4.267rem'
+        twitterUserProfileImageADiv.style.borderRadius = '50%'
+
         const keyname = 'twitter-view_clear_icon'
         twitterUserProfileImageAImg.src = localStorage.getItem(keyname)
             ? profileImage.replace('_normal', '_400x400')
             : profileImage
         twitterUserProfileImageAImg.crossOrigin = 'anonymous'
         twitterUserProfileImageAImg.style.position = 'absolute'
-        twitterUserProfileImageAImg.style.height = '100%'
+        twitterUserProfileImageAImg.style.height = '4.267rem'
         twitterUserProfileImageAImg.style.borderRadius = '50%'
 
+        twitterUserProfileImageA.appendChild(twitterUserProfileImageADiv)
         twitterUserProfileImageA.appendChild(twitterUserProfileImageAImg)
 
         const tulfbc = 'twitter_user-lists_follow_button'
@@ -2328,8 +2340,27 @@ import * as utils from './utils.js'
         twitterUserFollowButton.style.fontWeight = 'bold'
         twitterUserFollowButton.textContent = following ? 'Following' : 'Follow'
 
-        twitterUserListsFollowButton.appendChild(twitterUserListsButton)
-        twitterUserListsFollowButton.appendChild(twitterUserFollowButton)
+        const tuepbc = 'twitter_user-edit_profile_button'
+        utils.addClass(twitterUserEditProfileButton, bsbtnc)
+        utils.addClass(twitterUserEditProfileButton, apbtnc)
+        utils.addClass(twitterUserEditProfileButton, tuepbc)
+        twitterUserEditProfileButton.style.borderRadius = '100px'
+        twitterUserEditProfileButton.style.margin = '0 0 10px'
+        twitterUserEditProfileButton.style.height = '2.66rem'
+        twitterUserEditProfileButton.style.fontWeight = 'bold'
+        twitterUserEditProfileButton.textContent = 'Edit profile'
+
+        const isProfileUser = screenName =>
+            JSON.parse(localStorage.getItem('twitter_data_whthpng'))[
+                'screen_name'
+            ] === screenName
+        if (isProfileUser(screenName)) {
+            const tuepb = twitterUserEditProfileButton
+            twitterUserListsFollowButton.appendChild(tuepb)
+        } else {
+            twitterUserListsFollowButton.appendChild(twitterUserListsButton)
+            twitterUserListsFollowButton.appendChild(twitterUserFollowButton)
+        }
 
         twitterUserProfileImage.appendChild(twitterUserProfileImageA)
         twitterUserProfileImage.appendChild(twitterUserProfileImageDiv)
