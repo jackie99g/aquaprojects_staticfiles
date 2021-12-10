@@ -176,7 +176,9 @@ import * as utils from './utils.js'
         }
     })
 
+    let scrollingDirection = ''
     let touchingPositionPageX = 0
+    let touchingPositionPageY = 0
     let touchStartScrollLeft = 0
 
     function analyzeTransform(transform) {
@@ -191,6 +193,7 @@ import * as utils from './utils.js'
 
     function boxContainerTouchStart(e, container) {
         touchingPositionPageX = e.changedTouches[0].pageX
+        touchingPositionPageY = e.changedTouches[0].pageY
         touchStartScrollLeft = container.style.transform
             ? analyzeTransform(container.style.transform)
             : [0, 0, 0]
@@ -198,9 +201,19 @@ import * as utils from './utils.js'
 
     function boxContainerTouchMove(e, container) {
         const pageX = e.changedTouches[0].pageX
-        const amountOfMovement = touchingPositionPageX - pageX
-        const tx = (touchStartScrollLeft[0] * -1 + amountOfMovement) * -1
-        container.style.transform = `translate3d(${tx}px, 0px, 0px)`
+        const pageY = e.changedTouches[0].pageY
+        const amountOfMovementX = touchingPositionPageX - pageX
+        const amountOfMovementY = touchingPositionPageY - pageY
+        if (scrollingDirection === '') {
+            scrollingDirection =
+                Math.abs(amountOfMovementX) > Math.abs(amountOfMovementY)
+                    ? 'parallel'
+                    : 'vertical'
+        }
+        if (scrollingDirection === 'parallel') {
+            const tx = (touchStartScrollLeft[0] * -1 + amountOfMovementX) * -1
+            container.style.transform = `translate3d(${tx}px, 0px, 0px)`
+        }
     }
 
     function boxContainerTouchEnd(e, container) {
@@ -217,45 +230,65 @@ import * as utils from './utils.js'
         )
         container.style.transition = 'all 300ms ease 0s'
 
-        const tx = `${elementIndex * elementWidth * -1}px`
-        const transformFunction = `translate3d(${tx}, 0px, 0px)`
-        container.style.transform = transformFunction
-
-        touchingPositionPageX = 0
-        touchStartScrollLeft = 0
-
-        let havetoChange = true
-
-        if (amountOfMovement > container.offsetWidth / 6) {
-            if (elements.length - 1 < currentSlideNumber + 1) {
-                return
-            }
-            const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+        if (scrollingDirection === 'parallel') {
+            const tx = `${elementIndex * elementWidth * -1}px`
             const transformFunction = `translate3d(${tx}, 0px, 0px)`
             container.style.transform = transformFunction
-            currentSlideNumber += 1
-        } else if (amountOfMovement < -(container.offsetWidth / 6)) {
-            if (currentSlideNumber - 1 < 0) {
-                return
+            if (amountOfMovement > container.offsetWidth / 6) {
+                if (elements.length - 1 < currentSlideNumber + 1) {
+                    return
+                }
+                const tx = `${(elementIndex + 1) * elementWidth * -1}px`
+                const transformFunction = `translate3d(${tx}, 0px, 0px)`
+                container.style.transform = transformFunction
+                currentSlideNumber += 1
+                havetoChangeContent(container)
+            } else if (amountOfMovement < -(container.offsetWidth / 6)) {
+                if (currentSlideNumber - 1 < 0) {
+                    return
+                }
+                const tx = `${(elementIndex - 1) * elementWidth * -1}px`
+                const transformFunction = `translate3d(${tx}, 0px, 0px)`
+                container.style.transform = transformFunction
+                currentSlideNumber -= 1
+                havetoChangeContent(container)
             }
-            const tx = `${(elementIndex - 1) * elementWidth * -1}px`
-            const transformFunction = `translate3d(${tx}, 0px, 0px)`
-            container.style.transform = transformFunction
-            currentSlideNumber -= 1
-        } else {
-            havetoChange = false
         }
 
-        havetoChange === true && havetoChangeContent()
+        scrollingDirection = ''
+        touchingPositionPageX = 0
+        touchingPositionPageY = 0
+        touchStartScrollLeft = 0
 
-        function havetoChangeContent() {
+        function havetoChangeContent(container) {
             const anchor = document.querySelectorAll('.box_anchor')
             const anchorHref = anchor[currentSlideNumber].href
             const targetPage = anchorHref.replace(location.origin, '')
             const currentPage = location.href.replace(location.origin, '')
             history.pushState({ targetPage, currentPage }, null, targetPage)
             utils.updateDocumentTitle()
-            changeContent(targetPage)
+            fireBeforeChangeContent(targetPage)
+            const transitionend = () => {
+                changeContent(targetPage)
+                container.removeEventListener('transitionend', transitionend)
+            }
+            container.addEventListener('transitionend', transitionend)
+        }
+
+        function fireBeforeChangeContent(href) {
+            const ajaxProgressBar = document.querySelector('#ajax-progress-bar')
+            const slideNumber = getSlideNumber(href)
+            activateAnchor(slideNumber)
+            translateAnchors(slideNumber)
+
+            utils.removeClass(ajaxProgressBar, 'bg-danger')
+            ajaxProgressBar.parentNode.style.visibility = ''
+            ajaxProgressBar.style.width = '80%'
+
+            // Cache exsists.
+            if (window.AquaProjectsCache[href]) {
+                ajaxProgressBar.style.width = '100%'
+            }
         }
     }
 
