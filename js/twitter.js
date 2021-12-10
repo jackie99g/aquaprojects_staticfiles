@@ -3705,6 +3705,42 @@ import * as utils from './utils.js'
         }
     }
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter-quick-search-cancel')) {
+            twitterQuickSearchCancel()
+        }
+    })
+
+    function twitterQuickSearchCancel() {
+        const quickSearch = document.querySelector('.twitter-quick-search')
+        quickSearch.style.display = 'none'
+    }
+
+    document.addEventListener('keydown', e => {
+        const keyCode = e.keyCode
+        if (keyCode !== 13) return
+        if (utils.locationMatch('/twitter')) {
+            e.target &&
+                e.target.value !== '' &&
+                findParents(e.target, 'seamless_configuration-input') &&
+                twitterQuickSearchInputKeydown(e)
+        }
+    })
+
+    function twitterQuickSearchInputKeydown(e) {
+        const targetHref = `/twitter/search?q=${
+            findParents(e.target, 'seamless_configuration-input').value
+        }`
+        const targetPage = targetHref.replace(location.origin, '')
+        const currentPage = utils.getCurrentPage()
+        const replaceState = Object.assign({}, history.state)
+        replaceState['scrollTop'] = window.scrollY
+        history.replaceState(replaceState, null, currentPage)
+        scanTweetHeight()
+        history.pushState({ targetPage, currentPage }, null, targetPage)
+        changeContent(targetPage)
+    }
+
     async function updateTwitterWhthpngTweetTwitterIcon(isObserved) {
         const tw = document.querySelector('.twitter-whthpng')
         const tti = tw.querySelector('.tweet-twitter_icon')
