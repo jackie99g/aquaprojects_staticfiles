@@ -3189,6 +3189,68 @@ import * as utils from './utils.js'
         }
     }
 
+    document.addEventListener('click', e => {
+        if (findParents(e.target, 'twitter-whthpng-option')) {
+            twitterWhthpngOptionClick(e)
+        }
+    })
+
+    async function twitterWhthpngOptionClick(e) {
+        const target = findParents(e.target, 'twitter-whthpng-option')
+        try {
+            const aor = await acceptOrRejectTweetTwitterSocialMenu(target, [
+                {
+                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#search"></use></svg>',
+                    text: 'Search',
+                },
+                {
+                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#person"></use></svg>',
+                    text: 'Profile',
+                },
+                {
+                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#arrow-repeat"></use></svg>',
+                    text: 'Refresh',
+                },
+            ])
+            if (aor === 0) {
+                const getbbgcrgba = () => {
+                    const body = document.querySelector('body')
+                    const bbgc = body.style.backgroundColor
+                        .replaceAll(' ', '')
+                        .replace('rgb(', '')
+                        .replace(')', '')
+                        .split(',')
+                    const bbgcrgba = `rgba(${bbgc[0]}, ${bbgc[1]}, ${bbgc[2]}, 0.8)`
+                    return bbgcrgba
+                }
+                const quickSearch = document.querySelector(
+                    '.twitter-quick-search'
+                )
+                quickSearch.style.display = ''
+                quickSearch.style.backgroundColor = getbbgcrgba()
+                const mediaQueryString = '(prefers-color-scheme: dark)'
+                const wm = window.matchMedia(mediaQueryString)
+                wm.addEventListener('change', () => {
+                    quickSearch.style.backgroundColor = getbbgcrgba()
+                })
+                return undefined
+            }
+            if (aor === 1) {
+                twitterTitleHomeTwitterProfileClick()
+                return undefined
+            }
+            if (aor === 2) {
+                changeContent(location.href.replace(location.origin, ''))
+                return undefined
+            }
+        } catch (e) {
+            error(e)
+            return undefined
+        } finally {
+            closeTweetTwitterSocialMenu()
+        }
+    }
+
     function updateTweetSocial(tweet_id, href, selectors) {
         try {
             const ttsCache = utils.getApCache(href).querySelectorAll(selectors)
@@ -3229,13 +3291,15 @@ import * as utils from './utils.js'
             const icons = ic
             removeTweetTwitterSocialDropdown()
             const pes = prepareTweetTwitterSocialMenu(icons)
-            const elements = roundedCornersToTweetTwitterSocialDropdown(pes)
+            const elements = pes
             const div = document.createElement('div')
             div.classList.add('tweet-twitter_social-dropdown')
             div.classList.add(`ap_theme-${utils.getApTheme()}-backdrop`)
-            elements.forEach(element =>
+            div.style.borderRadius = '1rem'
+            elements.forEach(element => {
                 utils.addClass(element, 'ap_only_hover')
-            )
+                utils.addClass(element, 'ap_list_space')
+            })
             elements.forEach(element => div.appendChild(element))
             target.appendChild(div)
             const click = e => {
