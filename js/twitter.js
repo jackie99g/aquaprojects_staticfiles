@@ -10,6 +10,7 @@ import * as utils from './utils.js'
             initLastTweetIntersectionObserver()
             makeTwitterUserTwitterIconClear()
             setTweetCreated_at()
+            updateTwitterWhthpngTweetTwitterIcon()
             twitterProfile()
             twitterTrends()
             changeTwitterTimelineBackgroundSize()
@@ -3701,6 +3702,97 @@ import * as utils from './utils.js'
             changeContent(targetPage)
         } else {
             history.back()
+        }
+    }
+
+    async function updateTwitterWhthpngTweetTwitterIcon(isObserved) {
+        const tw = document.querySelector('.twitter-whthpng')
+        const tti = tw.querySelector('.tweet-twitter_icon')
+        const ttiAnchor = tti.querySelector('a')
+        const ttiImg = tti.querySelector('img')
+        const isTwitterDataWhthpng = localStorage.getItem(
+            'twitter_data_whthpng'
+        )
+        isTwitterDataWhthpng === null && (await setTwitterDataWhthpng())
+        const twitterDataWhthpng = localStorage.getItem('twitter_data_whthpng')
+        const twitterDataWhthpngJson = JSON.parse(twitterDataWhthpng)
+        ttiAnchor.href = `/twitter/${twitterDataWhthpngJson.screen_name}`
+        ttiAnchor.dataset.twitter_userScreen_name =
+            twitterDataWhthpngJson.screen_name
+        ttiImg.src = twitterDataWhthpngJson.profile_image_url_https
+        makeTwitterUserTwitterIconClear()
+
+        // Observe twitter profile data.
+        const observeTwitterProfile = func => {
+            let value = window.AquaProjectsCache['/twitter/profile']
+            // Do not run defineProperty again.
+            if (value) return undefined
+            Object.defineProperty(
+                window.AquaProjectsCache,
+                '/twitter/profile',
+                {
+                    get: () => value,
+                    set: newValue => {
+                        value = newValue
+                        func()
+                    },
+                    configurable: true,
+                }
+            )
+        }
+
+        // Do not observe again.
+        !isObserved &&
+            observeTwitterProfile(() => {
+                localStorage.removeItem('twitter_data_whthpng')
+                updateTwitterWhthpngTweetTwitterIcon(true)
+            })
+    }
+
+    async function setTwitterDataWhthpng() {
+        const href = '/twitter/profile'
+        if (window.AquaProjectsCache[href] === undefined) {
+            await getContentHtml(href)
+        }
+        const twitterProfile = utils
+            .getApCacheNode(href, '.twitter-profile')
+            .cloneNode(true)
+        const tti = twitterProfile.querySelector('.tweet-twitter_icon')
+        const ttiAnchor = tti.querySelector('a')
+        const ttiImg = tti.querySelector('img')
+        const screenName = ttiAnchor.dataset['twitter_userScreen_name']
+        const profileImageUrlHttps = ttiImg.src
+        const data = {
+            screen_name: screenName,
+            profile_image_url_https: profileImageUrlHttps,
+        }
+        localStorage.setItem('twitter_data_whthpng', JSON.stringify(data))
+        return new Promise(resolve => resolve(true))
+    }
+
+    async function getContentHtml(href) {
+        try {
+            const fetching = fetch(href, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'include',
+            })
+
+            const response = await fetching
+            if (response.ok === false) {
+                alert(response)
+            }
+            const data = await response.text()
+
+            utils.saveApCache(href, data)
+            return new Promise(resolve => {
+                resolve(data)
+            })
+        } catch (err) {
+            error(err)
+            return new Promise((resolve, reject) => {
+                reject(err)
+            })
         }
     }
 
