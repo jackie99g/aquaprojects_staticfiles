@@ -129,51 +129,117 @@ import * as utils from './utils.js'
         }
 
         getScript(
-            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js'
-        ).then(() => drawChart())
+            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js'
+        ).then(() =>
+            drawChart(
+                weatherHourlyChart.parentNode,
+                weatherHourlyChart,
+                hourlyWeatherDatelist.slice(0, 24),
+                hourlyWeatherlist.slice(0, 24)
+            )
+        )
 
-        function drawChart() {
-            /* eslint-disable */
-            const myChart = new Chart(ctx, {
+        function drawChart(
+            chartContainer,
+            chartCanvas,
+            labels,
+            dataDatasetsData
+        ) {
+            const getAspectRatio = () => (window.innerWidth < 768 ? 2 : 4)
+            const getbbgcrgba = () => {
+                const body = document.querySelector('body')
+                const bbgc = body.style.backgroundColor
+                    .replaceAll(' ', '')
+                    .replace('rgb(', '')
+                    .replace(')', '')
+                    .split(',')
+                const bbgcrgba = `rgba(${bbgc[0]}, ${bbgc[1]}, ${bbgc[2]}, 0)`
+                return bbgcrgba
+            }
+            const ctx = chartCanvas.getContext('2d')
+            const chartHeight = chartContainer.offsetWidth / getAspectRatio()
+
+            const gradientStroke = ctx.createLinearGradient(
+                0,
+                chartHeight,
+                0,
+                0
+            )
+            gradientStroke.addColorStop(1, 'rgba(29, 161, 242)')
+            gradientStroke.addColorStop(0, 'rgba(29, 161, 242)')
+
+            const gradientFill = ctx.createLinearGradient(0, chartHeight, 0, 0)
+            gradientFill.addColorStop(1, 'rgba(29, 161, 242, 0.6)')
+            gradientFill.addColorStop(0, getbbgcrgba())
+
+            // Setup
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'My First dataset',
+                        borderColor: gradientStroke,
+                        pointBackgroundColor: gradientStroke,
+                        backgroundColor: gradientFill,
+                        data: dataDatasetsData,
+                        tension: 0.4,
+                        fill: true,
+                    },
+                ],
+            }
+
+            // Config
+            const config = {
                 type: 'line',
-                data: {
-                    labels: hourlyWeatherDatelist,
-                    datasets: [
-                        {
-                            data: hourlyWeatherlist,
-                            backgroundColor: 'rgba(29, 161, 242, 0.2)',
-                            borderColor: 'rgba(29, 161, 242, 1)',
-                            borderWidth: 1,
-                        },
-                    ],
-                },
+                data: data,
                 options: {
-                    legend: {
-                        display: false,
+                    plugins: {
+                        legend: false,
                     },
-                    responsive: false,
                     scales: {
-                        xAxes: [
-                            {
-                                ticks: {
-                                    beginAtZero: true,
-                                },
+                        x: {
+                            display: true,
+                            grid: {
+                                display: false,
+                                drawBorder: false,
                             },
-                        ],
-                        yAxes: [
-                            {
-                                ticks: {
-                                    display: false,
-                                },
-                                gridLines: {
-                                    display: false,
-                                },
+                        },
+                        y: {
+                            display: true,
+                            grid: {
+                                drawBorder: false,
                             },
-                        ],
+                        },
                     },
+                    aspectRatio: getAspectRatio(),
                 },
-            })
+            }
+
+            // === include 'setup' then 'config' above ===
+
+            /* eslint-disable */
+            const chart = new Chart(chartCanvas, config)
             /* eslint-enable */
+
+            window.addEventListener('resize', () => {
+                chart.options.aspectRatio = getAspectRatio()
+                chart.update()
+            })
+
+            const mediaQueryString = '(prefers-color-scheme: dark)'
+            const wm = window.matchMedia(mediaQueryString)
+            wm.addEventListener('change', () => {
+                const gradientFill = ctx.createLinearGradient(
+                    0,
+                    chartHeight,
+                    0,
+                    0
+                )
+                gradientFill.addColorStop(1, 'rgba(29, 161, 242, 0.6)')
+                gradientFill.addColorStop(0, getbbgcrgba())
+                chart.data.datasets[0].backgroundColor = gradientFill
+                chart.update()
+            })
         }
     }
 
