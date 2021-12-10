@@ -1579,6 +1579,45 @@ a:hover {
     grid-area: 2/2/3/3;
 }
 
+.twitter-quick-search {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgb(255, 255, 255, 0.8);
+    z-index: 2;
+}
+
+.twitter-quick-search > div > div {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: max-content;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .twitter-quick-search > div > div {
+        width: 66.6666666667%;
+    }
+}
+
+.twitter-quick-search > div > div > div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    border-radius: 100px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 8px 8px 8px 8px rgb(6 134 255 / 15%);
+}
+
 .seamless_configuration-view {
     cursor: pointer;
 }
