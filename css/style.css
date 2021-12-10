@@ -541,10 +541,6 @@ a:hover {
     }
 }
 
-.username > a {
-    color: black;
-}
-
 .user_picture {
     width: 3rem;
     height: 3rem;
