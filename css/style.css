@@ -840,8 +840,6 @@ a:hover {
 
 .account_user_info {
     display: flex;
-    flex-direction: row;
-    padding: 1rem;
 }
 
 .account_picture {
