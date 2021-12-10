@@ -182,9 +182,9 @@ export function repaintNode(cacheName, selectors, useCacheDirectly) {
 }
 
 export function saveApCache(cacheName, data) {
-    window.AquaProjectsCache[
-        cacheName
-    ] = document.createRange().createContextualFragment(data)
+    window.AquaProjectsCache[cacheName] = document
+        .createRange()
+        .createContextualFragment(data)
 }
 
 export function getApCacheNode(cacheName, selectors) {
