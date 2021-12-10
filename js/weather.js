@@ -60,11 +60,6 @@ import * as utils from './utils.js'
             -weatherHourly.clientWidth - weatherHourly.offsetWidth,
             200
         )
-        scrollContentLeft(
-            document.querySelectorAll('.hourly-weather-chart-block')[0],
-            -weatherHourly.clientWidth - weatherHourly.offsetWidth,
-            200
-        )
     }
 
     // hourly-weather-right-btn
@@ -78,11 +73,6 @@ import * as utils from './utils.js'
         const weatherHourly = document.querySelector('.weather-hourly')
         scrollContentLeft(
             document.querySelectorAll('.hourly-weather')[0],
-            weatherHourly.clientWidth + weatherHourly.offsetWidth,
-            200
-        )
-        scrollContentLeft(
-            document.querySelectorAll('.hourly-weather-chart-block')[0],
             weatherHourly.clientWidth + weatherHourly.offsetWidth,
             200
         )
@@ -197,17 +187,12 @@ import * as utils from './utils.js'
         const windowWidth = window.innerWidth
         const dailyWeather = document.querySelector('.daily-weather')
         const hourlyWeather = document.querySelector('.hourly-weather')
-        const hourlyWeatherChartBlock = document.querySelector(
-            '.hourly-weather-chart-block'
-        )
         if (windowWidth < 768) {
             dailyWeather.style.overflowX = 'auto'
             hourlyWeather.style.overflowX = 'auto'
-            hourlyWeatherChartBlock.overflowX = 'auto'
         } else {
             dailyWeather.style.overflowX = 'hidden'
             hourlyWeather.style.overflowX = 'hidden'
-            hourlyWeatherChartBlock.overflowX = 'hidden'
         }
     }
 
