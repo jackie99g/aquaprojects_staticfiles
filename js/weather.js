@@ -156,6 +156,20 @@ import * as utils from './utils.js'
                 const bbgcrgba = `rgba(${bbgc[0]}, ${bbgc[1]}, ${bbgc[2]}, 0)`
                 return bbgcrgba
             }
+            const getaptcscrgb = () => {
+                const wm = mqs => window.matchMedia(mqs)
+                if (localStorage.getItem('ap-theme') === 'dark') {
+                    return 'rgb(136, 153, 166)'
+                } else if (localStorage.getItem('ap-theme') === 'light') {
+                    return 'rgb(101, 119, 134)'
+                } else {
+                    if (wm('(prefers-color-scheme: dark)').matches) {
+                        return 'rgb(136, 153, 166)'
+                    } else if (wm('(prefers-color-scheme: light)').matches) {
+                        return 'rgb(101, 119, 134)'
+                    }
+                }
+            }
             const ctx = chartCanvas.getContext('2d')
             const chartHeight = chartContainer.offsetWidth / getAspectRatio()
 
@@ -171,6 +185,8 @@ import * as utils from './utils.js'
             const gradientFill = ctx.createLinearGradient(0, chartHeight, 0, 0)
             gradientFill.addColorStop(1, 'rgba(29, 161, 242, 0.6)')
             gradientFill.addColorStop(0, getbbgcrgba())
+
+            const ticksColor = getaptcscrgb()
 
             // Setup
             const data = {
@@ -203,11 +219,17 @@ import * as utils from './utils.js'
                                 display: false,
                                 drawBorder: false,
                             },
+                            ticks: {
+                                color: ticksColor,
+                            },
                         },
                         y: {
                             display: true,
                             grid: {
                                 drawBorder: false,
+                            },
+                            ticks: {
+                                color: ticksColor,
                             },
                         },
                     },
@@ -238,6 +260,9 @@ import * as utils from './utils.js'
                 gradientFill.addColorStop(1, 'rgba(29, 161, 242, 0.6)')
                 gradientFill.addColorStop(0, getbbgcrgba())
                 chart.data.datasets[0].backgroundColor = gradientFill
+                const ticksColor = getaptcscrgb()
+                chart.options.scales.x.ticks.color = ticksColor
+                chart.options.scales.y.ticks.color = ticksColor
                 chart.update()
             })
         }
