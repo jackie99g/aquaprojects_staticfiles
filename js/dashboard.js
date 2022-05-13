@@ -1,4 +1,4 @@
-import { findParents, log, error } from './utils.js'
+import { changeTheme, findParents, log, error } from './utils.js'
 import * as utils from './utils.js'
 !(() => {
     !(() => {
@@ -64,7 +64,7 @@ import * as utils from './utils.js'
             ajaxProgressBar.classList.add('bg-danger')
             ajaxProgressBar.style.width = '100%'
             changeContentArea.innerHTML =
-                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
         }
         if (href != location.href.replace(location.origin, '')) {
             console.log('It seems that you moved to a different page first.')
@@ -83,7 +83,7 @@ import * as utils from './utils.js'
         } else {
             const changeContentArea = document.querySelector('#main')
             changeContentArea.innerHTML =
-                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
         }
 
         ajaxProgressBar.style.width = '100%'
@@ -262,7 +262,7 @@ import * as utils from './utils.js'
             ajaxProgressBar.classList.add('bg-danger')
             ajaxProgressBar.style.width = '100%'
             main.innerHTML =
-                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+                '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
         }
     }
 
@@ -442,18 +442,8 @@ import * as utils from './utils.js'
     }
 
     const mediaQueryString = '(prefers-color-scheme: dark)'
-    window.matchMedia(mediaQueryString).addEventListener('change', e => {
-        const body = document.querySelector('body')
-        if (e.matches) {
-            document.head.children['theme-color'].content = '#15202b'
-            body.style.backgroundColor = 'rgb(21, 32, 43)'
-            body.style.color = 'rgb(255, 255, 255)'
-        } else {
-            document.head.children['theme-color'].content = '#ffffff'
-            body.style.backgroundColor = 'rgb(255, 255, 255)'
-            body.style.color = ''
-        }
-    })
+    const wm = window.matchMedia(mediaQueryString)
+    wm.addEventListener('change', changeTheme)
 
     function updateDashboardAnchorGroup() {
         resetUserPictureAndAccountStyle()
@@ -491,7 +481,7 @@ import * as utils from './utils.js'
         const dcns = (uri, tagName) => document.createElementNS(uri, tagName)
         const svgns = 'http://www.w3.org/2000/svg'
         const xlinkns = 'http://www.w3.org/1999/xlink'
-        const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+        const bi = '/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg'
         const sicon = (e, i) => e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
         const use = dcns(svgns, 'use')
         const href = targetSvg.querySelector('use').getAttribute('href')
