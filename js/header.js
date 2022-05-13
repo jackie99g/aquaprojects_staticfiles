@@ -206,7 +206,6 @@ import * as utils from './utils.js'
         const reduceHeight =
             needsPadding === true ? '(3.2rem + 1px + 57px)' : '57px'
         const needsHidden = apSidebarPosition === null
-        dashboardHouse.style.display = needsHidden === true ? 'none' : ''
         const windowWidth = window.innerWidth
         if (windowWidth < 768) {
             if (visibleState === 'hidden') {
@@ -217,6 +216,7 @@ import * as utils from './utils.js'
                 account.style.boxShadow = ''
                 account.style.borderRadius = ''
                 account.style.overflow = 'auto'
+                dashboardHouse.style.display = needsHidden === true ? 'none' : ''
                 document.querySelector('#main').style.display = 'none'
             } else {
                 account.style.visibility = 'hidden'
@@ -247,7 +247,6 @@ import * as utils from './utils.js'
                 account.style.boxShadow = ''
                 account.style.borderRadius = '1rem'
                 account.style.overflow = ''
-                document.querySelector('.dashboard-house').style.display = ''
                 document.querySelector('#main').style.display = ''
             }
         }
