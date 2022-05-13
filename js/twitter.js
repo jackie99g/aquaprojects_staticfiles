@@ -3370,16 +3370,6 @@ import * as utils from './utils.js'
         }
     }
 
-    function roundedCornersToTweetTwitterSocialDropdown(elements) {
-        if (elements.length === 1) {
-            elements[0].style.borderRadius = '1rem'
-            return elements
-        }
-        elements[0].style.borderRadius = '1rem 1rem 0 0'
-        elements[elements.length - 1].style.borderRadius = '0 0 1rem 1rem'
-        return elements
-    }
-
     function proceedWithAcceptingOrRejectingTweetTwitterSocialMenu(icons) {
         return new Promise((resolve, reject) => {
             showTweetTwitterSocialMenu(icons)
