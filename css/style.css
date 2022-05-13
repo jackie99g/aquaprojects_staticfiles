@@ -1210,15 +1210,6 @@ a:hover {
     font-weight: normal;
 }
 
-/* .twitter_user-favorites_count-unit,
-.twitter_user-statuses_count-unit,
-.twitter_user-following_count-unit,
-.twitter_user-followers_count-unit,
-.twitter_user-count_status-comma,
-.twitter_user-status-comma {
-    color: #657786;
-} */
-
 .twitter_user-following_count-unit:hover,
 .twitter_user-followers_count-unit:hover {
     color: #1da1f2;
