@@ -30,6 +30,10 @@ body {
     }
 }
 
+svg {
+    fill: currentColor;
+}
+
 .animated {
     animation-duration: 0.3s !important;
 }
