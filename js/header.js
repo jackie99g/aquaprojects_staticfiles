@@ -184,6 +184,7 @@ import * as utils from './utils.js'
         const userPicture = findParents(e.target, 'user_picture')
         const account = document.querySelector('.account')
         const footer = document.querySelector('#footer')
+        const dashboardHouse = document.querySelector('.dashboard-house')
         const visibleState = account.style.visibility
             ? account.style.visibility
             : 'hidden'
@@ -204,6 +205,8 @@ import * as utils from './utils.js'
         const needsPadding = apSidebarPosition === 'bottom'
         const reduceHeight =
             needsPadding === true ? '(3.2rem + 1px + 57px)' : '57px'
+        const needsHidden = apSidebarPosition === null
+        dashboardHouse.style.display = needsHidden === true ? 'none' : ''
         const windowWidth = window.innerWidth
         if (windowWidth < 768) {
             if (visibleState === 'hidden') {
@@ -223,6 +226,7 @@ import * as utils from './utils.js'
                 account.style.boxShadow = ''
                 account.style.borderRadius = '1rem'
                 account.style.overflow = ''
+                document.querySelector('.dashboard-house').style.display = ''
                 document.querySelector('#main').style.display = ''
             }
         } else {
@@ -243,6 +247,7 @@ import * as utils from './utils.js'
                 account.style.boxShadow = ''
                 account.style.borderRadius = '1rem'
                 account.style.overflow = ''
+                document.querySelector('.dashboard-house').style.display = ''
                 document.querySelector('#main').style.display = ''
             }
         }
@@ -292,9 +297,11 @@ import * as utils from './utils.js'
         const main = document.querySelector('#main')
         const userPicture = document.querySelector('.user_picture')
         const footer = document.querySelector('#footer')
+        const dashboardHouse = document.querySelector('.dashboard-house')
         const windowWidth = window.innerWidth
         main.style.display = ''
         userPicture.style.background = ''
+        dashboardHouse.style.display = ''
         if (windowWidth < 768) utils.removeClass(footer, 'ap_display_none')
     }
 
