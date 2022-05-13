@@ -2173,7 +2173,7 @@ import * as utils from './utils.js'
         const cas = styles => `ap_theme-${utils.getApTheme()}-${styles}-skelton`
         const svgns = 'http://www.w3.org/2000/svg'
         const xlinkns = 'http://www.w3.org/1999/xlink'
-        const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+        const bi = '/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg'
         const sicon = (e, i) => e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
         const twitterUser = dc('div')
         const twitterUserBackgroundImage = dc('div')
@@ -2707,7 +2707,7 @@ import * as utils from './utils.js'
                     document.createElementNS(uri, tagName)
                 const svgns = 'http://www.w3.org/2000/svg'
                 const xlinkns = 'http://www.w3.org/1999/xlink'
-                const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+                const bi = '/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg'
                 const sicon = (e, i) =>
                     e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
                 const use = dcns(svgns, 'use')
@@ -2768,7 +2768,7 @@ import * as utils from './utils.js'
                     document.createElementNS(uri, tagName)
                 const svgns = 'http://www.w3.org/2000/svg'
                 const xlinkns = 'http://www.w3.org/1999/xlink'
-                const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+                const bi = '/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg'
                 const sicon = (e, i) =>
                     e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
                 const use = dcns(svgns, 'use')
@@ -2820,7 +2820,7 @@ import * as utils from './utils.js'
                     document.createElementNS(uri, tagName)
                 const svgns = 'http://www.w3.org/2000/svg'
                 const xlinkns = 'http://www.w3.org/1999/xlink'
-                const bi = '/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg'
+                const bi = '/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg'
                 const sicon = (e, i) =>
                     e.setAttributeNS(xlinkns, 'href', `${bi}#${i}`)
                 const use = dcns(svgns, 'use')
@@ -3231,15 +3231,15 @@ import * as utils from './utils.js'
         try {
             const aor = await acceptOrRejectTweetTwitterSocialMenu(target, [
                 {
-                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#search"></use></svg>',
+                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#search"></use></svg>',
                     text: 'Search',
                 },
                 {
-                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#person"></use></svg>',
+                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#person"></use></svg>',
                     text: 'Profile',
                 },
                 {
-                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#arrow-repeat"></use></svg>',
+                    icon: '<svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#arrow-repeat"></use></svg>',
                     text: 'Refresh',
                 },
             ])
@@ -3296,7 +3296,7 @@ import * as utils from './utils.js'
                             return element.dataset[keyname] === tweet_id
                         }),
                         'tweet-twitter_social'
-                    )
+                    ).cloneNode(true)
                     social.parentNode.insertBefore(socialCache, social)
                     social.remove()
                 }
@@ -4005,6 +4005,6 @@ import * as utils from './utils.js'
         const i = document.createElement('i')
         i.classList.add('fas', 'fa-exclamation-circle')
         document.querySelector('#main').innerHTML =
-            '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.5.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
+            '<div style="word-break: break-all; margin: 8px auto auto;"><div style="margin: 0px auto; width: fit-content;"><div style="width: fit-content; margin: 0px auto;"><svg class="bi"><use href="/libs/bootstrap-icons/1.7.0/bootstrap-icons.svg#exclamation-circle"></use></svg></div>Looks like you lost your connection. Please check it and try again.</div></div>'
     }
 })()
