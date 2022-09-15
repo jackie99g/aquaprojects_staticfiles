@@ -16,7 +16,9 @@ import * as utils from './utils.js'
             return
         }
 
-        if (scrollY > startPos) {
+        if (scrollY <= 0) {
+            headerContent.style.transform = 'translateY(0px)'
+        } else if (scrollY > startPos) {
             headerContentScrollLevel -= scrollY - startPos
             if (headerContentScrollLevel > 0) {
                 const top = headerContentHeight - headerContentScrollLevel
