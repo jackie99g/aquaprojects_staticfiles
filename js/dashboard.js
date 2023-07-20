@@ -13,6 +13,7 @@ import * as utils from './utils.js'
         history.replaceState(state, null, currentPage)
         updateDashboardAnchorGroup()
         updateFilesToCache()
+        changeTheme()
     })()
 
     document.addEventListener('click', e => {
