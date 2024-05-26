@@ -119,6 +119,26 @@ import { changeTheme, error, findParents, getCookie } from './utils.js'
         }
         console.log('isDeleted', isDeleted)
     }
+    const handletogglepip = () => {
+        if (document.pictureInPictureElement) {
+            document.exitPictureInPicture()
+        } else if (document.pictureInPictureEnabled) {
+            const ytdlpvideo = document.querySelector('.ytdlpvideo')
+            ytdlpvideo.requestPictureInPicture()
+        }
+    }
+    const handletoggleloop = () => {
+        const ytdlpvideo = document.querySelector('.ytdlpvideo')
+        const ytdlptoggleloopbtn = document.querySelector('.ytdlptoggleloopbtn')
+        const loopStatus = ytdlpvideo.getAttribute('loop')
+        if (loopStatus === 'true' || loopStatus === '') {
+            ytdlpvideo.removeAttribute('loop')
+            ytdlptoggleloopbtn.innerHTML = 'Set Loop'
+        } else if (loopStatus === null) {
+            ytdlpvideo.setAttribute('loop', 'true')
+            ytdlptoggleloopbtn.innerHTML = 'Unset Loop'
+        }
+    }
     document.addEventListener('click', e => {
         if (findParents(e.target, 'ytdlprequestbtn')) {
             onclick(e.target)
@@ -131,6 +151,12 @@ import { changeTheme, error, findParents, getCookie } from './utils.js'
         }
         if (findParents(e.target, 'ytdlpcachedelbtn')) {
             onclickcachedel(e.target)
+        }
+        if (findParents(e.target, 'ytdlptogglebtn')) {
+            handletogglepip(e.target)
+        }
+        if (findParents(e.target, 'ytdlptoggleloopbtn')) {
+            handletoggleloop(e.target)
         }
     })
 })()
