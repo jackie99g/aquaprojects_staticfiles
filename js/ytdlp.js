@@ -78,10 +78,20 @@ import { changeTheme, error, findParents, getCookie } from './utils.js'
             )
             const ytdlpcachestatus = document.querySelector('.ytdlpcachestatus')
             const getThead = () => {
-                return '<thead><tr><th>URL</th><th>ByteLength</th></tr></thead>'
+                const thUrl = '<th>URL</th>'
+                const thByte = '<th>ByteLength</th>'
+                const thCaP = '<th>Copy and Paste</th>'
+                return `<thead><tr>${thUrl}${thByte}${thCaP}</tr></thead>`
             }
             const getTd = (td0, td1) => {
-                return `<tr><td style="padding: 0 1rem;">${td0}</td><td>${td1}</td></tr>`
+                const td0bClass = 'class="ytdlpcacheurl"'
+                const td0bStyle = 'style="padding: 0 1rem;"'
+                const td0b = `<td ${td0bClass} ${td0bStyle}>${td0}</td>`
+                const td1b = `<td>${td1}</td>`
+                const td2bClass = 'class="ytdlpcachecopyandpastebtn"'
+                const td2b = `<td><button ${td2bClass}>Copy and Paste</button></td>`
+                const trClass = 'class="ytdlpcachetr"'
+                return `<tr ${trClass}>${td0b}${td1b}${td2b}</tr>`
             }
             const urlsStr = urls.map(e => getTd(e[0], e[1])).join('')
             ytdlpcachestatus.innerHTML = `<table>${getThead()}<tbody>${urlsStr}</tbody></table>`
