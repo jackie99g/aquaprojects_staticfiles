@@ -149,6 +149,19 @@ import { changeTheme, error, findParents, getCookie } from './utils.js'
             ytdlptoggleloopbtn.innerHTML = 'Unset Loop'
         }
     }
+    const handlecopyandpaste = target => {
+        const currentTr = findParents(target, 'ytdlpcachetr')
+        const ytdlprequestinput = document.querySelector('.ytdlprequestinput')
+        if (currentTr) {
+            const ytdlpcacheurl = currentTr.querySelector('.ytdlpcacheurl')
+            const cacheUrl = ytdlpcacheurl?.innerHTML
+            if (ytdlprequestinput && cacheUrl) {
+                const sPathname = cacheUrl.split('/')
+                const ytid = sPathname.length && sPathname.at(2)
+                ytdlprequestinput.value = ytid
+            }
+        }
+    }
     document.addEventListener('click', e => {
         if (findParents(e.target, 'ytdlprequestbtn')) {
             onclick(e.target)
@@ -167,6 +180,9 @@ import { changeTheme, error, findParents, getCookie } from './utils.js'
         }
         if (findParents(e.target, 'ytdlptoggleloopbtn')) {
             handletoggleloop(e.target)
+        }
+        if (findParents(e.target, 'ytdlpcachecopyandpastebtn')) {
+            handlecopyandpaste(e.target)
         }
     })
 })()
